@@ -1,0 +1,38 @@
+[
+  {
+    "alpha": 0.1,
+    "max_history": 41750000
+  },
+  {
+    "alpha": 0.2,
+    "max_history": 24544789
+  },
+  {
+    "alpha": 0.3,
+    "max_history": 8329253
+  },
+  {
+    "alpha": 0.4,
+    "max_history": 2971026
+  },
+  {
+    "alpha": 0.5,
+    "max_history": 1136501
+  },
+  {
+    "alpha": 0.6,
+    "max_history": 463126
+  },
+  {
+    "alpha": 0.7,
+    "max_history": 197418
+  },
+  {
+    "alpha": 0.8,
+    "max_history": 85131
+  },
+  {
+    "alpha": 0.9,
+    "max_history": 33961
+  }
+]

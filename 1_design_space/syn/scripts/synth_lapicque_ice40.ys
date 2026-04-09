@@ -1,0 +1,16 @@
+# Yosys synthesis script for Lapicque LIF neuron on iCE40
+
+# Read SystemVerilog files
+read_verilog -sv ../../src/lapicque.sv
+read_verilog -sv ../top_lapicque_icebreaker.sv
+
+# Set top-level module
+hierarchy -top top_lapicque_icebreaker
+
+# Synthesis for iCE40
+# The -dsp option will attempt to use iCE40 UltraPlus DSP cells for large arithmetic
+# The icebreaker from 1BitSquared has 8 of these DSP cells
+synth_ice40 -dsp -top top_lapicque_icebreaker -json top_lapicque_icebreaker.json
+
+# Print statistics
+stat

@@ -1,0 +1,54 @@
+
+3. Printing statistics.
+
+=== frac_order_lif ===
+
+   Number of wires:                274
+   Number of wire bits:           2941
+   Number of public wires:          79
+   Number of public wire bits:    1060
+   Number of ports:                  4
+   Number of port bits:             11
+   Number of memories:               1
+   Number of memory bits:           64
+   Number of processes:             20
+   Number of cells:                 79
+     $add                           19
+     $eq                             3
+     $ge                             9
+     $gt                             4
+     $logic_and                      2
+     $logic_not                      1
+     $meminit_v2                     1
+     $memrd                          8
+     $mul                            3
+     $mux                            2
+     $shl                            1
+     $sub                           18
+     SB_MAC16                        8
+
+
+===============================================
+Post-synthesis (iCE40 cells) Statistics
+===============================================
+
+
+5. Printing statistics.
+
+=== frac_order_lif ===
+
+   Number of wires:                568
+   Number of wire bits:           2387
+   Number of public wires:         568
+   Number of public wire bits:    2387
+   Number of ports:                  4
+   Number of port bits:             11
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:               1085
+     SB_CARRY                       94
+     SB_DFFER                       80
+     SB_LUT4                       903
+     SB_MAC16                        8
+

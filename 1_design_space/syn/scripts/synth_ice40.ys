@@ -1,0 +1,23 @@
+# Yosys synthesis script for LIF neuron on iCE40
+
+# Read SystemVerilog files
+read_verilog -sv ../../src/lif.sv
+read_verilog -sv ../../src/lif_top.sv
+
+# Set top-level module
+hierarchy -top lif_top
+
+# Synthesis for iCE40
+synth_ice40 -top lif_top
+
+# Write EDIF netlist for nextpnr
+write_edif ../results/lif_top.edif
+
+# Write Verilog netlist for inspection
+write_verilog ../results/lif_top_synth.v
+
+# Print statistics
+stat
+
+# Write dot file for visualization
+show -format dot -prefix ../results/lif_top

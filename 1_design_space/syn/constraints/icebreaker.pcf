@@ -1,0 +1,30 @@
+# iCEBreaker v1.1 Pin Constraints for LIF Neuron
+
+# 12MHz Clock
+set_io clk 35
+
+# Reset button (active low)
+set_io rst_n 10
+
+# DIP switches (SW1-SW8) for current input
+set_io sw[0] 14
+set_io sw[1] 15
+set_io sw[2] 16
+set_io sw[3] 17
+set_io sw[4] 18
+set_io sw[5] 19
+set_io sw[6] 20
+set_io sw[7] 21
+
+# LEDs (LED1-LED8) for membrane potential display
+set_io led[0] 37
+set_io led[1] 38
+set_io led[2] 39
+set_io led[3] 40
+set_io led[4] 41
+set_io led[5] 42
+set_io led[6] 43
+set_io led[7] 44
+
+# Spike LED (use the onboard red LED)
+set_io spike_led 11

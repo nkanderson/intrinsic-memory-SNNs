@@ -1,0 +1,29 @@
+# Yosys synthesis script for LIF neuron
+
+# Read SystemVerilog files
+read_verilog -sv ../../src/lif.sv
+read_verilog -sv ../../src/lif_top.sv
+
+# Set top-level module
+hierarchy -top lif_top
+
+# Process and optimize
+proc; opt; fsm; opt; memory; opt
+
+# Technology mapping (generic for now - replace with your FPGA family)
+techmap; opt
+
+# ABC optimization (fallback to generic ABC if no liberty file)
+abc -liberty ../liberty/cells.lib || abc
+
+# Clean up
+opt; clean
+
+# Write netlist
+write_verilog ../results/lif_top_synth.v
+
+# Print statistics
+stat
+
+# Write dot file for visualization
+show -format dot -prefix ../results/lif_top

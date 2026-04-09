@@ -1,0 +1,1598 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Mon Sep 22 21:09:56 2025
+[*]
+[dumpfile] "/u/niklas2/fractional-order-LIF-neuron/tb/dump.fst"
+[dumpfile_mtime] "Mon Sep 22 20:59:23 2025"
+[dumpfile_size] 610609
+[savefile] "/u/niklas2/fractional-order-LIF-neuron/tb/frac_order_history_256.gtkw"
+[timestart] 1442900
+[size] 1577 805
+[pos] -293 -120
+*-15.600000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 276
+[signals_width] 254
+[sst_expanded] 1
+[sst_vpaned_height] 230
+@24
+frac_order_lif.ADDR_WIDTH
+frac_order_lif.COEFF_WIDTH
+frac_order_lif.HISTORY_SIZE
+frac_order_lif.NORM_FACTOR
+frac_order_lif.NUM_DSP
+frac_order_lif.REFRACTORY_PERIOD
+frac_order_lif.R_SCALED
+@40000024
+[fpshift_count] 8
+frac_order_lif.TAU_OVER_H_ALPHA
+@24
+frac_order_lif.THRESHOLD
+@40000024
+[fpshift_count] 16
+frac_order_lif.coefficients[1][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[2][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[3][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[4][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[5][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[6][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[7][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[8][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[9][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[10][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[11][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[12][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[13][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[14][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[15][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[16][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[17][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[18][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[19][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[20][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[21][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[22][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[23][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[24][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[25][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[26][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[27][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[28][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[29][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[30][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[31][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[32][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[33][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[34][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[35][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[36][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[37][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[38][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[39][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[40][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[41][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[42][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[43][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[44][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[45][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[46][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[47][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[48][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[49][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[50][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[51][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[52][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[53][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[54][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[55][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[56][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[57][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[58][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[59][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[60][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[61][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[62][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[63][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[64][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[65][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[66][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[67][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[68][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[69][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[70][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[71][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[72][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[73][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[74][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[75][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[76][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[77][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[78][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[79][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[80][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[81][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[82][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[83][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[84][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[85][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[86][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[87][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[88][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[89][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[90][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[91][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[92][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[93][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[94][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[95][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[96][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[97][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[98][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[99][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[100][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[101][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[102][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[103][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[104][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[105][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[106][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[107][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[108][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[109][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[110][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[111][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[112][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[113][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[114][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[115][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[116][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[117][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[118][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[119][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[120][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[121][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[122][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[123][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[124][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[125][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[126][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[127][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[128][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[129][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[130][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[131][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[132][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[133][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[134][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[135][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[136][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[137][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[138][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[139][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[140][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[141][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[142][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[143][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[144][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[145][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[146][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[147][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[148][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[149][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[150][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[151][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[152][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[153][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[154][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[155][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[156][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[157][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[158][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[159][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[160][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[161][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[162][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[163][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[164][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[165][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[166][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[167][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[168][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[169][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[170][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[171][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[172][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[173][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[174][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[175][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[176][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[177][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[178][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[179][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[180][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[181][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[182][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[183][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[184][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[185][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[186][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[187][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[188][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[189][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[190][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[191][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[192][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[193][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[194][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[195][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[196][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[197][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[198][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[199][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[200][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[201][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[202][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[203][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[204][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[205][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[206][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[207][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[208][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[209][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[210][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[211][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[212][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[213][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[214][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[215][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[216][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[217][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[218][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[219][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[220][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[221][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[222][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[223][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[224][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[225][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[226][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[227][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[228][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[229][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[230][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[231][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[232][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[233][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[234][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[235][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[236][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[237][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[238][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[239][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[240][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[241][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[242][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[243][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[244][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[245][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[246][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[247][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[248][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[249][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[250][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[251][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[252][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[253][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[254][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[255][15:0]
+[fpshift_count] 16
+frac_order_lif.coefficients[256][15:0]
+@24
+frac_order_lif.rst
+frac_order_lif.clk
+frac_order_lif.current[7:0]
+frac_order_lif.current_term[31:0]
+@40000024
+[fpshift_count] 20
+frac_order_lif.history_term[31:0]
+@24
+frac_order_lif.membrane_potential[7:0]
+@40000024
+[fpshift_count] 4
+frac_order_lif.updated_potential[15:0]
+[fpshift_count] 16
+frac_order_lif.fractional_sum[31:0]
+@24
+frac_order_lif.spike
+frac_order_lif.refractory_counter[4:0]
+frac_order_lif.in_refractory
+@40000024
+[fpshift_count] 28
+frac_order_lif.temp_result[39:0]
+[fpshift_count] 24
+frac_order_lif.temp_history_mult[47:0]
+[fpshift_count] 20
+frac_order_lif.unnormalized_potential[31:0]
+@24
+frac_order_lif.history_ptr[7:0]
+frac_order_lif.history_values[0][7:0]
+frac_order_lif.history_values[1][7:0]
+frac_order_lif.history_values[2][7:0]
+frac_order_lif.history_values[3][7:0]
+frac_order_lif.history_values[4][7:0]
+frac_order_lif.history_values[5][7:0]
+frac_order_lif.history_values[6][7:0]
+frac_order_lif.history_values[7][7:0]
+frac_order_lif.history_values[8][7:0]
+frac_order_lif.history_values[9][7:0]
+frac_order_lif.history_values[10][7:0]
+frac_order_lif.history_values[11][7:0]
+frac_order_lif.history_values[12][7:0]
+frac_order_lif.history_values[13][7:0]
+frac_order_lif.history_values[14][7:0]
+frac_order_lif.history_values[15][7:0]
+frac_order_lif.history_values[16][7:0]
+frac_order_lif.history_values[17][7:0]
+frac_order_lif.history_values[18][7:0]
+frac_order_lif.history_values[19][7:0]
+frac_order_lif.history_values[20][7:0]
+frac_order_lif.history_values[21][7:0]
+frac_order_lif.history_values[22][7:0]
+frac_order_lif.history_values[23][7:0]
+frac_order_lif.history_values[24][7:0]
+frac_order_lif.history_values[25][7:0]
+frac_order_lif.history_values[26][7:0]
+frac_order_lif.history_values[27][7:0]
+frac_order_lif.history_values[28][7:0]
+frac_order_lif.history_values[29][7:0]
+frac_order_lif.history_values[30][7:0]
+frac_order_lif.history_values[31][7:0]
+frac_order_lif.history_values[32][7:0]
+frac_order_lif.history_values[33][7:0]
+frac_order_lif.history_values[34][7:0]
+frac_order_lif.history_values[35][7:0]
+frac_order_lif.history_values[36][7:0]
+frac_order_lif.history_values[37][7:0]
+frac_order_lif.history_values[38][7:0]
+frac_order_lif.history_values[39][7:0]
+frac_order_lif.history_values[40][7:0]
+frac_order_lif.history_values[41][7:0]
+frac_order_lif.history_values[42][7:0]
+frac_order_lif.history_values[43][7:0]
+frac_order_lif.history_values[44][7:0]
+frac_order_lif.history_values[45][7:0]
+frac_order_lif.history_values[46][7:0]
+frac_order_lif.history_values[47][7:0]
+frac_order_lif.history_values[48][7:0]
+frac_order_lif.history_values[49][7:0]
+frac_order_lif.history_values[50][7:0]
+frac_order_lif.history_values[51][7:0]
+frac_order_lif.history_values[52][7:0]
+frac_order_lif.history_values[53][7:0]
+frac_order_lif.history_values[54][7:0]
+frac_order_lif.history_values[55][7:0]
+frac_order_lif.history_values[56][7:0]
+frac_order_lif.history_values[57][7:0]
+frac_order_lif.history_values[58][7:0]
+frac_order_lif.history_values[59][7:0]
+frac_order_lif.history_values[60][7:0]
+frac_order_lif.history_values[61][7:0]
+frac_order_lif.history_values[62][7:0]
+frac_order_lif.history_values[63][7:0]
+frac_order_lif.history_values[64][7:0]
+frac_order_lif.history_values[65][7:0]
+frac_order_lif.history_values[66][7:0]
+frac_order_lif.history_values[67][7:0]
+frac_order_lif.history_values[68][7:0]
+frac_order_lif.history_values[69][7:0]
+frac_order_lif.history_values[70][7:0]
+frac_order_lif.history_values[71][7:0]
+frac_order_lif.history_values[72][7:0]
+frac_order_lif.history_values[73][7:0]
+frac_order_lif.history_values[74][7:0]
+frac_order_lif.history_values[75][7:0]
+frac_order_lif.history_values[76][7:0]
+frac_order_lif.history_values[77][7:0]
+frac_order_lif.history_values[78][7:0]
+frac_order_lif.history_values[79][7:0]
+frac_order_lif.history_values[80][7:0]
+frac_order_lif.history_values[81][7:0]
+frac_order_lif.history_values[82][7:0]
+frac_order_lif.history_values[83][7:0]
+frac_order_lif.history_values[84][7:0]
+frac_order_lif.history_values[85][7:0]
+frac_order_lif.history_values[86][7:0]
+frac_order_lif.history_values[87][7:0]
+frac_order_lif.history_values[88][7:0]
+frac_order_lif.history_values[89][7:0]
+frac_order_lif.history_values[90][7:0]
+frac_order_lif.history_values[91][7:0]
+frac_order_lif.history_values[92][7:0]
+frac_order_lif.history_values[93][7:0]
+frac_order_lif.history_values[94][7:0]
+frac_order_lif.history_values[95][7:0]
+frac_order_lif.history_values[96][7:0]
+frac_order_lif.history_values[97][7:0]
+frac_order_lif.history_values[98][7:0]
+frac_order_lif.history_values[99][7:0]
+frac_order_lif.history_values[100][7:0]
+frac_order_lif.history_values[101][7:0]
+frac_order_lif.history_values[102][7:0]
+frac_order_lif.history_values[103][7:0]
+frac_order_lif.history_values[104][7:0]
+frac_order_lif.history_values[105][7:0]
+frac_order_lif.history_values[106][7:0]
+frac_order_lif.history_values[107][7:0]
+frac_order_lif.history_values[108][7:0]
+frac_order_lif.history_values[109][7:0]
+frac_order_lif.history_values[110][7:0]
+frac_order_lif.history_values[111][7:0]
+frac_order_lif.history_values[112][7:0]
+frac_order_lif.history_values[113][7:0]
+frac_order_lif.history_values[114][7:0]
+frac_order_lif.history_values[115][7:0]
+frac_order_lif.history_values[116][7:0]
+frac_order_lif.history_values[117][7:0]
+frac_order_lif.history_values[118][7:0]
+frac_order_lif.history_values[119][7:0]
+frac_order_lif.history_values[120][7:0]
+frac_order_lif.history_values[121][7:0]
+frac_order_lif.history_values[122][7:0]
+frac_order_lif.history_values[123][7:0]
+frac_order_lif.history_values[124][7:0]
+frac_order_lif.history_values[125][7:0]
+frac_order_lif.history_values[126][7:0]
+frac_order_lif.history_values[127][7:0]
+frac_order_lif.history_values[128][7:0]
+frac_order_lif.history_values[129][7:0]
+frac_order_lif.history_values[130][7:0]
+frac_order_lif.history_values[131][7:0]
+frac_order_lif.history_values[132][7:0]
+frac_order_lif.history_values[133][7:0]
+frac_order_lif.history_values[134][7:0]
+frac_order_lif.history_values[135][7:0]
+frac_order_lif.history_values[136][7:0]
+frac_order_lif.history_values[137][7:0]
+frac_order_lif.history_values[138][7:0]
+frac_order_lif.history_values[139][7:0]
+frac_order_lif.history_values[140][7:0]
+frac_order_lif.history_values[141][7:0]
+frac_order_lif.history_values[142][7:0]
+frac_order_lif.history_values[143][7:0]
+frac_order_lif.history_values[144][7:0]
+frac_order_lif.history_values[145][7:0]
+frac_order_lif.history_values[146][7:0]
+frac_order_lif.history_values[147][7:0]
+frac_order_lif.history_values[148][7:0]
+frac_order_lif.history_values[149][7:0]
+frac_order_lif.history_values[150][7:0]
+frac_order_lif.history_values[151][7:0]
+frac_order_lif.history_values[152][7:0]
+frac_order_lif.history_values[153][7:0]
+frac_order_lif.history_values[154][7:0]
+frac_order_lif.history_values[155][7:0]
+frac_order_lif.history_values[156][7:0]
+frac_order_lif.history_values[157][7:0]
+frac_order_lif.history_values[158][7:0]
+frac_order_lif.history_values[159][7:0]
+frac_order_lif.history_values[160][7:0]
+frac_order_lif.history_values[161][7:0]
+frac_order_lif.history_values[162][7:0]
+frac_order_lif.history_values[163][7:0]
+frac_order_lif.history_values[164][7:0]
+frac_order_lif.history_values[165][7:0]
+frac_order_lif.history_values[166][7:0]
+frac_order_lif.history_values[167][7:0]
+frac_order_lif.history_values[168][7:0]
+frac_order_lif.history_values[169][7:0]
+frac_order_lif.history_values[170][7:0]
+frac_order_lif.history_values[171][7:0]
+frac_order_lif.history_values[172][7:0]
+frac_order_lif.history_values[173][7:0]
+frac_order_lif.history_values[174][7:0]
+frac_order_lif.history_values[175][7:0]
+frac_order_lif.history_values[176][7:0]
+frac_order_lif.history_values[177][7:0]
+frac_order_lif.history_values[178][7:0]
+frac_order_lif.history_values[179][7:0]
+frac_order_lif.history_values[180][7:0]
+frac_order_lif.history_values[181][7:0]
+frac_order_lif.history_values[182][7:0]
+frac_order_lif.history_values[183][7:0]
+frac_order_lif.history_values[184][7:0]
+frac_order_lif.history_values[185][7:0]
+frac_order_lif.history_values[186][7:0]
+frac_order_lif.history_values[187][7:0]
+frac_order_lif.history_values[188][7:0]
+frac_order_lif.history_values[189][7:0]
+frac_order_lif.history_values[190][7:0]
+frac_order_lif.history_values[191][7:0]
+frac_order_lif.history_values[192][7:0]
+frac_order_lif.history_values[193][7:0]
+frac_order_lif.history_values[194][7:0]
+frac_order_lif.history_values[195][7:0]
+frac_order_lif.history_values[196][7:0]
+frac_order_lif.history_values[197][7:0]
+frac_order_lif.history_values[198][7:0]
+frac_order_lif.history_values[199][7:0]
+frac_order_lif.history_values[200][7:0]
+frac_order_lif.history_values[201][7:0]
+frac_order_lif.history_values[202][7:0]
+frac_order_lif.history_values[203][7:0]
+frac_order_lif.history_values[204][7:0]
+frac_order_lif.history_values[205][7:0]
+frac_order_lif.history_values[206][7:0]
+frac_order_lif.history_values[207][7:0]
+frac_order_lif.history_values[208][7:0]
+frac_order_lif.history_values[209][7:0]
+frac_order_lif.history_values[210][7:0]
+frac_order_lif.history_values[211][7:0]
+frac_order_lif.history_values[212][7:0]
+frac_order_lif.history_values[213][7:0]
+frac_order_lif.history_values[214][7:0]
+frac_order_lif.history_values[215][7:0]
+frac_order_lif.history_values[216][7:0]
+frac_order_lif.history_values[217][7:0]
+frac_order_lif.history_values[218][7:0]
+frac_order_lif.history_values[219][7:0]
+frac_order_lif.history_values[220][7:0]
+frac_order_lif.history_values[221][7:0]
+frac_order_lif.history_values[222][7:0]
+frac_order_lif.history_values[223][7:0]
+frac_order_lif.history_values[224][7:0]
+frac_order_lif.history_values[225][7:0]
+frac_order_lif.history_values[226][7:0]
+frac_order_lif.history_values[227][7:0]
+frac_order_lif.history_values[228][7:0]
+frac_order_lif.history_values[229][7:0]
+frac_order_lif.history_values[230][7:0]
+frac_order_lif.history_values[231][7:0]
+frac_order_lif.history_values[232][7:0]
+frac_order_lif.history_values[233][7:0]
+frac_order_lif.history_values[234][7:0]
+frac_order_lif.history_values[235][7:0]
+frac_order_lif.history_values[236][7:0]
+frac_order_lif.history_values[237][7:0]
+frac_order_lif.history_values[238][7:0]
+frac_order_lif.history_values[239][7:0]
+frac_order_lif.history_values[240][7:0]
+frac_order_lif.history_values[241][7:0]
+frac_order_lif.history_values[242][7:0]
+frac_order_lif.history_values[243][7:0]
+frac_order_lif.history_values[244][7:0]
+frac_order_lif.history_values[245][7:0]
+frac_order_lif.history_values[246][7:0]
+frac_order_lif.history_values[247][7:0]
+frac_order_lif.history_values[248][7:0]
+frac_order_lif.history_values[249][7:0]
+frac_order_lif.history_values[250][7:0]
+frac_order_lif.history_values[251][7:0]
+frac_order_lif.history_values[252][7:0]
+frac_order_lif.history_values[253][7:0]
+frac_order_lif.history_values[254][7:0]
+frac_order_lif.history_values[255][7:0]
+@40000025
+[fpshift_count] 16
+frac_order_lif.products[0][23:0]
+[fpshift_count] 16
+frac_order_lif.products[1][23:0]
+[fpshift_count] 16
+frac_order_lif.products[2][23:0]
+[fpshift_count] 16
+frac_order_lif.products[3][23:0]
+[fpshift_count] 16
+frac_order_lif.products[4][23:0]
+[fpshift_count] 16
+frac_order_lif.products[5][23:0]
+[fpshift_count] 16
+frac_order_lif.products[6][23:0]
+[fpshift_count] 16
+frac_order_lif.products[7][23:0]
+[fpshift_count] 16
+frac_order_lif.products[8][23:0]
+[fpshift_count] 16
+frac_order_lif.products[9][23:0]
+[fpshift_count] 16
+frac_order_lif.products[10][23:0]
+[fpshift_count] 16
+frac_order_lif.products[11][23:0]
+[fpshift_count] 16
+frac_order_lif.products[12][23:0]
+[fpshift_count] 16
+frac_order_lif.products[13][23:0]
+[fpshift_count] 16
+frac_order_lif.products[14][23:0]
+[fpshift_count] 16
+frac_order_lif.products[15][23:0]
+[fpshift_count] 16
+frac_order_lif.products[16][23:0]
+[fpshift_count] 16
+frac_order_lif.products[17][23:0]
+[fpshift_count] 16
+frac_order_lif.products[18][23:0]
+[fpshift_count] 16
+frac_order_lif.products[19][23:0]
+[fpshift_count] 16
+frac_order_lif.products[20][23:0]
+[fpshift_count] 16
+frac_order_lif.products[21][23:0]
+[fpshift_count] 16
+frac_order_lif.products[22][23:0]
+[fpshift_count] 16
+frac_order_lif.products[23][23:0]
+[fpshift_count] 16
+frac_order_lif.products[24][23:0]
+[fpshift_count] 16
+frac_order_lif.products[25][23:0]
+[fpshift_count] 16
+frac_order_lif.products[26][23:0]
+[fpshift_count] 16
+frac_order_lif.products[27][23:0]
+[fpshift_count] 16
+frac_order_lif.products[28][23:0]
+[fpshift_count] 16
+frac_order_lif.products[29][23:0]
+[fpshift_count] 16
+frac_order_lif.products[30][23:0]
+[fpshift_count] 16
+frac_order_lif.products[31][23:0]
+[fpshift_count] 16
+frac_order_lif.products[32][23:0]
+[fpshift_count] 16
+frac_order_lif.products[33][23:0]
+[fpshift_count] 16
+frac_order_lif.products[34][23:0]
+[fpshift_count] 16
+frac_order_lif.products[35][23:0]
+[fpshift_count] 16
+frac_order_lif.products[36][23:0]
+[fpshift_count] 16
+frac_order_lif.products[37][23:0]
+[fpshift_count] 16
+frac_order_lif.products[38][23:0]
+[fpshift_count] 16
+frac_order_lif.products[39][23:0]
+[fpshift_count] 16
+frac_order_lif.products[40][23:0]
+[fpshift_count] 16
+frac_order_lif.products[41][23:0]
+[fpshift_count] 16
+frac_order_lif.products[42][23:0]
+[fpshift_count] 16
+frac_order_lif.products[43][23:0]
+[fpshift_count] 16
+frac_order_lif.products[44][23:0]
+[fpshift_count] 16
+frac_order_lif.products[45][23:0]
+[fpshift_count] 16
+frac_order_lif.products[46][23:0]
+[fpshift_count] 16
+frac_order_lif.products[47][23:0]
+[fpshift_count] 16
+frac_order_lif.products[48][23:0]
+[fpshift_count] 16
+frac_order_lif.products[49][23:0]
+[fpshift_count] 16
+frac_order_lif.products[50][23:0]
+[fpshift_count] 16
+frac_order_lif.products[51][23:0]
+[fpshift_count] 16
+frac_order_lif.products[52][23:0]
+[fpshift_count] 16
+frac_order_lif.products[53][23:0]
+[fpshift_count] 16
+frac_order_lif.products[54][23:0]
+[fpshift_count] 16
+frac_order_lif.products[55][23:0]
+[fpshift_count] 16
+frac_order_lif.products[56][23:0]
+[fpshift_count] 16
+frac_order_lif.products[57][23:0]
+[fpshift_count] 16
+frac_order_lif.products[58][23:0]
+[fpshift_count] 16
+frac_order_lif.products[59][23:0]
+[fpshift_count] 16
+frac_order_lif.products[60][23:0]
+[fpshift_count] 16
+frac_order_lif.products[61][23:0]
+[fpshift_count] 16
+frac_order_lif.products[62][23:0]
+[fpshift_count] 16
+frac_order_lif.products[63][23:0]
+[fpshift_count] 16
+frac_order_lif.products[64][23:0]
+[fpshift_count] 16
+frac_order_lif.products[65][23:0]
+[fpshift_count] 16
+frac_order_lif.products[66][23:0]
+[fpshift_count] 16
+frac_order_lif.products[67][23:0]
+[fpshift_count] 16
+frac_order_lif.products[68][23:0]
+[fpshift_count] 16
+frac_order_lif.products[69][23:0]
+[fpshift_count] 16
+frac_order_lif.products[70][23:0]
+[fpshift_count] 16
+frac_order_lif.products[71][23:0]
+[fpshift_count] 16
+frac_order_lif.products[72][23:0]
+[fpshift_count] 16
+frac_order_lif.products[73][23:0]
+[fpshift_count] 16
+frac_order_lif.products[74][23:0]
+[fpshift_count] 16
+frac_order_lif.products[75][23:0]
+[fpshift_count] 16
+frac_order_lif.products[76][23:0]
+[fpshift_count] 16
+frac_order_lif.products[77][23:0]
+[fpshift_count] 16
+frac_order_lif.products[78][23:0]
+[fpshift_count] 16
+frac_order_lif.products[79][23:0]
+[fpshift_count] 16
+frac_order_lif.products[80][23:0]
+[fpshift_count] 16
+frac_order_lif.products[81][23:0]
+[fpshift_count] 16
+frac_order_lif.products[82][23:0]
+[fpshift_count] 16
+frac_order_lif.products[83][23:0]
+[fpshift_count] 16
+frac_order_lif.products[84][23:0]
+[fpshift_count] 16
+frac_order_lif.products[85][23:0]
+[fpshift_count] 16
+frac_order_lif.products[86][23:0]
+[fpshift_count] 16
+frac_order_lif.products[87][23:0]
+[fpshift_count] 16
+frac_order_lif.products[88][23:0]
+[fpshift_count] 16
+frac_order_lif.products[89][23:0]
+[fpshift_count] 16
+frac_order_lif.products[90][23:0]
+[fpshift_count] 16
+frac_order_lif.products[91][23:0]
+[fpshift_count] 16
+frac_order_lif.products[92][23:0]
+[fpshift_count] 16
+frac_order_lif.products[93][23:0]
+[fpshift_count] 16
+frac_order_lif.products[94][23:0]
+[fpshift_count] 16
+frac_order_lif.products[95][23:0]
+[fpshift_count] 16
+frac_order_lif.products[96][23:0]
+[fpshift_count] 16
+frac_order_lif.products[97][23:0]
+[fpshift_count] 16
+frac_order_lif.products[98][23:0]
+[fpshift_count] 16
+frac_order_lif.products[99][23:0]
+[fpshift_count] 16
+frac_order_lif.products[100][23:0]
+[fpshift_count] 16
+frac_order_lif.products[101][23:0]
+[fpshift_count] 16
+frac_order_lif.products[102][23:0]
+[fpshift_count] 16
+frac_order_lif.products[103][23:0]
+[fpshift_count] 16
+frac_order_lif.products[104][23:0]
+[fpshift_count] 16
+frac_order_lif.products[105][23:0]
+[fpshift_count] 16
+frac_order_lif.products[106][23:0]
+[fpshift_count] 16
+frac_order_lif.products[107][23:0]
+[fpshift_count] 16
+frac_order_lif.products[108][23:0]
+[fpshift_count] 16
+frac_order_lif.products[109][23:0]
+[fpshift_count] 16
+frac_order_lif.products[110][23:0]
+[fpshift_count] 16
+frac_order_lif.products[111][23:0]
+[fpshift_count] 16
+frac_order_lif.products[112][23:0]
+[fpshift_count] 16
+frac_order_lif.products[113][23:0]
+[fpshift_count] 16
+frac_order_lif.products[114][23:0]
+[fpshift_count] 16
+frac_order_lif.products[115][23:0]
+[fpshift_count] 16
+frac_order_lif.products[116][23:0]
+[fpshift_count] 16
+frac_order_lif.products[117][23:0]
+[fpshift_count] 16
+frac_order_lif.products[118][23:0]
+[fpshift_count] 16
+frac_order_lif.products[119][23:0]
+[fpshift_count] 16
+frac_order_lif.products[120][23:0]
+[fpshift_count] 16
+frac_order_lif.products[121][23:0]
+[fpshift_count] 16
+frac_order_lif.products[122][23:0]
+[fpshift_count] 16
+frac_order_lif.products[123][23:0]
+[fpshift_count] 16
+frac_order_lif.products[124][23:0]
+[fpshift_count] 16
+frac_order_lif.products[125][23:0]
+[fpshift_count] 16
+frac_order_lif.products[126][23:0]
+[fpshift_count] 16
+frac_order_lif.products[127][23:0]
+[fpshift_count] 16
+frac_order_lif.products[128][23:0]
+[fpshift_count] 16
+frac_order_lif.products[129][23:0]
+[fpshift_count] 16
+frac_order_lif.products[130][23:0]
+[fpshift_count] 16
+frac_order_lif.products[131][23:0]
+[fpshift_count] 16
+frac_order_lif.products[132][23:0]
+[fpshift_count] 16
+frac_order_lif.products[133][23:0]
+[fpshift_count] 16
+frac_order_lif.products[134][23:0]
+[fpshift_count] 16
+frac_order_lif.products[135][23:0]
+[fpshift_count] 16
+frac_order_lif.products[136][23:0]
+[fpshift_count] 16
+frac_order_lif.products[137][23:0]
+[fpshift_count] 16
+frac_order_lif.products[138][23:0]
+[fpshift_count] 16
+frac_order_lif.products[139][23:0]
+[fpshift_count] 16
+frac_order_lif.products[140][23:0]
+[fpshift_count] 16
+frac_order_lif.products[141][23:0]
+[fpshift_count] 16
+frac_order_lif.products[142][23:0]
+[fpshift_count] 16
+frac_order_lif.products[143][23:0]
+[fpshift_count] 16
+frac_order_lif.products[144][23:0]
+[fpshift_count] 16
+frac_order_lif.products[145][23:0]
+[fpshift_count] 16
+frac_order_lif.products[146][23:0]
+[fpshift_count] 16
+frac_order_lif.products[147][23:0]
+[fpshift_count] 16
+frac_order_lif.products[148][23:0]
+[fpshift_count] 16
+frac_order_lif.products[149][23:0]
+[fpshift_count] 16
+frac_order_lif.products[150][23:0]
+[fpshift_count] 16
+frac_order_lif.products[151][23:0]
+[fpshift_count] 16
+frac_order_lif.products[152][23:0]
+[fpshift_count] 16
+frac_order_lif.products[153][23:0]
+[fpshift_count] 16
+frac_order_lif.products[154][23:0]
+[fpshift_count] 16
+frac_order_lif.products[155][23:0]
+[fpshift_count] 16
+frac_order_lif.products[156][23:0]
+[fpshift_count] 16
+frac_order_lif.products[157][23:0]
+[fpshift_count] 16
+frac_order_lif.products[158][23:0]
+[fpshift_count] 16
+frac_order_lif.products[159][23:0]
+[fpshift_count] 16
+frac_order_lif.products[160][23:0]
+[fpshift_count] 16
+frac_order_lif.products[161][23:0]
+[fpshift_count] 16
+frac_order_lif.products[162][23:0]
+[fpshift_count] 16
+frac_order_lif.products[163][23:0]
+[fpshift_count] 16
+frac_order_lif.products[164][23:0]
+[fpshift_count] 16
+frac_order_lif.products[165][23:0]
+[fpshift_count] 16
+frac_order_lif.products[166][23:0]
+[fpshift_count] 16
+frac_order_lif.products[167][23:0]
+[fpshift_count] 16
+frac_order_lif.products[168][23:0]
+[fpshift_count] 16
+frac_order_lif.products[169][23:0]
+[fpshift_count] 16
+frac_order_lif.products[170][23:0]
+[fpshift_count] 16
+frac_order_lif.products[171][23:0]
+[fpshift_count] 16
+frac_order_lif.products[172][23:0]
+[fpshift_count] 16
+frac_order_lif.products[173][23:0]
+[fpshift_count] 16
+frac_order_lif.products[174][23:0]
+[fpshift_count] 16
+frac_order_lif.products[175][23:0]
+[fpshift_count] 16
+frac_order_lif.products[176][23:0]
+[fpshift_count] 16
+frac_order_lif.products[177][23:0]
+[fpshift_count] 16
+frac_order_lif.products[178][23:0]
+[fpshift_count] 16
+frac_order_lif.products[179][23:0]
+[fpshift_count] 16
+frac_order_lif.products[180][23:0]
+[fpshift_count] 16
+frac_order_lif.products[181][23:0]
+[fpshift_count] 16
+frac_order_lif.products[182][23:0]
+[fpshift_count] 16
+frac_order_lif.products[183][23:0]
+[fpshift_count] 16
+frac_order_lif.products[184][23:0]
+[fpshift_count] 16
+frac_order_lif.products[185][23:0]
+[fpshift_count] 16
+frac_order_lif.products[186][23:0]
+[fpshift_count] 16
+frac_order_lif.products[187][23:0]
+[fpshift_count] 16
+frac_order_lif.products[188][23:0]
+[fpshift_count] 16
+frac_order_lif.products[189][23:0]
+[fpshift_count] 16
+frac_order_lif.products[190][23:0]
+[fpshift_count] 16
+frac_order_lif.products[191][23:0]
+[fpshift_count] 16
+frac_order_lif.products[192][23:0]
+[fpshift_count] 16
+frac_order_lif.products[193][23:0]
+[fpshift_count] 16
+frac_order_lif.products[194][23:0]
+[fpshift_count] 16
+frac_order_lif.products[195][23:0]
+[fpshift_count] 16
+frac_order_lif.products[196][23:0]
+[fpshift_count] 16
+frac_order_lif.products[197][23:0]
+[fpshift_count] 16
+frac_order_lif.products[198][23:0]
+[fpshift_count] 16
+frac_order_lif.products[199][23:0]
+[fpshift_count] 16
+frac_order_lif.products[200][23:0]
+[fpshift_count] 16
+frac_order_lif.products[201][23:0]
+[fpshift_count] 16
+frac_order_lif.products[202][23:0]
+[fpshift_count] 16
+frac_order_lif.products[203][23:0]
+[fpshift_count] 16
+frac_order_lif.products[204][23:0]
+[fpshift_count] 16
+frac_order_lif.products[205][23:0]
+[fpshift_count] 16
+frac_order_lif.products[206][23:0]
+[fpshift_count] 16
+frac_order_lif.products[207][23:0]
+[fpshift_count] 16
+frac_order_lif.products[208][23:0]
+[fpshift_count] 16
+frac_order_lif.products[209][23:0]
+[fpshift_count] 16
+frac_order_lif.products[210][23:0]
+[fpshift_count] 16
+frac_order_lif.products[211][23:0]
+[fpshift_count] 16
+frac_order_lif.products[212][23:0]
+[fpshift_count] 16
+frac_order_lif.products[213][23:0]
+[fpshift_count] 16
+frac_order_lif.products[214][23:0]
+[fpshift_count] 16
+frac_order_lif.products[215][23:0]
+[fpshift_count] 16
+frac_order_lif.products[216][23:0]
+[fpshift_count] 16
+frac_order_lif.products[217][23:0]
+[fpshift_count] 16
+frac_order_lif.products[218][23:0]
+[fpshift_count] 16
+frac_order_lif.products[219][23:0]
+[fpshift_count] 16
+frac_order_lif.products[220][23:0]
+[fpshift_count] 16
+frac_order_lif.products[221][23:0]
+[fpshift_count] 16
+frac_order_lif.products[222][23:0]
+[fpshift_count] 16
+frac_order_lif.products[223][23:0]
+[fpshift_count] 16
+frac_order_lif.products[224][23:0]
+[fpshift_count] 16
+frac_order_lif.products[225][23:0]
+[fpshift_count] 16
+frac_order_lif.products[226][23:0]
+[fpshift_count] 16
+frac_order_lif.products[227][23:0]
+[fpshift_count] 16
+frac_order_lif.products[228][23:0]
+[fpshift_count] 16
+frac_order_lif.products[229][23:0]
+[fpshift_count] 16
+frac_order_lif.products[230][23:0]
+[fpshift_count] 16
+frac_order_lif.products[231][23:0]
+[fpshift_count] 16
+frac_order_lif.products[232][23:0]
+[fpshift_count] 16
+frac_order_lif.products[233][23:0]
+[fpshift_count] 16
+frac_order_lif.products[234][23:0]
+[fpshift_count] 16
+frac_order_lif.products[235][23:0]
+[fpshift_count] 16
+frac_order_lif.products[236][23:0]
+[fpshift_count] 16
+frac_order_lif.products[237][23:0]
+[fpshift_count] 16
+frac_order_lif.products[238][23:0]
+[fpshift_count] 16
+frac_order_lif.products[239][23:0]
+[fpshift_count] 16
+frac_order_lif.products[240][23:0]
+[fpshift_count] 16
+frac_order_lif.products[241][23:0]
+[fpshift_count] 16
+frac_order_lif.products[242][23:0]
+[fpshift_count] 16
+frac_order_lif.products[243][23:0]
+[fpshift_count] 16
+frac_order_lif.products[244][23:0]
+[fpshift_count] 16
+frac_order_lif.products[245][23:0]
+[fpshift_count] 16
+frac_order_lif.products[246][23:0]
+[fpshift_count] 16
+frac_order_lif.products[247][23:0]
+[fpshift_count] 16
+frac_order_lif.products[248][23:0]
+[fpshift_count] 16
+frac_order_lif.products[249][23:0]
+[fpshift_count] 16
+frac_order_lif.products[250][23:0]
+[fpshift_count] 16
+frac_order_lif.products[251][23:0]
+[fpshift_count] 16
+frac_order_lif.products[252][23:0]
+[fpshift_count] 16
+frac_order_lif.products[253][23:0]
+[fpshift_count] 16
+frac_order_lif.products[254][23:0]
+[fpshift_count] 16
+frac_order_lif.products[255][23:0]
+@24
+frac_order_lif.history_buffer[0][7:0]
+frac_order_lif.history_buffer[1][7:0]
+frac_order_lif.history_buffer[2][7:0]
+frac_order_lif.history_buffer[3][7:0]
+frac_order_lif.history_buffer[4][7:0]
+frac_order_lif.history_buffer[5][7:0]
+frac_order_lif.history_buffer[6][7:0]
+frac_order_lif.history_buffer[7][7:0]
+frac_order_lif.history_buffer[8][7:0]
+frac_order_lif.history_buffer[9][7:0]
+frac_order_lif.history_buffer[10][7:0]
+frac_order_lif.history_buffer[11][7:0]
+frac_order_lif.history_buffer[12][7:0]
+frac_order_lif.history_buffer[13][7:0]
+frac_order_lif.history_buffer[14][7:0]
+frac_order_lif.history_buffer[15][7:0]
+frac_order_lif.history_buffer[16][7:0]
+frac_order_lif.history_buffer[17][7:0]
+frac_order_lif.history_buffer[18][7:0]
+frac_order_lif.history_buffer[19][7:0]
+frac_order_lif.history_buffer[20][7:0]
+frac_order_lif.history_buffer[21][7:0]
+frac_order_lif.history_buffer[22][7:0]
+frac_order_lif.history_buffer[23][7:0]
+frac_order_lif.history_buffer[24][7:0]
+frac_order_lif.history_buffer[25][7:0]
+frac_order_lif.history_buffer[26][7:0]
+frac_order_lif.history_buffer[27][7:0]
+frac_order_lif.history_buffer[28][7:0]
+frac_order_lif.history_buffer[29][7:0]
+frac_order_lif.history_buffer[30][7:0]
+frac_order_lif.history_buffer[31][7:0]
+frac_order_lif.history_buffer[32][7:0]
+frac_order_lif.history_buffer[33][7:0]
+frac_order_lif.history_buffer[34][7:0]
+frac_order_lif.history_buffer[35][7:0]
+frac_order_lif.history_buffer[36][7:0]
+frac_order_lif.history_buffer[37][7:0]
+frac_order_lif.history_buffer[38][7:0]
+frac_order_lif.history_buffer[39][7:0]
+frac_order_lif.history_buffer[40][7:0]
+frac_order_lif.history_buffer[41][7:0]
+frac_order_lif.history_buffer[42][7:0]
+frac_order_lif.history_buffer[43][7:0]
+frac_order_lif.history_buffer[44][7:0]
+frac_order_lif.history_buffer[45][7:0]
+frac_order_lif.history_buffer[46][7:0]
+frac_order_lif.history_buffer[47][7:0]
+frac_order_lif.history_buffer[48][7:0]
+frac_order_lif.history_buffer[49][7:0]
+frac_order_lif.history_buffer[50][7:0]
+frac_order_lif.history_buffer[51][7:0]
+frac_order_lif.history_buffer[52][7:0]
+frac_order_lif.history_buffer[53][7:0]
+frac_order_lif.history_buffer[54][7:0]
+frac_order_lif.history_buffer[55][7:0]
+frac_order_lif.history_buffer[56][7:0]
+frac_order_lif.history_buffer[57][7:0]
+frac_order_lif.history_buffer[58][7:0]
+frac_order_lif.history_buffer[59][7:0]
+frac_order_lif.history_buffer[60][7:0]
+frac_order_lif.history_buffer[61][7:0]
+frac_order_lif.history_buffer[62][7:0]
+frac_order_lif.history_buffer[63][7:0]
+frac_order_lif.history_buffer[64][7:0]
+frac_order_lif.history_buffer[65][7:0]
+frac_order_lif.history_buffer[66][7:0]
+frac_order_lif.history_buffer[67][7:0]
+frac_order_lif.history_buffer[68][7:0]
+frac_order_lif.history_buffer[69][7:0]
+frac_order_lif.history_buffer[70][7:0]
+frac_order_lif.history_buffer[71][7:0]
+frac_order_lif.history_buffer[72][7:0]
+frac_order_lif.history_buffer[73][7:0]
+frac_order_lif.history_buffer[74][7:0]
+frac_order_lif.history_buffer[75][7:0]
+frac_order_lif.history_buffer[76][7:0]
+frac_order_lif.history_buffer[77][7:0]
+frac_order_lif.history_buffer[78][7:0]
+frac_order_lif.history_buffer[79][7:0]
+frac_order_lif.history_buffer[80][7:0]
+frac_order_lif.history_buffer[81][7:0]
+frac_order_lif.history_buffer[82][7:0]
+frac_order_lif.history_buffer[83][7:0]
+frac_order_lif.history_buffer[84][7:0]
+frac_order_lif.history_buffer[85][7:0]
+frac_order_lif.history_buffer[86][7:0]
+frac_order_lif.history_buffer[87][7:0]
+frac_order_lif.history_buffer[88][7:0]
+frac_order_lif.history_buffer[89][7:0]
+frac_order_lif.history_buffer[90][7:0]
+frac_order_lif.history_buffer[91][7:0]
+frac_order_lif.history_buffer[92][7:0]
+frac_order_lif.history_buffer[93][7:0]
+frac_order_lif.history_buffer[94][7:0]
+frac_order_lif.history_buffer[95][7:0]
+frac_order_lif.history_buffer[96][7:0]
+frac_order_lif.history_buffer[97][7:0]
+frac_order_lif.history_buffer[98][7:0]
+frac_order_lif.history_buffer[99][7:0]
+frac_order_lif.history_buffer[100][7:0]
+frac_order_lif.history_buffer[101][7:0]
+frac_order_lif.history_buffer[102][7:0]
+frac_order_lif.history_buffer[103][7:0]
+frac_order_lif.history_buffer[104][7:0]
+frac_order_lif.history_buffer[105][7:0]
+frac_order_lif.history_buffer[106][7:0]
+frac_order_lif.history_buffer[107][7:0]
+frac_order_lif.history_buffer[108][7:0]
+frac_order_lif.history_buffer[109][7:0]
+frac_order_lif.history_buffer[110][7:0]
+frac_order_lif.history_buffer[111][7:0]
+frac_order_lif.history_buffer[112][7:0]
+frac_order_lif.history_buffer[113][7:0]
+frac_order_lif.history_buffer[114][7:0]
+frac_order_lif.history_buffer[115][7:0]
+frac_order_lif.history_buffer[116][7:0]
+frac_order_lif.history_buffer[117][7:0]
+frac_order_lif.history_buffer[118][7:0]
+frac_order_lif.history_buffer[119][7:0]
+frac_order_lif.history_buffer[120][7:0]
+frac_order_lif.history_buffer[121][7:0]
+frac_order_lif.history_buffer[122][7:0]
+frac_order_lif.history_buffer[123][7:0]
+frac_order_lif.history_buffer[124][7:0]
+frac_order_lif.history_buffer[125][7:0]
+frac_order_lif.history_buffer[126][7:0]
+frac_order_lif.history_buffer[127][7:0]
+frac_order_lif.history_buffer[128][7:0]
+frac_order_lif.history_buffer[129][7:0]
+frac_order_lif.history_buffer[130][7:0]
+frac_order_lif.history_buffer[131][7:0]
+frac_order_lif.history_buffer[132][7:0]
+frac_order_lif.history_buffer[133][7:0]
+frac_order_lif.history_buffer[134][7:0]
+frac_order_lif.history_buffer[135][7:0]
+frac_order_lif.history_buffer[136][7:0]
+frac_order_lif.history_buffer[137][7:0]
+frac_order_lif.history_buffer[138][7:0]
+frac_order_lif.history_buffer[139][7:0]
+frac_order_lif.history_buffer[140][7:0]
+frac_order_lif.history_buffer[141][7:0]
+frac_order_lif.history_buffer[142][7:0]
+frac_order_lif.history_buffer[143][7:0]
+frac_order_lif.history_buffer[144][7:0]
+frac_order_lif.history_buffer[145][7:0]
+frac_order_lif.history_buffer[146][7:0]
+frac_order_lif.history_buffer[147][7:0]
+frac_order_lif.history_buffer[148][7:0]
+frac_order_lif.history_buffer[149][7:0]
+frac_order_lif.history_buffer[150][7:0]
+frac_order_lif.history_buffer[151][7:0]
+frac_order_lif.history_buffer[152][7:0]
+frac_order_lif.history_buffer[153][7:0]
+frac_order_lif.history_buffer[154][7:0]
+frac_order_lif.history_buffer[155][7:0]
+frac_order_lif.history_buffer[156][7:0]
+frac_order_lif.history_buffer[157][7:0]
+frac_order_lif.history_buffer[158][7:0]
+frac_order_lif.history_buffer[159][7:0]
+frac_order_lif.history_buffer[160][7:0]
+frac_order_lif.history_buffer[161][7:0]
+frac_order_lif.history_buffer[162][7:0]
+frac_order_lif.history_buffer[163][7:0]
+frac_order_lif.history_buffer[164][7:0]
+frac_order_lif.history_buffer[165][7:0]
+frac_order_lif.history_buffer[166][7:0]
+frac_order_lif.history_buffer[167][7:0]
+frac_order_lif.history_buffer[168][7:0]
+frac_order_lif.history_buffer[169][7:0]
+frac_order_lif.history_buffer[170][7:0]
+frac_order_lif.history_buffer[171][7:0]
+frac_order_lif.history_buffer[172][7:0]
+frac_order_lif.history_buffer[173][7:0]
+frac_order_lif.history_buffer[174][7:0]
+frac_order_lif.history_buffer[175][7:0]
+frac_order_lif.history_buffer[176][7:0]
+frac_order_lif.history_buffer[177][7:0]
+frac_order_lif.history_buffer[178][7:0]
+frac_order_lif.history_buffer[179][7:0]
+frac_order_lif.history_buffer[180][7:0]
+frac_order_lif.history_buffer[181][7:0]
+frac_order_lif.history_buffer[182][7:0]
+frac_order_lif.history_buffer[183][7:0]
+frac_order_lif.history_buffer[184][7:0]
+frac_order_lif.history_buffer[185][7:0]
+frac_order_lif.history_buffer[186][7:0]
+frac_order_lif.history_buffer[187][7:0]
+frac_order_lif.history_buffer[188][7:0]
+frac_order_lif.history_buffer[189][7:0]
+frac_order_lif.history_buffer[190][7:0]
+frac_order_lif.history_buffer[191][7:0]
+frac_order_lif.history_buffer[192][7:0]
+frac_order_lif.history_buffer[193][7:0]
+frac_order_lif.history_buffer[194][7:0]
+frac_order_lif.history_buffer[195][7:0]
+frac_order_lif.history_buffer[196][7:0]
+frac_order_lif.history_buffer[197][7:0]
+frac_order_lif.history_buffer[198][7:0]
+frac_order_lif.history_buffer[199][7:0]
+frac_order_lif.history_buffer[200][7:0]
+frac_order_lif.history_buffer[201][7:0]
+frac_order_lif.history_buffer[202][7:0]
+frac_order_lif.history_buffer[203][7:0]
+frac_order_lif.history_buffer[204][7:0]
+frac_order_lif.history_buffer[205][7:0]
+frac_order_lif.history_buffer[206][7:0]
+frac_order_lif.history_buffer[207][7:0]
+frac_order_lif.history_buffer[208][7:0]
+frac_order_lif.history_buffer[209][7:0]
+frac_order_lif.history_buffer[210][7:0]
+frac_order_lif.history_buffer[211][7:0]
+frac_order_lif.history_buffer[212][7:0]
+frac_order_lif.history_buffer[213][7:0]
+frac_order_lif.history_buffer[214][7:0]
+frac_order_lif.history_buffer[215][7:0]
+frac_order_lif.history_buffer[216][7:0]
+frac_order_lif.history_buffer[217][7:0]
+frac_order_lif.history_buffer[218][7:0]
+frac_order_lif.history_buffer[219][7:0]
+frac_order_lif.history_buffer[220][7:0]
+frac_order_lif.history_buffer[221][7:0]
+frac_order_lif.history_buffer[222][7:0]
+frac_order_lif.history_buffer[223][7:0]
+frac_order_lif.history_buffer[224][7:0]
+frac_order_lif.history_buffer[225][7:0]
+frac_order_lif.history_buffer[226][7:0]
+frac_order_lif.history_buffer[227][7:0]
+frac_order_lif.history_buffer[228][7:0]
+frac_order_lif.history_buffer[229][7:0]
+frac_order_lif.history_buffer[230][7:0]
+frac_order_lif.history_buffer[231][7:0]
+frac_order_lif.history_buffer[232][7:0]
+frac_order_lif.history_buffer[233][7:0]
+frac_order_lif.history_buffer[234][7:0]
+frac_order_lif.history_buffer[235][7:0]
+frac_order_lif.history_buffer[236][7:0]
+frac_order_lif.history_buffer[237][7:0]
+frac_order_lif.history_buffer[238][7:0]
+frac_order_lif.history_buffer[239][7:0]
+frac_order_lif.history_buffer[240][7:0]
+frac_order_lif.history_buffer[241][7:0]
+frac_order_lif.history_buffer[242][7:0]
+frac_order_lif.history_buffer[243][7:0]
+frac_order_lif.history_buffer[244][7:0]
+frac_order_lif.history_buffer[245][7:0]
+frac_order_lif.history_buffer[246][7:0]
+frac_order_lif.history_buffer[247][7:0]
+frac_order_lif.history_buffer[248][7:0]
+frac_order_lif.history_buffer[249][7:0]
+frac_order_lif.history_buffer[250][7:0]
+frac_order_lif.history_buffer[251][7:0]
+frac_order_lif.history_buffer[252][7:0]
+frac_order_lif.history_buffer[253][7:0]
+frac_order_lif.history_buffer[254][7:0]
+frac_order_lif.history_buffer[255][7:0]
+[pattern_trace] 1
+[pattern_trace] 0

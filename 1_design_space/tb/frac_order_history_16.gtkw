@@ -1,0 +1,164 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Thu Sep 18 17:05:23 2025
+[*]
+[dumpfile] "/Users/nik/Documents/Teuscher-Lab/fractional-order-LIF-neuron/tb/dump.fst"
+[dumpfile_mtime] "Thu Sep 18 16:55:02 2025"
+[dumpfile_size] 70713
+[savefile] "/Users/nik/Documents/Teuscher-Lab/fractional-order-LIF-neuron/tb/frac_order_history_16.gtkw"
+[timestart] 263500
+[size] 1824 877
+[pos] -1 -1
+*-15.500000 363800 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] frac_order_lif.
+[sst_width] 276
+[signals_width] 371
+[sst_expanded] 1
+[sst_vpaned_height] 411
+@420
+frac_order_lif.ADDR_WIDTH
+frac_order_lif.COEFF_WIDTH
+frac_order_lif.HISTORY_SIZE
+@40000420
+[fpshift_count] 8
+frac_order_lif.NORM_FACTOR
+@420
+frac_order_lif.REFRACTORY_PERIOD
+frac_order_lif.R_SCALED
+@40000420
+[fpshift_count] 8
+frac_order_lif.TAU_OVER_H_ALPHA
+@24
+frac_order_lif.THRESHOLD
+@40000024
+[fpshift_count] 8
+frac_order_lif.coefficients[1][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[2][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[3][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[4][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[5][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[6][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[7][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[8][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[9][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[10][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[11][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[12][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[13][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[14][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[15][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[16][7:0]
+@28
+frac_order_lif.clk
+@24
+frac_order_lif.current[7:0]
+frac_order_lif.current_term[15:0]
+@40000024
+[fpshift_count] 16
+frac_order_lif.history_term[31:0]
+@24
+frac_order_lif.membrane_potential[7:0]
+frac_order_lif.updated_potential[15:0]
+@40000024
+[fpshift_count] 8
+frac_order_lif.fractional_sum[31:0]
+@28
+frac_order_lif.rst
+frac_order_lif.spike
+@24
+frac_order_lif.history_values[0][7:0]
+frac_order_lif.history_values[1][7:0]
+frac_order_lif.history_values[2][7:0]
+frac_order_lif.history_values[3][7:0]
+frac_order_lif.history_values[4][7:0]
+frac_order_lif.history_values[5][7:0]
+frac_order_lif.history_values[6][7:0]
+frac_order_lif.history_values[7][7:0]
+frac_order_lif.history_values[8][7:0]
+frac_order_lif.history_values[9][7:0]
+frac_order_lif.history_values[10][7:0]
+frac_order_lif.history_values[11][7:0]
+frac_order_lif.history_values[12][7:0]
+frac_order_lif.history_values[13][7:0]
+frac_order_lif.history_values[14][7:0]
+frac_order_lif.history_values[15][7:0]
+@28
+frac_order_lif.in_refractory
+@40000024
+[fpshift_count] 24
+frac_order_lif.temp_result[39:0]
+@40000025
+[fpshift_count] 16
+frac_order_lif.unnormalized_potential[31:0]
+@40000024
+[fpshift_count] 8
+frac_order_lif.products[0][15:0]
+[fpshift_count] 8
+frac_order_lif.products[1][15:0]
+[fpshift_count] 8
+frac_order_lif.products[2][15:0]
+[fpshift_count] 8
+frac_order_lif.products[3][15:0]
+[fpshift_count] 8
+frac_order_lif.products[4][15:0]
+[fpshift_count] 8
+frac_order_lif.products[5][15:0]
+[fpshift_count] 8
+frac_order_lif.products[6][15:0]
+[fpshift_count] 8
+frac_order_lif.products[7][15:0]
+[fpshift_count] 8
+frac_order_lif.products[8][15:0]
+[fpshift_count] 8
+frac_order_lif.products[9][15:0]
+[fpshift_count] 8
+frac_order_lif.products[10][15:0]
+[fpshift_count] 8
+frac_order_lif.products[11][15:0]
+[fpshift_count] 8
+frac_order_lif.products[12][15:0]
+[fpshift_count] 8
+frac_order_lif.products[13][15:0]
+[fpshift_count] 8
+frac_order_lif.products[14][15:0]
+[fpshift_count] 8
+frac_order_lif.products[15][15:0]
+@22
+frac_order_lif.refractory_counter[4:0]
+@40000024
+[fpshift_count] 16
+frac_order_lif.temp_history_mult[47:0]
+@24
+frac_order_lif.history_buffer[0][7:0]
+frac_order_lif.history_buffer[1][7:0]
+frac_order_lif.history_buffer[2][7:0]
+frac_order_lif.history_buffer[3][7:0]
+frac_order_lif.history_buffer[4][7:0]
+frac_order_lif.history_buffer[5][7:0]
+frac_order_lif.history_buffer[6][7:0]
+frac_order_lif.history_buffer[7][7:0]
+frac_order_lif.history_buffer[8][7:0]
+frac_order_lif.history_buffer[9][7:0]
+frac_order_lif.history_buffer[10][7:0]
+frac_order_lif.history_buffer[11][7:0]
+frac_order_lif.history_buffer[12][7:0]
+frac_order_lif.history_buffer[13][7:0]
+frac_order_lif.history_buffer[14][7:0]
+frac_order_lif.history_buffer[15][7:0]
+[pattern_trace] 1
+[pattern_trace] 0

@@ -1,0 +1,135 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Wed Aug  6 23:04:43 2025
+[*]
+[dumpfile] "/u/niklas2/fractional-order-LIF-neuron/tb/dump.fst"
+[dumpfile_mtime] "Wed Aug  6 23:02:09 2025"
+[dumpfile_size] 2325
+[savefile] "/u/niklas2/fractional-order-LIF-neuron/tb/gtkwave_frac_order_signal_formats.gtkw"
+[timestart] 808600
+[size] 1810 877
+[pos] -2315 -158
+*-14.300000 661600 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] frac_order_lif.
+[sst_width] 276
+[signals_width] 285
+[sst_expanded] 1
+[sst_vpaned_height] 255
+@420
+frac_order_lif.ADDR_WIDTH
+@24
+frac_order_lif.ALPHA_4BIT
+@22
+frac_order_lif.ALPHA_REAL
+@420
+frac_order_lif.COEFF_WIDTH
+frac_order_lif.HISTORY_SIZE
+@22
+frac_order_lif.H_ALPHA
+@420
+frac_order_lif.H_SCALED
+@40000420
+[fpshift_count] 8
+frac_order_lif.NORM_FACTOR
+@22
+frac_order_lif.NORM_FACTOR_REAL
+frac_order_lif.NORM_FACTOR_SCALED
+@420
+frac_order_lif.REFRACTORY_PERIOD
+frac_order_lif.R_SCALED
+@22
+frac_order_lif.TAU_ALPHA
+@40000420
+[fpshift_count] 8
+frac_order_lif.TAU_OVER_H_ALPHA
+@22
+frac_order_lif.TAU_OVER_H_ALPHA_REAL
+@420
+frac_order_lif.TAU_SCALED
+@24
+frac_order_lif.THRESHOLD
+@40000024
+[fpshift_count] 8
+frac_order_lif.coefficients[1][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[2][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[3][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[4][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[5][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[6][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[7][7:0]
+[fpshift_count] 8
+frac_order_lif.coefficients[8][7:0]
+@28
+frac_order_lif.clk
+@25
+frac_order_lif.current[7:0]
+@24
+frac_order_lif.current_term[15:0]
+@40000024
+[fpshift_count] 16
+frac_order_lif.history_term[31:0]
+@24
+frac_order_lif.membrane_potential[7:0]
+frac_order_lif.updated_potential[15:0]
+@40000024
+[fpshift_count] 8
+frac_order_lif.fractional_sum[31:0]
+@28
+frac_order_lif.rst
+frac_order_lif.spike
+@24
+frac_order_lif.history_values[0][7:0]
+frac_order_lif.history_values[1][7:0]
+frac_order_lif.history_values[2][7:0]
+frac_order_lif.history_values[3][7:0]
+frac_order_lif.history_values[4][7:0]
+frac_order_lif.history_values[5][7:0]
+frac_order_lif.history_values[6][7:0]
+frac_order_lif.history_values[7][7:0]
+@28
+frac_order_lif.in_refractory
+@40000024
+[fpshift_count] 8
+frac_order_lif.products[0][15:0]
+[fpshift_count] 8
+frac_order_lif.products[1][15:0]
+[fpshift_count] 8
+frac_order_lif.products[2][15:0]
+[fpshift_count] 8
+frac_order_lif.products[3][15:0]
+[fpshift_count] 8
+frac_order_lif.products[4][15:0]
+[fpshift_count] 8
+frac_order_lif.products[5][15:0]
+[fpshift_count] 8
+frac_order_lif.products[6][15:0]
+[fpshift_count] 8
+frac_order_lif.products[7][15:0]
+@22
+frac_order_lif.refractory_counter[4:0]
+@40000024
+[fpshift_count] 16
+frac_order_lif.temp_history_mult[47:0]
+[fpshift_count] 24
+frac_order_lif.temp_result[39:0]
+[fpshift_count] 16
+frac_order_lif.unnormalized_potential[31:0]
+@24
+frac_order_lif.history_buffer[0][7:0]
+frac_order_lif.history_buffer[1][7:0]
+frac_order_lif.history_buffer[2][7:0]
+frac_order_lif.history_buffer[3][7:0]
+frac_order_lif.history_buffer[4][7:0]
+frac_order_lif.history_buffer[5][7:0]
+frac_order_lif.history_buffer[6][7:0]
+frac_order_lif.history_buffer[7][7:0]
+@28
+frac_order_lif.history_ptr[2:0]
+[pattern_trace] 1
+[pattern_trace] 0

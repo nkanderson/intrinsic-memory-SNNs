@@ -1,0 +1,38 @@
+[
+  {
+    "alpha": 0.1,
+    "max_history": 4663281249999999
+  },
+  {
+    "alpha": 0.2,
+    "max_history": 2295211018729381
+  },
+  {
+    "alpha": 0.3,
+    "max_history": 220052230130581
+  },
+  {
+    "alpha": 0.4,
+    "max_history": 22563891940050
+  },
+  {
+    "alpha": 0.5,
+    "max_history": 3002915942692
+  },
+  {
+    "alpha": 0.6,
+    "max_history": 485625974306
+  },
+  {
+    "alpha": 0.7,
+    "max_history": 91587247976
+  },
+  {
+    "alpha": 0.8,
+    "max_history": 19130760888
+  },
+  {
+    "alpha": 0.9,
+    "max_history": 3989863225
+  }
+]

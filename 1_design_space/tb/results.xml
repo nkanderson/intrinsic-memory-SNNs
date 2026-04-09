@@ -1,0 +1,14 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1758670561" />
+    <testcase name="test_steady_input_frequency_increase" classname="test_frac_order_lif_memory" file="/Users/nik/Documents/Teuscher-Lab/fractional-order-LIF-neuron/tb/test_frac_order_lif_memory.py" lineno="232" time="0.3984208106994629" sim_time_ns="80090.001" ratio_time="201018.61862937064">
+      <failure message="Test failed with RANDOM_SEED=1758670561" />
+    </testcase>
+    <testcase name="test_dropout_recovery_memory_effect" classname="test_frac_order_lif_memory" file="/Users/nik/Documents/Teuscher-Lab/fractional-order-LIF-neuron/tb/test_frac_order_lif_memory.py" lineno="368" time="0.40422487258911133" sim_time_ns="80100.001" ratio_time="198157.03196824426">
+      <failure message="Test failed with RANDOM_SEED=1758670561" />
+    </testcase>
+    <testcase name="test_parameter_sensitivity" classname="test_frac_order_lif_memory" file="/Users/nik/Documents/Teuscher-Lab/fractional-order-LIF-neuron/tb/test_frac_order_lif_memory.py" lineno="561" time="0" sim_time_ns="0" ratio_time="nan">
+      <skipped />
+    </testcase>
+  </testsuite>
+</testsuites>

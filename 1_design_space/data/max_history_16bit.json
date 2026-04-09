@@ -1,0 +1,38 @@
+[
+  {
+    "alpha": 0.1,
+    "max_history": 2775
+  },
+  {
+    "alpha": 0.2,
+    "max_history": 2378
+  },
+  {
+    "alpha": 0.3,
+    "max_history": 1643
+  },
+  {
+    "alpha": 0.4,
+    "max_history": 1078
+  },
+  {
+    "alpha": 0.5,
+    "max_history": 699
+  },
+  {
+    "alpha": 0.6,
+    "max_history": 452
+  },
+  {
+    "alpha": 0.7,
+    "max_history": 290
+  },
+  {
+    "alpha": 0.8,
+    "max_history": 179
+  },
+  {
+    "alpha": 0.9,
+    "max_history": 99
+  }
+]
