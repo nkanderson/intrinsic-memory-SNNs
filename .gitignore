@@ -1,0 +1,23 @@
+# Verilator output directory
+obj_dir/
+logs/
+wave.vcd
+dump.fst
+test_profile.pstat
+
+# cocotb
+sim_build/
+**/cocotb/**/dump.fst
+**/cocotb/**/results.xml
+**/cocotb/results/
+
+# Python
+venv/
+__pycache__/
+.pytest_cache
+
+# Synthesis
+*.bin
+*.asc
+# Might need to make this more specific depending on any data output by unrelated scripts
+**/scripts/*.json
