@@ -1,0 +1,14 @@
+// GL Coefficient Magnitudes for Fractional LIF
+// alpha = 0.5, lambda = 0.067569
+// History length = 8, coefficients = 7
+// Format: QU1.15 (16-bit unsigned)
+// Contains |g_1| to |g_{8-1}| (g_0 = 1 is implicit)
+// Assumes 0 < alpha <= 1, where g_k (k>=1) are non-positive
+//
+4000  // |g_1| = 0.500000
+1000  // |g_2| = 0.125000
+0800  // |g_3| = 0.062500
+0500  // |g_4| = 0.039062
+0380  // |g_5| = 0.027344
+02A0  // |g_6| = 0.020508
+0210  // |g_7| = 0.016113

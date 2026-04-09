@@ -1,0 +1,32 @@
+# Configuration for SNN-DQN on CartPole-v1 with minimal number of neurons
+# Comes from Optuna results of >= 490.0 on 1000 episode training
+
+training:
+  batch_size: 256 # Transitions sampled from replay buffer
+  gamma: 0.9756053256750646 # Discount factor for future rewards
+  eps_start: 0.8588829862985439 # Starting exploration rate
+  eps_end: 0.06366632002316527 # Minimum exploration rate
+  # eps_decay controls the rate of exponential decay of epsilon
+  # - If set too low, the agent may not explore enough and get stuck in suboptimal policies
+  eps_decay: 2294 # Epsilon decay rate (higher = slower decay, longer exploration)
+  tau: 0.005148232641088038 # Target network soft update rate
+  lr: 0.00038999143381482446 # AdamW learning rate
+  num_episodes: 1000 # Total training episodes
+  eval_every_episodes: 50 # Run fixed-seed evaluation every N training episodes
+  eval_num_episodes: 30 # Number of episodes for each fixed-seed evaluation
+  eval_seed_base: 42 # First evaluation seed
+  eval_seed_stride: 7 # Seed increment between evaluation episodes
+
+snn:
+  num_steps: 50 # SNN simulation timesteps per environment step
+  beta: 0.9 # LIF neuron membrane decay rate (NOTE: not used for fractional neurons, see lam instead)
+  surrogate_gradient_slope: 25 # Slope for fast_sigmoid surrogate gradient
+  neuron_type: fractional # Neuron type: 'leaky', 'leakysv', or 'fractional'
+  hidden1_size: 16 # Neurons in first hidden layer
+  hidden2_size: 4 # Neurons in second hidden layer
+
+  # Fractional-order LIF specific parameters (used only when neuron_type: fractional)
+  alpha: 0.5 # Fractional order for derivative (0 < alpha <= 1)
+  lam: 0.1387117453423375 # Leakage parameter (matches beta=0.9 for reasonable comparison to standard LIF)
+  history_length: 256 # Number of past values for GL approximation
+  dt: 1.0 # Discrete timestep for GL approximation

@@ -1,0 +1,28 @@
+# Baseline configuration for SNN-DQN on CartPole-v1
+# This config uses the original hardcoded values as a baseline
+
+training:
+  batch_size: 128 # Transitions sampled from replay buffer
+  gamma: 0.99 # Discount factor for future rewards
+  eps_start: 0.9 # Starting exploration rate
+  eps_end: 0.01 # Minimum exploration rate
+  # eps_decay controls the rate of exponential decay of epsilon
+  # - If set too low, the agent may not explore enough and get stuck in suboptimal policies
+  eps_decay: 2500 # Epsilon decay rate (higher = slower decay, longer exploration)
+  tau: 0.005 # Target network soft update rate
+  lr: 0.0003 # AdamW learning rate (3e-4)
+  num_episodes: 600 # Total training episodes
+
+snn:
+  num_steps: 30 # SNN simulation timesteps per environment step
+  beta: 0.9 # LIF neuron membrane decay rate (NOTE: not used for fractional neurons, see lam instead)
+  surrogate_gradient_slope: 25 # Slope for fast_sigmoid surrogate gradient
+  neuron_type: fractional # Neuron type: 'leaky', 'leakysv', or 'fractional'
+  hidden1_size: 64 # Neurons in first hidden layer
+  hidden2_size: 16 # Neurons in second hidden layer
+
+  # Fractional-order LIF specific parameters (used only when neuron_type: fractional)
+  alpha: 0.5 # Fractional order for derivative (0 < alpha <= 1)
+  lam: 0.111 # Leakage parameter (matches beta=0.9 for reasonable comparison to standard LIF)
+  history_length: 64 # Number of past values for GL approximation
+  dt: 1.0 # Discrete timestep for GL approximation

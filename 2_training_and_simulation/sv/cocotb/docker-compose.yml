@@ -1,0 +1,38 @@
+services:
+  cocotb:
+    platform: linux/amd64  # Force x86_64 for oss-cad-suite compatibility
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+      args:
+        # Pass host user's UID/GID so container runs as host system user
+        # Files created in mounted volumes will have host user ownership
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    image: cocotb-cartpole:latest
+    container_name: cocotb-cartpole-tests
+    volumes:
+      # Mount parent directory (cartpole_snn/sv) for SystemVerilog source files
+      # Read-only mount - Docker will detect changes to files on host and reflect them in container
+      - ..:/workspace/sv:ro
+      # Mount test directory for Python test files
+      # Read-write allows container to create __pycache__ and pytest artifacts
+      # Docker detects changes to .py test files on host
+      - ./tests:/workspace/tests:rw
+      # Mount results directory for test outputs, VCD/FST waveforms, and build artifacts
+      # Read-write needed for container to write test results
+      - ./results:/workspace/results:rw
+    working_dir: /workspace/tests
+    environment:
+      # Cocotb configuration
+      - COCOTB_REDUCED_LOG_FMT=1
+      - PYTHONUNBUFFERED=1
+      # Simulator configuration
+      - SIM=verilator
+      - WAVES=1
+    # Keep container running for interactive use
+    stdin_open: true
+    tty: true
+    command: /bin/bash

@@ -1,0 +1,6 @@
+// Q-accumulator test biases
+// NUM_ACTIONS=2
+// bias[0] = 0.1 * 8192 = 819
+// bias[1] = -0.1 * 8192 = -819
+0333  // bias[0] = 0.1
+FCCD  // bias[1] = -0.1

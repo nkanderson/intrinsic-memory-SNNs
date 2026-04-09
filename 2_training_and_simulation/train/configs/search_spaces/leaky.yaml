@@ -1,0 +1,62 @@
+# Search space for Leaky (snnTorch standard) neuron type
+# Each parameter defines a range or set of values for Optuna to explore.
+#
+# Supported types:
+#   fixed:       single value (not tuned)
+#   int:         integer range [low, high]
+#   float:       float range [low, high], optional log scale
+#   categorical: list of discrete choices
+
+training:
+  batch_size:
+    type: categorical
+    choices: [64, 128, 256]
+  gamma:
+    type: float
+    low: 0.95
+    high: 0.999
+  eps_start:
+    type: float
+    low: 0.8
+    high: 1.0
+  eps_end:
+    type: float
+    low: 0.005
+    high: 0.1
+  eps_decay:
+    type: int
+    low: 1000
+    high: 5000
+  tau:
+    type: float
+    low: 0.001
+    high: 0.01
+  lr:
+    type: float
+    low: 1.0e-4
+    high: 1.0e-2
+    log: true
+  num_episodes:
+    type: fixed
+    value: 1000
+
+snn:
+  num_steps:
+    type: categorical
+    choices: [10, 20, 30, 50]
+  beta:
+    type: float
+    low: 0.7
+    high: 0.99
+  surrogate_gradient_slope:
+    type: fixed
+    value: 25
+  neuron_type:
+    type: fixed
+    value: leaky
+  hidden1_size:
+    type: categorical
+    choices: [16, 32, 64]
+  hidden2_size:
+    type: categorical
+    choices: [4, 8, 16, 32]

@@ -1,0 +1,23 @@
+// Test weights for linear_layer: identity matrix (4x4)
+// Row-major order: weights_flat[n*NUM_INPUTS + i] = weight for output n, input i
+// Format: QS2.13 (16-bit signed hex), 1.0 = 0x2000, 0.0 = 0x0000
+// Output 0: [1.0, 0.0, 0.0, 0.0]
+2000
+0000
+0000
+0000
+// Output 1: [0.0, 1.0, 0.0, 0.0]
+0000
+2000
+0000
+0000
+// Output 2: [0.0, 0.0, 1.0, 0.0]
+0000
+0000
+2000
+0000
+// Output 3: [0.0, 0.0, 0.0, 1.0]
+0000
+0000
+0000
+2000

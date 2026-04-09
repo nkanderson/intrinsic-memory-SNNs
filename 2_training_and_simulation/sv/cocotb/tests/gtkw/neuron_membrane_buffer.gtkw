@@ -1,0 +1,44 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Tue Jan 20 17:07:01 2026
+[*]
+[dumpfile] "/Users/nik/Documents/Teuscher-Lab/example-model-training-pipeline/cartpole_snn/sv/cocotb/results/sim_build/neuron_membrane_buffer.fst"
+[dumpfile_mtime] "Mon Jan 19 20:38:55 2026"
+[dumpfile_size] 1271
+[savefile] "/Users/nik/Documents/Teuscher-Lab/example-model-training-pipeline/cartpole_snn/sv/cocotb/tests/gtkw/neuron_membrane_buffer.gtkw"
+[timestart] 0
+[size] 1744 818
+[pos] 1956 151
+*-15.400000 1112800 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] neuron_membrane_buffer.
+[sst_width] 253
+[signals_width] 255
+[sst_expanded] 1
+[sst_vpaned_height] 234
+@420
+neuron_membrane_buffer.MEMBRANE_WIDTH
+neuron_membrane_buffer.NUM_TIMESTEPS
+@28
+neuron_membrane_buffer.clk
+neuron_membrane_buffer.clear
+neuron_membrane_buffer.reset
+neuron_membrane_buffer.full
+@420
+neuron_membrane_buffer.membrane_in[23:0]
+neuron_membrane_buffer.membrane_out[23:0]
+@c00024
+neuron_membrane_buffer.read_timestep[2:0]
+@28
+(0)neuron_membrane_buffer.read_timestep[2:0]
+(1)neuron_membrane_buffer.read_timestep[2:0]
+(2)neuron_membrane_buffer.read_timestep[2:0]
+@1401204
+-group_end
+@28
+neuron_membrane_buffer.write_en
+@24
+neuron_membrane_buffer.write_timestep[2:0]
+@28
+neuron_membrane_buffer.written[7:0]
+[pattern_trace] 1
+[pattern_trace] 0

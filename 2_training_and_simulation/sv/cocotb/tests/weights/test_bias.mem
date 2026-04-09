@@ -1,0 +1,6 @@
+// Test bias for linear_layer: all zeros (4 outputs)
+// Format: QS2.13 (16-bit signed hex)
+0000
+0000
+0000
+0000

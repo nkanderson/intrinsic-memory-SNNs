@@ -1,0 +1,28 @@
+# Configuration for SNN-DQN using BitshiftLIF neurons on CartPole-v1
+# BitshiftLIF uses bit-shift approximations instead of GL coefficients
+# Designed to approximate alpha=0.5 using hardware-efficient operations
+
+training:
+  batch_size: 128 # Transitions sampled from replay buffer
+  gamma: 0.99 # Discount factor for future rewards
+  eps_start: 0.9 # Starting exploration rate
+  eps_end: 0.01 # Minimum exploration rate
+  eps_decay: 2500 # Epsilon decay rate (higher = slower decay, longer exploration)
+  tau: 0.005 # Target network soft update rate
+  lr: 0.0003 # AdamW learning rate (3e-4)
+  num_episodes: 600 # Total training episodes
+
+snn:
+  num_steps: 30 # SNN simulation timesteps per environment step
+  beta: 0.9 # For compatibility (not used in bitshift dynamics, see lam instead)
+  surrogate_gradient_slope: 25 # Slope for fast_sigmoid surrogate gradient
+  neuron_type: bitshift # Neuron type: 'leaky', 'leakysv', 'fractional', or 'bitshift'
+  hidden1_size: 32 # Neurons in first hidden layer
+  hidden2_size: 16 # Neurons in second hidden layer
+
+  # BitshiftLIF specific parameters (used only when neuron_type: bitshift)
+  shift_func: custom_slow_decay # Shift function type: 'simple', 'slow_decay', 'custom', or 'custom_slow_decay'
+  lam: 0.111 # Leakage parameter (matches beta=0.9 for comparison to standard LIF)
+  history_length: 128 # Number of past values for bitshift approximation
+  dt: 1.0 # Discrete timestep for approximation
+

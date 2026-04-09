@@ -1,0 +1,42 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Mon Jan 19 20:32:57 2026
+[*]
+[dumpfile] "/Users/nik/Documents/Teuscher-Lab/example-model-training-pipeline/cartpole_snn/sv/cocotb/results/sim_build/spike_buffer.fst"
+[dumpfile_mtime] "Mon Jan 19 19:18:58 2026"
+[dumpfile_size] 1254
+[savefile] "/Users/nik/Documents/Teuscher-Lab/example-model-training-pipeline/cartpole_snn/sv/cocotb/tests/gtkw/spike_buffer.gtkw"
+[timestart] 1005300
+[size] 1824 795
+[pos] 1919 48
+*-15.900000 1182300 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] spike_buffer.
+[sst_width] 253
+[signals_width] 289
+[sst_expanded] 1
+[sst_vpaned_height] 226
+@420
+spike_buffer.CYCLE_WIDTH
+spike_buffer.NUM_NEURONS
+spike_buffer.NUM_TIMESTEPS
+@28
+spike_buffer.clk
+spike_buffer.reset
+spike_buffer.start
+spike_buffer.spike_in[7:0]
+spike_buffer.spikes_out[7:0]
+spike_buffer.done
+@22
+spike_buffer.timestep_out[4:0]
+@28
+spike_buffer.timestep_ready
+@25
+spike_buffer.cycle_count[3:0]
+@28
+spike_buffer.timestep_complete
+@22
+spike_buffer.output_timestep[4:0]
+@28
+spike_buffer.state[1:0]
+[pattern_trace] 1
+[pattern_trace] 0
