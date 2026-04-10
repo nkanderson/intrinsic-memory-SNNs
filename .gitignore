@@ -16,7 +16,11 @@ venv/
 __pycache__/
 .pytest_cache
 
-# Synthesis
+# Synthesis, including Vivado
+**/vivado.jou
+**/vivado.log
+**/.Xil/
+**/results/
 *.bin
 *.asc
 # Might need to make this more specific depending on any data output by unrelated scripts
