@@ -17,8 +17,8 @@ __pycache__/
 .pytest_cache
 
 # Synthesis, including Vivado
-**/vivado.jou
-**/vivado.log
+**/vivado*.jou
+**/vivado*.log
 **/.Xil/
 **/results/
 *.bin
