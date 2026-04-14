@@ -57,6 +57,7 @@ class DQNAgent:
         lam: float = 0.111,
         history_length: int = 64,
         dt: float = 1.0,
+        shift_func_name: Optional[str] = None,
     ):
         """
         Initialize the agent.
@@ -80,6 +81,8 @@ class DQNAgent:
             lam: Lambda parameter for FLIF neurons (default: 0.111)
             history_length: History buffer length for FLIF neurons (default: 64)
             dt: Time step for FLIF neurons (default: 1.0)
+            shift_func_name: Name of bitshift function (e.g. 'simple',
+                'slow_decay', 'custom', 'custom_slow_decay')
         """
         # Training hyperparameters
         self.n_observations = n_observations
@@ -98,6 +101,7 @@ class DQNAgent:
         self.lam = lam
         self.history_length = history_length
         self.dt = dt
+        self.shift_func_name = shift_func_name
 
         # Model components (pre-initialized instances)
         self.policy_net = policy_net
@@ -144,6 +148,7 @@ class DQNAgent:
             device=config["device"],
             episode=config.get("episode", 0),
             avg_reward=config.get("avg_reward", 0.0),
+            shift_func_name=config.get("shift_func", None),
         )
 
     def save(self, filename: Optional[str] = None) -> str:
@@ -180,6 +185,7 @@ class DQNAgent:
                 "lam": self.lam,
                 "history_length": self.history_length,
                 "dt": self.dt,
+                "shift_func": self.shift_func_name,
             },
         }
 
@@ -264,6 +270,7 @@ class DQNAgent:
             lam=config.get("lam", 0.111),
             history_length=config.get("history_length", 64),
             dt=config.get("dt", 1.0),
+            shift_func_name=config.get("shift_func", None),
         )
 
         return agent

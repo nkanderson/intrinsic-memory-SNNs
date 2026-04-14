@@ -32,6 +32,25 @@ n_observations = (
     4  # CartPole has 4 observations: [position, velocity, angle, angular_velocity]
 )
 
+SHIFT_FUNC_MAP = {
+    "simple": simple_bitshift,
+    "slow_decay": slow_decay_bitshift,
+    "custom": custom_bitshift,
+    "custom_slow_decay": custom_slow_decay_bitshift,
+}
+
+
+def resolve_shift_func(shift_func_name):
+    if not shift_func_name:
+        return None
+    shift_func = SHIFT_FUNC_MAP.get(shift_func_name)
+    if shift_func is None:
+        raise ValueError(
+            f"Unknown shift_func: {shift_func_name}. "
+            f"Valid options: {list(SHIFT_FUNC_MAP.keys())}"
+        )
+    return shift_func
+
 
 def load_config(config_path):
     """Load hyperparameters from YAML config file."""
@@ -274,22 +293,7 @@ if __name__ == "__main__":
 
         # BitshiftLIF parameter (optional, used only if neuron_type == "bitshift")
         shift_func_name = config["snn"].get("shift_func", None)
-        # Map simple string name to actual function
-        shift_func = None
-        if shift_func_name:
-            if shift_func_name == "simple":
-                shift_func = simple_bitshift
-            elif shift_func_name == "slow_decay":
-                shift_func = slow_decay_bitshift
-            elif shift_func_name == "custom":
-                shift_func = custom_bitshift
-            elif shift_func_name == "custom_slow_decay":
-                shift_func = custom_slow_decay_bitshift
-            else:
-                raise ValueError(
-                    f"Unknown shift_func: {shift_func_name}. "
-                    f"Valid options: 'simple', 'slow_decay', 'custom', 'custom_slow_decay'"
-                )
+        shift_func = resolve_shift_func(shift_func_name)
     else:
         # No config file - will load everything from model checkpoint
         # Set placeholder defaults (will be overridden by checkpoint values)
@@ -316,6 +320,7 @@ if __name__ == "__main__":
         lam = 0.111
         history_length = 64
         dt = 1.0
+        shift_func_name = None
         shift_func = None  # No shift_func in placeholder defaults
 
     # Apply other parsed arguments
@@ -414,6 +419,8 @@ if __name__ == "__main__":
         net_num_steps = checkpoint_config.get("num_steps", num_steps)
         net_beta = checkpoint_config.get("beta", beta)
         net_neuron_type = checkpoint_config.get("neuron_type", neuron_type)
+        net_shift_func_name = checkpoint_config.get("shift_func", shift_func_name)
+        net_shift_func = resolve_shift_func(net_shift_func_name)
 
         # Set config_overrides for loading the agent. This is only necessary for
         # older models which did not have all parameters saved in the checkpoint.
@@ -428,6 +435,7 @@ if __name__ == "__main__":
             "num_steps": net_num_steps,
             "beta": net_beta,
             "neuron_type": net_neuron_type,
+            "shift_func": net_shift_func_name,
         }
 
         # Create policy and target nets with precedence: checkpoint > config file > placeholder
@@ -444,7 +452,7 @@ if __name__ == "__main__":
             lam=net_lam,
             history_length=net_history_length,
             dt=net_dt,
-            shift_func=shift_func,
+            shift_func=net_shift_func,
         ).to(device)
         target_net = SNNPolicy(
             n_observations,
@@ -459,7 +467,7 @@ if __name__ == "__main__":
             lam=net_lam,
             history_length=net_history_length,
             dt=net_dt,
-            shift_func=shift_func,
+            shift_func=net_shift_func,
         ).to(device)
         optimizer = optim.AdamW(policy_net.parameters(), lr=lr, amsgrad=True)
 
@@ -564,6 +572,7 @@ if __name__ == "__main__":
             lam=lam,
             history_length=history_length,
             dt=dt,
+            shift_func_name=shift_func_name,
         )
 
     # Print configuration info after agent is created

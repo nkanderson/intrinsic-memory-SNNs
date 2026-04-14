@@ -13,6 +13,7 @@
 #   make test_neuron_membrane_buffer     # Run neuron_membrane_buffer tests
 #   make cartpole_integration            # Run cartpole_integration tests
 #   make cartpole_integration_fractional # Run cartpole_integration_fractional tests
+#   make test_cartpole_integration_bitshift_custom_slow_decay # Run bitshift custom_slow_decay integration tests
 #   make test_cartpole_integration_fractional_hist256 # Run cartpole_integration_fractional_hist256 tests
 #   make clean                           # Clean build artifacts
 
@@ -124,8 +125,17 @@ else ifeq ($(TEST),cartpole_integration_fractional_hist256)
                       $(PWD)/../sv/q_accumulator.sv
     TOPLEVEL = neural_network_fractional
     MODULE = test_cartpole_integration
+else ifeq ($(TEST),cartpole_integration_bitshift_custom_slow_decay)
+    # Full model integration test with gymnasium using bitshift custom_slow_decay neurons
+    VERILOG_SOURCES = $(PWD)/../sv/neural_network_bitshift.sv \
+                      $(PWD)/../sv/linear_layer.sv \
+                      $(PWD)/../sv/bitshift_lif.sv \
+                      $(PWD)/../sv/neuron_membrane_buffer.sv \
+                      $(PWD)/../sv/q_accumulator.sv
+    TOPLEVEL = neural_network_bitshift
+    MODULE = test_cartpole_integration
 else
-    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'bitshift_lif', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'cartpole_integration', 'cartpole_integration_fractional', 'cartpole_integration_fractional_hist8', or 'cartpole_integration_fractional_hist256')
+    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'bitshift_lif', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'cartpole_integration', 'cartpole_integration_fractional', 'cartpole_integration_fractional_hist8', 'cartpole_integration_fractional_hist256', or 'cartpole_integration_bitshift_custom_slow_decay')
 endif
 
 # Simulator - use Icarus for all tests (event-driven, correct timing)
@@ -279,6 +289,27 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fractional_hist256/fc_out_weights.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_BIAS_FILE=\"$(PWD)/weights/fractional_hist256/fc_out_bias.mem\"
     endif
+    ifeq ($(TEST),cartpole_integration_bitshift_custom_slow_decay)
+        # Bitshift custom_slow_decay model from weights/bitshift-custom_slow_decay: 32 HL1, 8 HL2, 10 timesteps
+        # NOTE: This profile uses QS3.12 weights. Keep FRAC_BITS=12 and constants aligned
+        # with train/configs/bitshift-custom_slow_decay-32hl1-8hl2-8hist.yaml + generated
+        # fractional_constants.txt (C_SCALED=256, INV_DENOM=59823).
+        COMPILE_ARGS += -Pneural_network_bitshift.NUM_INPUTS=4 -Pneural_network_bitshift.HL1_SIZE=32
+        COMPILE_ARGS += -Pneural_network_bitshift.HL2_SIZE=8 -Pneural_network_bitshift.NUM_ACTIONS=2
+        COMPILE_ARGS += -Pneural_network_bitshift.NUM_TIMESTEPS=10 -Pneural_network_bitshift.Q_BATCH_SIZE=4
+        COMPILE_ARGS += -Pneural_network_bitshift.FRAC_BITS=12
+        COMPILE_ARGS += -Pneural_network_bitshift.FC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -Pneural_network_bitshift.HISTORY_LENGTH=8
+        COMPILE_ARGS += -Pneural_network_bitshift.SHIFT_WIDTH=8 -Pneural_network_bitshift.SHIFT_MODE=3
+        COMPILE_ARGS += -Pneural_network_bitshift.CUSTOM_DECAY_RATE=3
+        COMPILE_ARGS += -Pneural_network_bitshift.C_SCALED=256 -Pneural_network_bitshift.INV_DENOM=59823
+        COMPILE_ARGS += -Pneural_network_bitshift.FC1_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift.FC1_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift.FC2_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift.FC2_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift.FC_OUT_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_bias.mem\"
+    endif
 endif
 
 # Verilator should be used when needing to trace unpacked arrays
@@ -429,6 +460,25 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fractional_hist256/fc_out_weights.mem\"
         COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/fractional_hist256/fc_out_bias.mem\"
     endif
+    ifeq ($(TEST),cartpole_integration_bitshift_custom_slow_decay)
+        # Bitshift custom_slow_decay model from weights/bitshift-custom_slow_decay: 32 HL1, 8 HL2, 10 timesteps
+        # NOTE: Keep these parameters in sync with the Icarus block above.
+        COMPILE_ARGS += -GNUM_INPUTS=4 -GHL1_SIZE=32
+        COMPILE_ARGS += -GHL2_SIZE=8 -GNUM_ACTIONS=2
+        COMPILE_ARGS += -GNUM_TIMESTEPS=10 -GQ_BATCH_SIZE=4
+        COMPILE_ARGS += -GFRAC_BITS=12
+        COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -GHISTORY_LENGTH=8
+        COMPILE_ARGS += -GSHIFT_WIDTH=8 -GSHIFT_MODE=3
+        COMPILE_ARGS += -GCUSTOM_DECAY_RATE=3
+        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=59823
+        COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc1_weights.mem\"
+        COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc1_bias.mem\"
+        COMPILE_ARGS += -GFC2_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc2_weights.mem\"
+        COMPILE_ARGS += -GFC2_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc2_bias.mem\"
+        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_weights.mem\"
+        COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_bias.mem\"
+    endif
 endif
 
 # Output directory for simulation results
@@ -511,10 +561,13 @@ test_cartpole_integration_fractional_hist8:
 test_cartpole_integration_fractional_hist256:
 	$(MAKE) TEST=cartpole_integration_fractional_hist256
 
+test_cartpole_integration_bitshift_custom_slow_decay:
+	$(MAKE) TEST=cartpole_integration_bitshift_custom_slow_decay
+
 # Clean up generated files
 clean::
 	rm -rf $(RESULTS_DIR)/*
 	rm -rf __pycache__
 	rm -rf .pytest_cache
 
-.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_bitshift_lif test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_cartpole_integration test_cartpole_integration_fractional test_cartpole_integration_fractional_hist8 test_cartpole_integration_fractional_hist256
+.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_bitshift_lif test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_cartpole_integration test_cartpole_integration_fractional test_cartpole_integration_fractional_hist8 test_cartpole_integration_fractional_hist256 test_cartpole_integration_bitshift_custom_slow_decay

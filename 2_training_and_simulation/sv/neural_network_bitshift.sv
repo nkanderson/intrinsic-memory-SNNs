@@ -39,9 +39,10 @@ module neural_network_bitshift #(
     // Choose the smallest width that avoids FC2 saturation for the target observation set.
     parameter FC2_OUTPUT_WIDTH = DATA_WIDTH,
     parameter MEMBRANE_WIDTH = 24,
-    parameter FRAC_BITS = 13,
+    parameter FRAC_BITS = 12,
     // LIF parameters
-    parameter THRESHOLD = 8192,
+    // Keep threshold aligned with fixed-point format: 1.0 = 2^FRAC_BITS
+    parameter THRESHOLD = (1 << FRAC_BITS),
     parameter BETA = 115,
     // Bitshift LIF parameters
     parameter HISTORY_LENGTH = 64,

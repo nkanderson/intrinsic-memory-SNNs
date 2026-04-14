@@ -13,6 +13,7 @@ For β = 0.9 (default): λ = 0.1 / 0.9 ≈ 0.111
 Usage:
     python generate_coefficients.py --alpha 0.5 --lam 0.111 --history-length 64 --output-dir ../sv/weights/
     python generate_coefficients.py --alpha 0.5 --beta 0.9 --history-length 64 --output-dir ../sv/weights/
+    python generate_coefficients.py --alpha 0.5 --lam 0.111 --constants-only
 """
 
 import argparse
@@ -166,7 +167,9 @@ def write_mem_file(
         f.write(f"// alpha = {alpha}, lambda = {lam:.6f}\n")
         f.write(f"// History length = {history_length}, coefficients = {len(values)}\n")
         f.write(f"// Format: QU{bits-frac_bits}.{frac_bits} ({bits}-bit unsigned)\n")
-        f.write(f"// Contains |g_1| to |g_{{{history_length}-1}}| (g_0 = 1 is implicit)\n")
+        f.write(
+            f"// Contains |g_1| to |g_{{{history_length}-1}}| (g_0 = 1 is implicit)\n"
+        )
         f.write("// Assumes 0 < alpha <= 1, where g_k (k>=1) are non-positive\n")
         f.write("//\n")
 
@@ -272,13 +275,21 @@ def main():
         help="Coefficient fractional bits, default: 15 (QU1.15 with 16-bit coeffs)",
     )
     parser.add_argument(
-        "--output-dir", type=str, required=True, help="Output directory for .mem files"
+        "--output-dir",
+        type=str,
+        default=None,
+        help="Output directory for generated files (required unless --constants-only)",
     )
     parser.add_argument(
         "--prefix",
         type=str,
         default="",
         help="Prefix for output filenames (e.g., 'hl1_' for layer-specific)",
+    )
+    parser.add_argument(
+        "--constants-only",
+        action="store_true",
+        help="Compute and print only fractional constants (skip GL coefficient generation)",
     )
 
     args = parser.parse_args()
@@ -292,10 +303,55 @@ def main():
         beta_used = args.beta
         print(f"Computing lambda from beta={args.beta}: lambda = {lam:.6f}")
 
-    # This magnitude-only flow relies on coefficient sign behavior for 0 < alpha <= 1
-    assert 0 < args.alpha <= 1.0, (
-        "Magnitude-only coefficient export requires 0 < alpha <= 1.0"
+    if not args.constants_only and args.output_dir is None:
+        parser.error("--output-dir is required unless --constants-only is specified")
+
+    # Compute constants (used in both full and constants-only modes)
+    constants = compute_fractional_constants(
+        alpha=args.alpha,
+        lam=lam,
+        dt=args.dt,
     )
+
+    print("\nConstants:")
+    print(f"  alpha = {args.alpha}")
+    print(f"  lambda = {lam:.6f}")
+    print(f"  dt = {args.dt}")
+    print(f"  C = {constants['C']:.6f} -> C_SCALED = {constants['C_SCALED']} (Q8.8)")
+    print(
+        f"  1/(C+λ) = {constants['inv_denom']:.6f} -> INV_DENOM = {constants['INV_DENOM']} (Q0.16)"
+    )
+
+    print("\n" + "=" * 60)
+    print("SystemVerilog parameters (copy to fractional_lif instantiation):")
+    print("=" * 60)
+    print(f"    .HISTORY_LENGTH({args.history_length}),")
+    print(f"    .COEFF_WIDTH({args.coeff_bits}),")
+    print(f"    .COEFF_FRAC_BITS({args.coeff_frac_bits}),")
+    print(f"    .C_SCALED(16'd{constants['C_SCALED']}),")
+    print(f"    .INV_DENOM(16'd{constants['INV_DENOM']}),")
+
+    if args.constants_only:
+        if args.output_dir is not None:
+            output_dir = Path(args.output_dir)
+            output_dir.mkdir(parents=True, exist_ok=True)
+            constants_file = output_dir / f"{args.prefix}fractional_constants.txt"
+            write_constants_header(
+                constants_file,
+                constants,
+                alpha=args.alpha,
+                beta=beta_used,
+                history_length=args.history_length,
+                coeff_bits=args.coeff_bits,
+                coeff_frac_bits=args.coeff_frac_bits,
+            )
+            print(f"\nWrote constants to {constants_file}")
+        return
+
+    # This magnitude-only flow relies on coefficient sign behavior for 0 < alpha <= 1
+    assert (
+        0 < args.alpha <= 1.0
+    ), "Magnitude-only coefficient export requires 0 < alpha <= 1.0"
 
     # Compute GL coefficients (g_0 to g_{H-1})
     print(
@@ -312,7 +368,11 @@ def main():
     print(f"  g_{{H-1}} = {coeffs[-1].item():.6f}")
 
     # Validate sign pattern and quantize magnitudes
-    coeffs_np = coeffs_to_store.numpy() if hasattr(coeffs_to_store, "numpy") else np.array(coeffs_to_store)
+    coeffs_np = (
+        coeffs_to_store.numpy()
+        if hasattr(coeffs_to_store, "numpy")
+        else np.array(coeffs_to_store)
+    )
     if np.any(coeffs_np > 1e-12):
         raise ValueError(
             "Expected g_k <= 0 for k>=1 when 0<alpha<=1; found positive coefficient"
@@ -322,19 +382,6 @@ def main():
         coeffs_to_store,
         bits=args.coeff_bits,
         frac_bits=args.coeff_frac_bits,
-    )
-
-    # Compute constants
-    constants = compute_fractional_constants(
-        alpha=args.alpha,
-        lam=lam,
-        dt=args.dt,
-    )
-
-    print("\nConstants:")
-    print(f"  C = {constants['C']:.6f} -> C_SCALED = {constants['C_SCALED']} (Q8.8)")
-    print(
-        f"  1/(C+λ) = {constants['inv_denom']:.6f} -> INV_DENOM = {constants['INV_DENOM']} (Q0.16)"
     )
 
     # Write output files
@@ -367,14 +414,6 @@ def main():
     print(f"Wrote constants to {constants_file}")
 
     # Print SystemVerilog parameters for copy-paste
-    print("\n" + "=" * 60)
-    print("SystemVerilog parameters (copy to fractional_lif instantiation):")
-    print("=" * 60)
-    print(f"    .HISTORY_LENGTH({args.history_length}),")
-    print(f"    .COEFF_WIDTH({args.coeff_bits}),")
-    print(f"    .COEFF_FRAC_BITS({args.coeff_frac_bits}),")
-    print(f"    .C_SCALED(16'd{constants['C_SCALED']}),")
-    print(f"    .INV_DENOM(16'd{constants['INV_DENOM']}),")
     print(f'    .GL_COEFF_FILE("{args.prefix}gl_coefficients.mem")')
 
 

@@ -22,7 +22,7 @@ import os
 import gymnasium as gym
 import numpy as np
 
-# Fixed-point format constants (QS2.13)
+# Fixed-point format constants (default QS2.13; can be overridden by DUT FRAC_BITS)
 TOTAL_BITS = 16
 FRAC_BITS = 13
 SCALE_FACTOR = 2**FRAC_BITS  # 8192
@@ -37,9 +37,20 @@ NUM_TIMESTEPS = 30
 FULL_DEBUG = os.getenv("FULL_DEBUG", os.getenv("SNAPSHOT_FULL_DEBUG", "0")) == "1"
 
 
-def float_to_fixed(value: float) -> int:
+def get_frac_bits(dut=None) -> int:
+    """Read FRAC_BITS from DUT when available; otherwise use default."""
+    if dut is not None:
+        try:
+            return int(dut.FRAC_BITS.value)
+        except Exception:
+            pass
+    return FRAC_BITS
+
+
+def float_to_fixed(value: float, frac_bits: int = FRAC_BITS) -> int:
     """Convert float to fixed-point (unsigned representation for cocotb)."""
-    scaled = int(round(value * SCALE_FACTOR))
+    scale_factor = 2**frac_bits
+    scaled = int(round(value * scale_factor))
     if scaled > MAX_SIGNED:
         scaled = MAX_SIGNED
     elif scaled < MIN_SIGNED:
@@ -105,8 +116,9 @@ async def run_inference(
         int: selected action (0 or 1)
     """
     # Set observations (convert to fixed-point)
+    frac_bits = get_frac_bits(dut)
     for i in range(NUM_INPUTS):
-        dut.observations[i].value = float_to_fixed(float(observations[i]))
+        dut.observations[i].value = float_to_fixed(float(observations[i]), frac_bits)
 
     # Start inference
     dut.start.value = 1
@@ -279,8 +291,10 @@ async def run_inference_with_timestep_snapshots(
     timeout_cycles: int = 50000,
 ) -> tuple[int, list[dict]]:
     """Run one inference and collect fc2/HL2/Q snapshots during execution."""
+    frac_bits = get_frac_bits(dut)
+    scale_factor = 2**frac_bits
     obs_floats = [float(observations[i]) for i in range(NUM_INPUTS)]
-    obs_fixed = [float_to_fixed(v) for v in obs_floats]
+    obs_fixed = [float_to_fixed(v, frac_bits) for v in obs_floats]
 
     for i in range(NUM_INPUTS):
         dut.observations[i].value = obs_fixed[i]
@@ -325,7 +339,7 @@ async def run_inference_with_timestep_snapshots(
                     "fc2_idx": fc2_idx,
                     "fc2_raw": fc2_raw,
                     "fc2_signed": fc2_signed,
-                    "fc2_float": fc2_signed / SCALE_FACTOR,
+                    "fc2_float": fc2_signed / scale_factor,
                     "fc2_sat_pos": fc2_sat_pos,
                     "fc2_sat_neg": fc2_sat_neg,
                     "fc2_sat_pos_count": fc2_sat_pos_count,
@@ -657,10 +671,11 @@ async def test_inference_timing(dut):
 
     # Create a sample observation
     test_obs = np.array([0.01, -0.02, 0.03, -0.01])
+    frac_bits = get_frac_bits(dut)
 
     # Measure timing
     for i in range(NUM_INPUTS):
-        dut.observations[i].value = float_to_fixed(float(test_obs[i]))
+        dut.observations[i].value = float_to_fixed(float(test_obs[i]), frac_bits)
 
     # Start inference and count cycles
     dut.start.value = 1
