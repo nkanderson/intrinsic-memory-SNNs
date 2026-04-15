@@ -25,3 +25,5 @@ __pycache__/
 *.asc
 # Might need to make this more specific depending on any data output by unrelated scripts
 **/scripts/*.json
+
+!3_benchmarking_on_FPGA/results
