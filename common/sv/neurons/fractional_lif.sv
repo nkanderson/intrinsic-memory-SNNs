@@ -69,12 +69,13 @@ module fractional_lif #(
     localparam signed [MEMBRANE_WIDTH-1:0] MEMBRANE_MAX = {1'b0, {(MEMBRANE_WIDTH-1){1'b1}}};
     localparam signed [MEMBRANE_WIDTH-1:0] MEMBRANE_MIN = {1'b1, {(MEMBRANE_WIDTH-1){1'b0}}};
 
-    typedef enum logic [4:0] {
-        ST_IDLE         = 5'b00001,
-        ST_MAC          = 5'b00010,
-        ST_PREP_NUM     = 5'b00100,
-        ST_MUL_DIV      = 5'b01000,
-        ST_FINALIZE     = 5'b10000
+    typedef enum logic [5:0] {
+        ST_IDLE         = 6'b000001,
+        ST_MAC          = 6'b000010,
+        ST_PREP_NUM     = 6'b000100,
+        ST_MUL_RECIP    = 6'b001000,
+        ST_SHIFT_DIV    = 6'b010000,
+        ST_FINALIZE     = 6'b100000
     } state_t;
 
     // Internal state
@@ -110,7 +111,8 @@ module fractional_lif #(
     logic signed [NUMERATOR_WIDTH-1:0] prep_numerator;
     logic signed [NUMERATOR_WIDTH-1:0] numerator_reg;
     (* use_dsp = "yes" *) logic signed [SCALED_RESULT_WIDTH-1:0] mul_scaled_result;
-    logic signed [SCALED_RESULT_WIDTH-1:0] mul_membrane_pre_reset;
+    logic signed [SCALED_RESULT_WIDTH-1:0] mul_scaled_result_reg;
+    logic signed [SCALED_RESULT_WIDTH-1:0] div_membrane_pre_reset;
     logic signed [SCALED_RESULT_WIDTH-1:0] membrane_pre_reset_reg;
     logic signed [SCALED_RESULT_WIDTH-1:0] membrane_after_reset;
     logic signed [SCALED_RESULT_WIDTH-1:0] membrane_max_ext;
@@ -148,10 +150,14 @@ module fractional_lif #(
                          {{(NUMERATOR_WIDTH-SCALED_HISTORY_WIDTH){prep_scaled_history[SCALED_HISTORY_WIDTH-1]}}, prep_scaled_history};
     end
 
-    // ST_MUL_DIV stage: divide by (C+lambda) using INV_DENOM reciprocal
+    // ST_MUL_RECIP stage: reciprocal multiply
     always_comb begin
         mul_scaled_result = numerator_reg * $signed({1'b0, INV_DENOM});
-        mul_membrane_pre_reset = mul_scaled_result >>> INV_DENOM_FRAC_BITS;
+    end
+
+    // ST_SHIFT_DIV stage: arithmetic shift for divide-by-scale
+    always_comb begin
+        div_membrane_pre_reset = mul_scaled_result_reg >>> INV_DENOM_FRAC_BITS;
     end
 
     // ST_FINALIZE stage: delayed reset subtraction, saturation, spike generation
@@ -189,6 +195,7 @@ module fractional_lif #(
             mac_index <= '0;
             history_sum_acc <= '0;
             numerator_reg <= '0;
+            mul_scaled_result_reg <= '0;
             membrane_pre_reset_reg <= '0;
 
             for (int i = 0; i < HISTORY_LENGTH; i++) begin
@@ -206,6 +213,7 @@ module fractional_lif #(
             mac_index <= '0;
             history_sum_acc <= '0;
             numerator_reg <= '0;
+            mul_scaled_result_reg <= '0;
             membrane_pre_reset_reg <= '0;
 
             for (int i = 0; i < HISTORY_LENGTH; i++) begin
@@ -240,11 +248,16 @@ module fractional_lif #(
 
                 ST_PREP_NUM: begin
                     numerator_reg <= prep_numerator;
-                    state <= ST_MUL_DIV;
+                    state <= ST_MUL_RECIP;
                 end
 
-                ST_MUL_DIV: begin
-                    membrane_pre_reset_reg <= mul_membrane_pre_reset;
+                ST_MUL_RECIP: begin
+                    mul_scaled_result_reg <= mul_scaled_result;
+                    state <= ST_SHIFT_DIV;
+                end
+
+                ST_SHIFT_DIV: begin
+                    membrane_pre_reset_reg <= div_membrane_pre_reset;
                     state <= ST_FINALIZE;
                 end
 
