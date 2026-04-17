@@ -34,7 +34,6 @@ module top_lif_demo (
 
     logic [STEP_CNT_W-1:0] step_counter;
     logic step_pulse;
-    logic step_sample_pending;
 
     logic signed [DATA_WIDTH-1:0] current_in;
     logic spike;
@@ -68,24 +67,19 @@ module top_lif_demo (
             step_pulse <= 1'b0;
             step_count <= '0;
             run_done <= 1'b0;
-            step_sample_pending <= 1'b0;
         end else if (step_counter == STEP_CNT_W'(STEP_DIV - 1)) begin
             step_counter <= '0;
             step_pulse <= ~run_done;
-
-            if (!run_done) begin
-                step_sample_pending <= 1'b1;
-                if (step_count == RUN_CNT_W'(RUN_STEPS - 1)) begin
-                    run_done <= 1'b1;
-                end
-                step_count <= step_count + 1'b1;
-            end else begin
-                step_sample_pending <= 1'b0;
-            end
         end else begin
             step_counter <= step_counter + 1'b1;
             step_pulse <= 1'b0;
-            step_sample_pending <= 1'b0;
+        end
+
+        if (!sw[0] && neuron_output_valid && !run_done) begin
+            if (step_count == RUN_CNT_W'(RUN_STEPS - 1)) begin
+                run_done <= 1'b1;
+            end
+            step_count <= step_count + 1'b1;
         end
     end
 
@@ -106,24 +100,23 @@ module top_lif_demo (
         .output_valid(neuron_output_valid)
     );
 
-    // Spike counter over fixed runtime window (clear/restart with sw[0])
-    // Note: spike updates in lif on the same clock edge as step_pulse, so use
-    // step_sample_pending to sample spike one cycle later.
+    // Spike counter over fixed runtime window (clear/restart with sw[0]).
+    // Count only on neuron_output_valid so event timing matches multi-cycle variants.
     always_ff @(posedge CLK100MHZ) begin
         if (sw[0]) begin
             spike_count <= '0;
-        end else if (step_sample_pending && spike) begin
+        end else if (neuron_output_valid && spike) begin
             spike_count <= spike_count + 1'b1;
         end
     end
 
     // LEDs for quick observability
     // LED[15] = run done
-    // LED[14] = sampled spike pulse
+    // LED[14] = neuron output_valid pulse
     // LED[13:0] = low bits of spike count
     always_ff @(posedge CLK100MHZ) begin
         LED[15] <= run_done;
-        LED[14] <= (step_sample_pending && spike);
+        LED[14] <= neuron_output_valid;
         LED[13:0] <= spike_count[13:0];
     end
 
