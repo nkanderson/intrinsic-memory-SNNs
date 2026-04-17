@@ -214,7 +214,8 @@ def main():
     bitshift_vals = simple_sequence(history_length)
     slow_decay_vals = slow_decay_sequence(history_length)
     # TODO: Compare different decay rates for the custom sequence
-    custom_vals = custom_sequence(history_length, 4)
+    custom_vals = custom_sequence(history_length, 3)
+    # custom_vals = custom_sequence(history_length, 4)
     custom_slow_decay_vals = custom_slow_decay_sequence(history_length)
 
     # Regular bit-shift comparison
