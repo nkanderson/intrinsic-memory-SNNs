@@ -56,7 +56,14 @@ module bitshift_lif #(
   localparam signed [MEMBRANE_WIDTH-1:0] MEMBRANE_MAX = {1'b0, {(MEMBRANE_WIDTH-1){1'b1}}};
   localparam signed [MEMBRANE_WIDTH-1:0] MEMBRANE_MIN = {1'b1, {(MEMBRANE_WIDTH-1){1'b0}}};
 
+  typedef enum logic [2:0] {
+    ST_IDLE     = 3'b001,
+    ST_ACCUM    = 3'b010,
+    ST_FINALIZE = 3'b100
+  } state_t;
+
   // Internal state
+  (* fsm_encoding = "one_hot" *) state_t state;
   logic signed [MEMBRANE_WIDTH-1:0] membrane_potential;
   logic spike_prev;
 
@@ -64,13 +71,31 @@ module bitshift_lif #(
   logic signed [MEMBRANE_WIDTH-1:0] history_buffer [0:HISTORY_LENGTH-1];
   logic [ADDR_WIDTH-1:0] history_ptr;  // points to next write location (oldest sample)
 
-  // Intermediate signals
-  logic signed [MEMBRANE_WIDTH-1:0] next_membrane;
-  logic signed [MEMBRANE_WIDTH-1:0] current_extended;
+  // Multi-cycle accumulation state
+  logic signed [MEMBRANE_WIDTH-1:0] current_latched;
+  logic [ADDR_WIDTH-1:0] accum_index;
+  logic signed [HISTORY_SUM_WIDTH-1:0] history_sum_acc;
+
+  // Intermediate helper signals
+  logic [ADDR_WIDTH-1:0] accum_k_plus_1;
+  logic [ADDR_WIDTH-1:0] accum_hist_idx;
+  logic signed [MEMBRANE_WIDTH-1:0] accum_hist_val;
+  logic [SHIFT_WIDTH-1:0] accum_shift_amt;
+  logic signed [MEMBRANE_WIDTH-1:0] accum_shifted_hist;
+  logic signed [HISTORY_SUM_WIDTH-1:0] accum_shifted_hist_ext;
+  logic signed [HISTORY_SUM_WIDTH-1:0] accum_next;
+
   logic signed [MEMBRANE_WIDTH-1:0] reset_subtract;
-  logic next_spike;
-  logic signed [HISTORY_SUM_WIDTH-1:0] history_sum;
-  logic signed [MEMBRANE_WIDTH-1:0] history_shifted_terms [0:HISTORY_LENGTH-2];
+  (* use_dsp = "yes" *) logic signed [SCALED_HISTORY_WIDTH-1:0] scaled_history_mult;
+  logic signed [SCALED_HISTORY_WIDTH-1:0] scaled_history;
+  logic signed [NUMERATOR_WIDTH-1:0] numerator;
+  (* use_dsp = "yes" *) logic signed [SCALED_RESULT_WIDTH-1:0] scaled_result;
+  logic signed [SCALED_RESULT_WIDTH-1:0] membrane_pre_reset;
+  logic signed [SCALED_RESULT_WIDTH-1:0] membrane_after_reset;
+  logic signed [SCALED_RESULT_WIDTH-1:0] membrane_max_ext;
+  logic signed [SCALED_RESULT_WIDTH-1:0] membrane_min_ext;
+  logic signed [MEMBRANE_WIDTH-1:0] finalize_membrane;
+  logic finalize_spike;
 
   function automatic integer get_shift_amount_const(input integer idx);
     integer rem;
@@ -146,69 +171,32 @@ module bitshift_lif #(
     end
   endfunction
 
-  // Build per-tap shifted history terms with compile-time constant shift amounts.
-  // This avoids runtime shift-pattern selection logic in the datapath.
-  generate
-    for (genvar gi = 0; gi < HISTORY_LENGTH - 1; gi++) begin : gen_history_terms
-      localparam integer SHIFT_AMT = get_shift_amount_const(gi + 1);
-      always_comb begin
-        logic [ADDR_WIDTH-1:0] k_plus_1;
-        logic [ADDR_WIDTH-1:0] hist_idx_g;
-
-        k_plus_1 = ADDR_WIDTH'(gi + 1);
-        if (history_ptr >= k_plus_1) begin
-          hist_idx_g = history_ptr - k_plus_1;
-        end else begin
-          hist_idx_g = history_ptr + ADDR_WIDTH'(HISTORY_LENGTH) - k_plus_1;
-        end
-
-        history_shifted_terms[gi] = history_buffer[hist_idx_g] >>> SHIFT_AMT;
-      end
-    end
-  endgenerate
-
-  // Combinational next-state computation
+  // One accumulation term per cycle: V[n-k] >> shift[k], k=1..H-1
   always_comb begin
-    logic signed [SCALED_HISTORY_WIDTH-1:0] scaled_history;
-    logic signed [NUMERATOR_WIDTH-1:0] numerator;
-    logic signed [SCALED_RESULT_WIDTH-1:0] scaled_result;
-    logic signed [SCALED_RESULT_WIDTH-1:0] membrane_pre_reset;
-    logic signed [SCALED_RESULT_WIDTH-1:0] membrane_after_reset;
-    logic signed [SCALED_RESULT_WIDTH-1:0] membrane_max_ext;
-    logic signed [SCALED_RESULT_WIDTH-1:0] membrane_min_ext;
-
-    // Defaults
-    current_extended = '0;
-    reset_subtract = '0;
-    next_membrane = '0;
-    next_spike = 1'b0;
-    history_sum = '0;
-    scaled_history = '0;
-    numerator = '0;
-    scaled_result = '0;
-    membrane_pre_reset = '0;
-    membrane_after_reset = '0;
-    membrane_max_ext = '0;
-    membrane_min_ext = '0;
-
-    // Sign-extend input current
-    current_extended = {{(MEMBRANE_WIDTH-DATA_WIDTH){current[DATA_WIDTH-1]}}, current};
-
-    // Step 1: Sum shifted history terms for k=1..H-1
-    for (int k = 0; k < HISTORY_LENGTH - 1; k++) begin
-      history_sum = history_sum +
-              {{(HISTORY_SUM_WIDTH-MEMBRANE_WIDTH){history_shifted_terms[k][MEMBRANE_WIDTH-1]}}, history_shifted_terms[k]};
+    accum_k_plus_1 = ADDR_WIDTH'(accum_index + 1'b1);
+    if (history_ptr >= accum_k_plus_1) begin
+      accum_hist_idx = history_ptr - accum_k_plus_1;
+    end else begin
+      accum_hist_idx = history_ptr + ADDR_WIDTH'(HISTORY_LENGTH) - accum_k_plus_1;
     end
 
-    // Step 2: Delayed reset subtraction (lif.sv style)
+    accum_hist_val = history_buffer[accum_hist_idx];
+    accum_shift_amt = SHIFT_WIDTH'(get_shift_amount_const(accum_index + 1));
+    accum_shifted_hist = accum_hist_val >>> accum_shift_amt;
+    accum_shifted_hist_ext =
+      {{(HISTORY_SUM_WIDTH-MEMBRANE_WIDTH){accum_shifted_hist[MEMBRANE_WIDTH-1]}}, accum_shifted_hist};
+    accum_next = history_sum_acc + accum_shifted_hist_ext;
+  end
+
+  // Finalize stage: V[n] = (I[n] - C*sum)/(C+lambda), then delayed reset subtraction
+  always_comb begin
     reset_subtract = spike_prev ? MEMBRANE_WIDTH'($signed(THRESHOLD)) : '0;
 
-    // Step 3: V[n] = (I[n] - C * history_sum) / (C + λ)
-    // C_SCALED and INV_DENOM are fixed-point constants
-    scaled_history = ($signed({1'b0, C_SCALED}) * history_sum) >>> C_SCALED_FRAC_BITS;
+    scaled_history_mult = $signed({1'b0, C_SCALED}) * history_sum_acc;
+    scaled_history = scaled_history_mult >>> C_SCALED_FRAC_BITS;
 
-    numerator = {{(NUMERATOR_WIDTH-MEMBRANE_WIDTH){current_extended[MEMBRANE_WIDTH-1]}}, current_extended} -
-          {{(NUMERATOR_WIDTH-SCALED_HISTORY_WIDTH){scaled_history[SCALED_HISTORY_WIDTH-1]}}, scaled_history};
+    numerator = {{(NUMERATOR_WIDTH-MEMBRANE_WIDTH){current_latched[MEMBRANE_WIDTH-1]}}, current_latched} -
+                {{(NUMERATOR_WIDTH-SCALED_HISTORY_WIDTH){scaled_history[SCALED_HISTORY_WIDTH-1]}}, scaled_history};
 
     scaled_result = numerator * $signed({1'b0, INV_DENOM});
     membrane_pre_reset = scaled_result >>> INV_DENOM_FRAC_BITS;
@@ -220,57 +208,94 @@ module bitshift_lif #(
     membrane_min_ext = {{(SCALED_RESULT_WIDTH-MEMBRANE_WIDTH){MEMBRANE_MIN[MEMBRANE_WIDTH-1]}}, MEMBRANE_MIN};
 
     if (membrane_after_reset > membrane_max_ext) begin
-      next_membrane = MEMBRANE_MAX;
+      finalize_membrane = MEMBRANE_MAX;
     end else if (membrane_after_reset < membrane_min_ext) begin
-      next_membrane = MEMBRANE_MIN;
+      finalize_membrane = MEMBRANE_MIN;
     end else begin
-      next_membrane = membrane_after_reset[MEMBRANE_WIDTH-1:0];
+      finalize_membrane = membrane_after_reset[MEMBRANE_WIDTH-1:0];
     end
 
-    // Step 4: Spike generation
-    next_spike = (next_membrane >= MEMBRANE_WIDTH'($signed(THRESHOLD)));
+    finalize_spike = (finalize_membrane >= MEMBRANE_WIDTH'($signed(THRESHOLD)));
   end
 
   // Sequential state updates
   always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
+      state <= ST_IDLE;
       membrane_potential <= '0;
       spike_prev <= 1'b0;
       spike_out <= 1'b0;
       membrane_out <= '0;
       output_valid <= 1'b0;
       history_ptr <= '0;
+      current_latched <= '0;
+      accum_index <= '0;
+      history_sum_acc <= '0;
       for (int i = 0; i < HISTORY_LENGTH; i++) begin
         history_buffer[i] <= '0;
       end
     end else if (clear) begin
+      state <= ST_IDLE;
       membrane_potential <= '0;
       spike_prev <= 1'b0;
       spike_out <= 1'b0;
       membrane_out <= '0;
       output_valid <= 1'b0;
       history_ptr <= '0;
+      current_latched <= '0;
+      accum_index <= '0;
+      history_sum_acc <= '0;
       for (int i = 0; i < HISTORY_LENGTH; i++) begin
         history_buffer[i] <= '0;
       end
-    end else if (enable) begin
-      // Store current membrane in history before update
-      history_buffer[history_ptr] <= membrane_potential;
-      history_ptr <= (history_ptr == ADDR_WIDTH'(HISTORY_LENGTH - 1)) ? '0 : history_ptr + 1'b1;
-
-      // Publish next state
-      membrane_potential <= next_membrane;
-      spike_prev <= next_spike;
-      spike_out <= next_spike;
-      membrane_out <= next_membrane;
-      output_valid <= 1'b1;
     end else begin
       output_valid <= 1'b0;
+
+      unique case (state)
+        ST_IDLE: begin
+          if (enable) begin
+            current_latched <= {{(MEMBRANE_WIDTH-DATA_WIDTH){current[DATA_WIDTH-1]}}, current};
+            history_sum_acc <= '0;
+            accum_index <= '0;
+
+            if (HISTORY_LENGTH > 1) begin
+              state <= ST_ACCUM;
+            end else begin
+              state <= ST_FINALIZE;
+            end
+          end
+        end
+
+        ST_ACCUM: begin
+          history_sum_acc <= accum_next;
+          if (accum_index == ADDR_WIDTH'(HISTORY_LENGTH - 2)) begin
+            state <= ST_FINALIZE;
+          end else begin
+            accum_index <= accum_index + 1'b1;
+          end
+        end
+
+        ST_FINALIZE: begin
+          // Store current membrane in history before updating
+          history_buffer[history_ptr] <= membrane_potential;
+          history_ptr <= (history_ptr == ADDR_WIDTH'(HISTORY_LENGTH - 1)) ? '0 : history_ptr + 1'b1;
+
+          membrane_potential <= finalize_membrane;
+          spike_prev <= finalize_spike;
+          spike_out <= finalize_spike;
+          membrane_out <= finalize_membrane;
+          output_valid <= 1'b1;
+
+          state <= ST_IDLE;
+        end
+
+        default: begin
+          state <= ST_IDLE;
+        end
+      endcase
     end
-    // else: hold state
   end
 
-  // Single-cycle neuron is always ready to accept a new request.
-  assign busy = 1'b0;
+  assign busy = (state != ST_IDLE);
 
 endmodule

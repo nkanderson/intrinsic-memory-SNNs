@@ -1,0 +1,50 @@
+Bitshift LIF Demo Power Metrics
+===============================
+
+Design: top_bitshift_lif_demo
+Device: xc7a100tcsg324-1
+Flow state: Routed (vectorless power estimate)
+Vivado report date: Fri Apr 17 14:14:26 2026
+
+Primary source report:
+- /home/stonepine/intrinsic-memory-SNNs/1_design_space/results/bitshift_lif/vivado_project/top_bitshift_lif_demo.runs/impl_1/top_bitshift_lif_demo_power_routed.rpt
+
+1) Summary (from report_power)
+------------------------------
+- Total On-Chip Power (W): 0.099
+- Dynamic (W): 0.016
+- Device Static (W): 0.084
+- Junction Temperature (C): 25.5
+- Effective TJA (C/W): 4.6
+- Max Ambient (C): 84.5
+- Confidence Level: Medium
+
+2) On-Chip Component Breakdown
+------------------------------
+- Clocks:        0.002 W
+- Slice Logic:   0.006 W
+- Signals:       0.007 W
+- I/O:          <0.001 W
+- Static Power:  0.084 W
+
+Observations:
+- Static power still dominates (~84.8% of total).
+- Dynamic power (0.016 W) is notably higher than fractional demo due to larger logic/signal switching.
+
+3) Power Supply Summary (selected rails)
+----------------------------------------
+- Vccint:    1.000 V, 0.031 A total (0.016 A dynamic, 0.015 A static)
+- Vccaux:    1.800 V, 0.018 A total
+- Vcco33:    3.300 V, 0.000 A total
+- Vccadc:    1.800 V, 0.020 A total
+
+4) Assumptions / Confidence Notes
+---------------------------------
+- No simulation activity file was provided (Simulation Activity File: ---).
+- Internal node activity coverage is low (<25% user-specified), so dynamic power is an estimate.
+- Overall confidence is "Medium" per Vivado.
+
+Recommendation for tighter accuracy:
+- Use representative SAIF/VCD switching activity for the bitshift neuron (same 100 Hz update cadence used on board)
+	and rerun report_power for higher-confidence dynamic estimates.
+

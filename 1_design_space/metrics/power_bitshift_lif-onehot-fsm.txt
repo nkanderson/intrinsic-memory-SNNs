@@ -1,0 +1,42 @@
+Bitshift LIF Demo Power Metrics (One-Hot FSM)
+=============================================
+
+Design: top_bitshift_lif_demo
+Device: xc7a100tcsg324-1
+Flow state: Routed (vectorless power estimate)
+Vivado report date: Fri Apr 17 14:20:15 2026
+
+Primary source report:
+- /home/stonepine/intrinsic-memory-SNNs/1_design_space/results/bitshift_lif/vivado_project/top_bitshift_lif_demo.runs/impl_1/top_bitshift_lif_demo_power_routed.rpt
+
+1) Summary (from report_power)
+------------------------------
+- Total On-Chip Power (W): 0.087
+- Dynamic (W): 0.003
+- Device Static (W): 0.084
+- Junction Temperature (C): 25.4
+- Effective TJA (C/W): 4.6
+- Max Ambient (C): 84.6
+- Confidence Level: Medium
+
+2) On-Chip Component Breakdown
+------------------------------
+- Clocks:        0.002 W
+- Slice Logic:  <0.001 W
+- Signals:      <0.001 W
+- I/O:          <0.001 W
+- Static Power:  0.084 W
+
+3) Comparison vs previous bitshift metrics
+------------------------------------------
+Reference previous file: metrics/power_bitshift_lif.txt
+
+- Total On-Chip Power: 0.099 -> 0.087 W  (delta: -0.012 W, -12.1%)
+- Dynamic Power:       0.016 -> 0.003 W  (delta: -0.013 W, -81.3%)
+- Static Power:        0.084 -> 0.084 W  (delta: +0.000 W, ~0%)
+
+4) Assumptions / Confidence Notes
+---------------------------------
+- No simulation activity file was provided (Simulation Activity File: ---).
+- Internal node activity coverage is low (<25% user-specified), so dynamic power is still an estimate.
+- Overall confidence is "Medium" per Vivado.
