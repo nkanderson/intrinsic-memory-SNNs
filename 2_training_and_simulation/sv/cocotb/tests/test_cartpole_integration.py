@@ -37,6 +37,31 @@ NUM_TIMESTEPS = 30
 FULL_DEBUG = os.getenv("FULL_DEBUG", os.getenv("SNAPSHOT_FULL_DEBUG", "0")) == "1"
 
 
+def _read_int_param(dut, name: str, default: int) -> int:
+    """Best-effort read of integer DUT parameter/constant handle."""
+    try:
+        return int(getattr(dut, name).value)
+    except Exception:
+        return default
+
+
+def estimate_inference_timeout_cycles(dut) -> int:
+    """Estimate a safe inference timeout from DUT sizing parameters.
+
+    This scales timeout for multi-cycle neuron variants (e.g. larger HISTORY_LENGTH)
+    while preserving current behavior for single-cycle LIF.
+    """
+    num_timesteps = _read_int_param(dut, "NUM_TIMESTEPS", NUM_TIMESTEPS)
+    hl1_size = _read_int_param(dut, "HL1_SIZE", get_hl1_size(dut) or 64)
+    hl2_size = _read_int_param(dut, "HL2_SIZE", get_hl2_size(dut) or 16)
+    history_length = _read_int_param(dut, "HISTORY_LENGTH", 1)
+
+    # Heuristic: work scales with timesteps, layer widths, and neuron history latency.
+    # Keep a floor so standard LIF remains unchanged from prior behavior.
+    scaled = num_timesteps * max(1, hl1_size + hl2_size) * max(4, history_length) * 4
+    return max(50_000, scaled)
+
+
 def get_frac_bits(dut=None) -> int:
     """Read FRAC_BITS from DUT when available; otherwise use default."""
     if dut is not None:
@@ -102,7 +127,7 @@ async def reset_dut(dut):
 
 
 async def run_inference(
-    dut, observations: np.ndarray, timeout_cycles: int = 50000
+    dut, observations: np.ndarray, timeout_cycles: int | None = None
 ) -> tuple:
     """
     Run a single inference through the neural network.
@@ -126,6 +151,9 @@ async def run_inference(
     dut.start.value = 0
 
     # Wait for done
+    if timeout_cycles is None:
+        timeout_cycles = estimate_inference_timeout_cycles(dut)
+
     for cycle in range(timeout_cycles):
         await RisingEdge(dut.clk)
         if dut.done.value == 1:
@@ -140,7 +168,7 @@ async def run_inference(
 
 
 async def run_inference_with_trace(
-    dut, observations: np.ndarray, timeout_cycles: int = 50000
+    dut, observations: np.ndarray, timeout_cycles: int | None = None
 ) -> tuple[int, dict]:
     """Run one inference and return action plus traceable internal summaries."""
     action = await run_inference(dut, observations, timeout_cycles=timeout_cycles)
@@ -288,7 +316,7 @@ async def run_inference_with_timestep_snapshots(
     observations: np.ndarray,
     inference_idx: int,
     full_debug: bool = False,
-    timeout_cycles: int = 50000,
+    timeout_cycles: int | None = None,
 ) -> tuple[int, list[dict]]:
     """Run one inference and collect fc2/HL2/Q snapshots during execution."""
     frac_bits = get_frac_bits(dut)
@@ -310,6 +338,9 @@ async def run_inference_with_timestep_snapshots(
     hl1_t0_spike_sample = ""
     fc2_sat_pos_count = 0
     fc2_sat_neg_count = 0
+
+    if timeout_cycles is None:
+        timeout_cycles = estimate_inference_timeout_cycles(dut)
 
     for cycle in range(timeout_cycles):
         await RisingEdge(dut.clk)

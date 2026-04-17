@@ -168,7 +168,7 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pfractional_lif.GL_COEFF_FILE=\"$(PWD)/weights/fractional_gl_coeffs_h8.mem\"
     endif
     ifeq ($(TEST),fractional_lif_hist64)
-				# Match params from fractional_constants.txt for original 64-16 model
+        # Match params from fractional_constants.txt for original 64-16 model
         COMPILE_ARGS += -Pfractional_lif.HISTORY_LENGTH=64
         COMPILE_ARGS += -Pfractional_lif.COEFF_WIDTH=16 -Pfractional_lif.COEFF_FRAC_BITS=15
         COMPILE_ARGS += -Pfractional_lif.C_SCALED=256 -Pfractional_lif.INV_DENOM=58988

@@ -157,6 +157,8 @@ module neural_network_fractional #(
     logic hl1_enable;
     logic hl1_spikes [0:HL1_SIZE-1];
     logic signed [MEMBRANE_WIDTH-1:0] hl1_membranes [0:HL1_SIZE-1];  // Not used but kept for completeness
+    logic hl1_busy [0:HL1_SIZE-1];
+    logic hl1_output_valid [0:HL1_SIZE-1];
 
     // Pack spike outputs into vector for fc2
     logic [HL1_SIZE-1:0] hl1_spike_vector;
@@ -185,7 +187,9 @@ module neural_network_fractional #(
                 .enable(hl1_enable),
                 .current(hl1_currents[i]),
                 .spike_out(hl1_spikes[i]),
-                .membrane_out(hl1_membranes[i])
+                .membrane_out(hl1_membranes[i]),
+                .busy(hl1_busy[i]),
+                .output_valid(hl1_output_valid[i])
             );
         end
     endgenerate
@@ -198,6 +202,7 @@ module neural_network_fractional #(
     logic [$clog2(HL2_SIZE)-1:0] fc2_output_idx;
     logic fc2_output_valid;
     logic fc2_done;
+    logic fc2_done_seen;
 
     // Convert spike vector to signed input array for fc2 direct from HL1 LIF outputs
     logic signed [DATA_WIDTH-1:0] fc2_inputs [0:HL1_SIZE-1];
@@ -235,6 +240,8 @@ module neural_network_fractional #(
     logic signed [FC2_OUTPUT_WIDTH-1:0] hl2_currents [0:HL2_SIZE-1];
     logic hl2_spikes [0:HL2_SIZE-1];  // Not used but output for completeness
     logic signed [MEMBRANE_WIDTH-1:0] hl2_membranes [0:HL2_SIZE-1];
+    logic hl2_busy [0:HL2_SIZE-1];
+    logic hl2_output_valid [0:HL2_SIZE-1];
 
     // Save fc2 outputs as they stream out
     always_ff @(posedge clk or posedge reset) begin
@@ -267,19 +274,19 @@ module neural_network_fractional #(
     logic [TIMESTEP_WIDTH-1:0] q_read_timestep;
     logic signed [MEMBRANE_WIDTH-1:0] membrane_to_q [0:HL2_SIZE-1];
 
-    // Delayed write enable for membrane buffer (captures new membrane after LIF computes)
-    logic hl2_enable_delayed [0:HL2_SIZE-1];
+    // Delay output_valid by 1 cycle so membrane_buf captures updated membrane_out value.
+    logic hl2_output_valid_delayed [0:HL2_SIZE-1];
     logic [TIMESTEP_WIDTH-1:0] membrane_write_timestep_delayed;
 
     always_ff @(posedge clk or posedge reset) begin
         if (reset) begin
             for (int i = 0; i < HL2_SIZE; i++) begin
-                hl2_enable_delayed[i] <= 1'b0;
+                hl2_output_valid_delayed[i] <= 1'b0;
             end
             membrane_write_timestep_delayed <= '0;
         end else begin
             for (int i = 0; i < HL2_SIZE; i++) begin
-                hl2_enable_delayed[i] <= hl2_enable[i];
+                hl2_output_valid_delayed[i] <= hl2_output_valid[i];
             end
             membrane_write_timestep_delayed <= membrane_write_timestep;
         end
@@ -305,10 +312,12 @@ module neural_network_fractional #(
                 .enable(hl2_enable[i]),
                 .current(hl2_currents[i]),
                 .spike_out(hl2_spikes[i]),
-                .membrane_out(hl2_membranes[i])
+                .membrane_out(hl2_membranes[i]),
+                .busy(hl2_busy[i]),
+                .output_valid(hl2_output_valid[i])
             );
 
-            // Per-neuron membrane buffer with writes delayed by 1 cycle to capture new membrane value after LIF processing
+            // Per-neuron membrane buffer writes are aligned to delayed output_valid.
             neuron_membrane_buffer #(
                 .NUM_TIMESTEPS(NUM_TIMESTEPS),
                 .MEMBRANE_WIDTH(MEMBRANE_WIDTH)
@@ -316,7 +325,7 @@ module neural_network_fractional #(
                 .clk(clk),
                 .reset(reset),
                 .clear(hl2_clear),
-                .write_en(hl2_enable_delayed[i]),
+                .write_en(hl2_output_valid_delayed[i]),
                 .write_timestep(membrane_write_timestep_delayed),
                 .membrane_in(hl2_membranes[i]),
                 .read_timestep(q_read_timestep),
@@ -329,7 +338,15 @@ module neural_network_fractional #(
     // HL2 enable logic: enable the neuron one cycle after fc2 outputs its current
     always_comb begin
         for (int i = 0; i < HL2_SIZE; i++) begin
-            hl2_enable[i] = hl2_process_valid && (hl2_process_idx == i[$clog2(HL2_SIZE)-1:0]);
+            hl2_enable[i] = hl2_process_valid && (hl2_process_idx == i[$clog2(HL2_SIZE)-1:0]) && !hl2_busy[i];
+        end
+    end
+
+    logic hl2_any_busy;
+    always_comb begin
+        hl2_any_busy = 1'b0;
+        for (int i = 0; i < HL2_SIZE; i++) begin
+            hl2_any_busy = hl2_any_busy || hl2_busy[i];
         end
     end
 
@@ -380,6 +397,7 @@ module neural_network_fractional #(
             ts_state <= TS_HL1_STEP;
             current_timestep <= '0;
             done <= 1'b0;
+            fc2_done_seen <= 1'b0;
 
             // Control signals
             fc1_start <= 1'b0;
@@ -404,10 +422,16 @@ module neural_network_fractional #(
             hl1_enable <= 1'b0;
             hl2_clear <= 1'b0;
 
+            // Latch fc2_done while in TS_FC2_HL2 so one-cycle pulse is not missed.
+            if ((state == RUN_TIMESTEPS) && (ts_state == TS_FC2_HL2) && (fc2_done == 1'b1)) begin
+                fc2_done_seen <= 1'b1;
+            end
+
             unique case (state)
                 IDLE: begin
                     done <= 1'b0;
                     if (start) begin
+                        fc2_done_seen <= 1'b0;
                         // Save observations
                         for (int i = 0; i < NUM_INPUTS; i++) begin
                             observations_registered[i] <= observations[i];
@@ -445,6 +469,7 @@ module neural_network_fractional #(
                             // HL1 spikes feed directly to fc2 via hl1_spike_vector
                             // Start fc2
                             fc2_start <= 1'b1;
+                            fc2_done_seen <= 1'b0;
                             membrane_write_timestep <= current_timestep;
 
                             ts_state <= TS_FC2_HL2;
@@ -454,7 +479,8 @@ module neural_network_fractional #(
                             // Wait for fc2 to complete
                             // HL2 LIFs are enabled individually as fc2 outputs their currents
                             // (handled by hl2_enable combinational logic)
-                            if (fc2_done) begin
+                            // Also wait for HL2 neurons to fully drain multi-cycle work.
+                            if (fc2_done_seen && !hl2_process_valid && !hl2_any_busy) begin
                                 ts_state <= TS_NEXT;
                             end
                         end
@@ -492,6 +518,7 @@ module neural_network_fractional #(
                     // Hold done and q_values until next start
                     if (start) begin
                         done <= 1'b0;
+                        fc2_done_seen <= 1'b0;
 
                         // Save new observations
                         for (int i = 0; i < NUM_INPUTS; i++) begin
