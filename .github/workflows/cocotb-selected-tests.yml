@@ -25,12 +25,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Export runner UID/GID for Docker
+        run: |
+          echo "USER_ID=$(id -u)" >> "$GITHUB_ENV"
+          echo "GROUP_ID=$(id -g)" >> "$GITHUB_ENV"
+
+      - name: Ensure writable cocotb results dir
+        run: |
+          mkdir -p 2_training_and_simulation/sv/cocotb/results
+          chmod -R u+rwX 2_training_and_simulation/sv/cocotb/results
+
       - name: Build cocotb Docker image
         working-directory: 2_training_and_simulation/sv/cocotb
+        env:
+          USER_ID: ${{ env.USER_ID }}
+          GROUP_ID: ${{ env.GROUP_ID }}
         run: docker compose build
 
       - name: Run selected cocotb tests (ordered)
         working-directory: 2_training_and_simulation/sv/cocotb
+        env:
+          USER_ID: ${{ env.USER_ID }}
+          GROUP_ID: ${{ env.GROUP_ID }}
         run: |
           docker compose run --rm cocotb bash -lc '
             set -euo pipefail
