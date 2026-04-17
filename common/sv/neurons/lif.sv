@@ -40,6 +40,8 @@ module lif #(
     logic signed [MEMBRANE_WIDTH-1:0] next_membrane;
     logic signed [MEMBRANE_WIDTH-1:0] current_extended;
     logic signed [MEMBRANE_WIDTH-1:0] decay_potential;
+    // Synthesis assist: keep decay multiply on DSP when available.
+    (* use_dsp = "yes" *)
     logic signed [31:0] decay_temp;
     logic signed [MEMBRANE_WIDTH-1:0] reset_subtract;
     logic next_spike;
