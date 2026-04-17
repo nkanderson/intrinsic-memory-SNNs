@@ -149,6 +149,17 @@ def write_csv(path: Path, rows: List[Dict[str, str]], fieldnames: List[str]):
             writer.writerow(r)
 
 
+def resolve_plot_path(path: Path, use_svg: bool) -> Path:
+    """
+    Resolve output plot path for selected image format.
+
+    If use_svg is True, force `.svg` extension.
+    """
+    if use_svg:
+        return path.with_suffix(".svg") if path.suffix else Path(f"{path}.svg")
+    return path
+
+
 def build_relative_error_series(
     alpha: float = 0.5,
     history_length: int = 16,
@@ -202,6 +213,7 @@ def plot_relative_error_comparison(
     coeff_bits: int = 16,
     coeff_frac_bits: int = 15,
     output_path: Path | None = None,
+    use_svg: bool = False,
 ):
     """
     Plot relative error (%) for quantized and bit-shift variant coefficients.
@@ -282,9 +294,13 @@ def plot_relative_error_comparison(
     plt.tight_layout()
 
     if output_path is not None:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_path, dpi=150)
-        print(f"Wrote relative error plot to {output_path}")
+        final_path = resolve_plot_path(output_path, use_svg)
+        final_path.parent.mkdir(parents=True, exist_ok=True)
+        if use_svg:
+            plt.savefig(final_path, format="svg")
+        else:
+            plt.savefig(final_path, dpi=150)
+        print(f"Wrote relative error plot to {final_path}")
 
     plt.close()
 
@@ -311,6 +327,7 @@ def plot_relative_error_abslog(
     coeff_bits: int = 16,
     coeff_frac_bits: int = 15,
     output_path: Path | None = None,
+    use_svg: bool = False,
 ):
     """
     Plot absolute relative error (%) using a log-like scale that includes zero.
@@ -375,9 +392,13 @@ def plot_relative_error_abslog(
     plt.tight_layout()
 
     if output_path is not None:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_path, dpi=150)
-        print(f"Wrote absolute relative error log plot to {output_path}")
+        final_path = resolve_plot_path(output_path, use_svg)
+        final_path.parent.mkdir(parents=True, exist_ok=True)
+        if use_svg:
+            plt.savefig(final_path, format="svg")
+        else:
+            plt.savefig(final_path, dpi=150)
+        print(f"Wrote absolute relative error log plot to {final_path}")
 
     plt.close()
 
@@ -388,6 +409,7 @@ def plot_mean_absolute_error_bar(
     coeff_bits: int = 16,
     coeff_frac_bits: int = 15,
     output_path: Path | None = None,
+    use_svg: bool = False,
 ):
     """
     Plot mean absolute relative error (%) as a bar chart by method.
@@ -420,9 +442,13 @@ def plot_mean_absolute_error_bar(
     plt.tight_layout()
 
     if output_path is not None:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_path, dpi=150)
-        print(f"Wrote mean absolute error bar chart to {output_path}")
+        final_path = resolve_plot_path(output_path, use_svg)
+        final_path.parent.mkdir(parents=True, exist_ok=True)
+        if use_svg:
+            plt.savefig(final_path, format="svg")
+        else:
+            plt.savefig(final_path, dpi=150)
+        print(f"Wrote mean absolute error bar chart to {final_path}")
 
     plt.close()
 
@@ -482,6 +508,11 @@ def main():
         default=None,
         help="Output image path for mean absolute relative-error bar chart",
     )
+    parser.add_argument(
+        "--svg",
+        action="store_true",
+        help="Save plot outputs as SVG instead of PNG",
+    )
 
     args = parser.parse_args()
 
@@ -530,6 +561,7 @@ def main():
             coeff_bits=args.coeff_bits,
             coeff_frac_bits=args.coeff_frac_bits,
             output_path=Path(args.out_relerr_plot),
+            use_svg=args.svg,
         )
 
     if args.out_relerr_abslog:
@@ -539,6 +571,7 @@ def main():
             coeff_bits=args.coeff_bits,
             coeff_frac_bits=args.coeff_frac_bits,
             output_path=Path(args.out_relerr_abslog),
+            use_svg=args.svg,
         )
 
     if args.out_relerr_mae_bar:
@@ -548,6 +581,7 @@ def main():
             coeff_bits=args.coeff_bits,
             coeff_frac_bits=args.coeff_frac_bits,
             output_path=Path(args.out_relerr_mae_bar),
+            use_svg=args.svg,
         )
 
 
