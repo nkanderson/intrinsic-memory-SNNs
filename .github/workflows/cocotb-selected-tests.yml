@@ -37,39 +37,51 @@ jobs:
             cd /workspace/tests
 
             echo "[1/12] test_lif"
+            make clean
             make test_lif
 
             echo "[2/12] test_fractional_lif"
+            make clean
             make test_fractional_lif
 
             echo "[3/12] test_bitshift_lif (default mode target)"
+            make clean
             make test_bitshift_lif
 
             echo "[4/12] test_bitshift_lif_mode0"
+            make clean
             make test_bitshift_lif_mode0
 
             echo "[5/12] test_bitshift_lif_mode1"
+            make clean
             make test_bitshift_lif_mode1
 
             echo "[6/12] test_bitshift_lif_mode2"
+            make clean
             make test_bitshift_lif_mode2
 
             echo "[7/12] test_bitshift_lif_mode3"
+            make clean
             make test_bitshift_lif_mode3
 
             echo "[8/12] test_neural_network"
+            make clean
             make test_neural_network
 
             echo "[9/12] test_cartpole_integration"
+            make clean
             make test_cartpole_integration
 
             echo "[10/12] test_cartpole_integration_fractional_hist8"
+            make clean
             make test_cartpole_integration_fractional_hist8
 
             echo "[11/12] test_cartpole_integration_bitshift_custom_slow_decay"
+            make clean
             make test_cartpole_integration_bitshift_custom_slow_decay
 
             echo "[12/12] test_cartpole_integration_fractional"
+            make clean
             make test_cartpole_integration_fractional
           '
 
