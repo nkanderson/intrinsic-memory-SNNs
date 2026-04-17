@@ -33,6 +33,11 @@ module neural_network #(
     parameter NUM_TIMESTEPS = 30,
     // Fixed-point parameters
     parameter DATA_WIDTH = 16,
+    // FC2_OUTPUT_WIDTH is a transport/interface width (not fc2 internal accumulator width).
+    // linear_layer computes in a wider ACCUM_WIDTH, then saturates to OUTPUT_WIDTH.
+    // This width is carried on fc2_output_current -> hl2_currents -> lif.DATA_WIDTH.
+    // Choose the smallest width that avoids FC2 saturation for the target observation set.
+    parameter FC2_OUTPUT_WIDTH = DATA_WIDTH,
     parameter MEMBRANE_WIDTH = 24,
     parameter FRAC_BITS = 13,
     // LIF parameters
@@ -145,6 +150,8 @@ module neural_network #(
     logic hl1_enable;
     logic hl1_spikes [0:HL1_SIZE-1];
     logic signed [MEMBRANE_WIDTH-1:0] hl1_membranes [0:HL1_SIZE-1];  // Not used but kept for completeness
+    logic hl1_busy [0:HL1_SIZE-1];
+    logic hl1_output_valid [0:HL1_SIZE-1];
 
     // Pack spike outputs into vector for fc2
     logic [HL1_SIZE-1:0] hl1_spike_vector;
@@ -168,7 +175,9 @@ module neural_network #(
                 .enable(hl1_enable),
                 .current(hl1_currents[i]),
                 .spike_out(hl1_spikes[i]),
-                .membrane_out(hl1_membranes[i])
+                .membrane_out(hl1_membranes[i]),
+                .busy(hl1_busy[i]),
+                .output_valid(hl1_output_valid[i])
             );
         end
     endgenerate
@@ -177,7 +186,7 @@ module neural_network #(
     // fc2 (linear_layer): HL1 spikes → HL2 currents
     // =========================================================================
     logic fc2_start;
-    logic signed [DATA_WIDTH-1:0] fc2_output_current;
+    logic signed [FC2_OUTPUT_WIDTH-1:0] fc2_output_current;
     logic [$clog2(HL2_SIZE)-1:0] fc2_output_idx;
     logic fc2_output_valid;
     logic fc2_done;
@@ -195,6 +204,7 @@ module neural_network #(
         .NUM_INPUTS(HL1_SIZE),
         .NUM_OUTPUTS(HL2_SIZE),
         .DATA_WIDTH(DATA_WIDTH),
+        .OUTPUT_WIDTH(FC2_OUTPUT_WIDTH),
         .FRAC_BITS(FRAC_BITS),
         .WEIGHTS_FILE(FC2_WEIGHTS_FILE),
         .BIAS_FILE(FC2_BIAS_FILE)
@@ -214,9 +224,11 @@ module neural_network #(
     // =========================================================================
     logic hl2_clear;
     logic hl2_enable [0:HL2_SIZE-1];  // Individual enable per neuron
-    logic signed [DATA_WIDTH-1:0] hl2_currents [0:HL2_SIZE-1];
+    logic signed [FC2_OUTPUT_WIDTH-1:0] hl2_currents [0:HL2_SIZE-1];
     logic hl2_spikes [0:HL2_SIZE-1];  // Not used but output for completeness
     logic signed [MEMBRANE_WIDTH-1:0] hl2_membranes [0:HL2_SIZE-1];
+    logic hl2_busy [0:HL2_SIZE-1];
+    logic hl2_output_valid [0:HL2_SIZE-1];
 
     // Save fc2 outputs as they stream out
     always_ff @(posedge clk or posedge reset) begin
@@ -249,19 +261,19 @@ module neural_network #(
     logic [TIMESTEP_WIDTH-1:0] q_read_timestep;
     logic signed [MEMBRANE_WIDTH-1:0] membrane_to_q [0:HL2_SIZE-1];
 
-    // Delayed write enable for membrane buffer (captures new membrane after LIF computes)
-    logic hl2_enable_delayed [0:HL2_SIZE-1];
+    // Delay output_valid by 1 cycle so membrane_buf captures updated membrane_out value.
+    logic hl2_output_valid_delayed [0:HL2_SIZE-1];
     logic [TIMESTEP_WIDTH-1:0] membrane_write_timestep_delayed;
 
     always_ff @(posedge clk or posedge reset) begin
         if (reset) begin
             for (int i = 0; i < HL2_SIZE; i++) begin
-                hl2_enable_delayed[i] <= 1'b0;
+                hl2_output_valid_delayed[i] <= 1'b0;
             end
             membrane_write_timestep_delayed <= '0;
         end else begin
             for (int i = 0; i < HL2_SIZE; i++) begin
-                hl2_enable_delayed[i] <= hl2_enable[i];
+                hl2_output_valid_delayed[i] <= hl2_output_valid[i];
             end
             membrane_write_timestep_delayed <= membrane_write_timestep;
         end
@@ -273,7 +285,7 @@ module neural_network #(
             lif #(
                 .THRESHOLD(THRESHOLD),
                 .BETA(BETA),
-                .DATA_WIDTH(DATA_WIDTH),
+                .DATA_WIDTH(FC2_OUTPUT_WIDTH),
                 .MEMBRANE_WIDTH(MEMBRANE_WIDTH)
             ) hl2_lif (
                 .clk(clk),
@@ -282,10 +294,12 @@ module neural_network #(
                 .enable(hl2_enable[i]),
                 .current(hl2_currents[i]),
                 .spike_out(hl2_spikes[i]),
-                .membrane_out(hl2_membranes[i])
+                .membrane_out(hl2_membranes[i]),
+                .busy(hl2_busy[i]),
+                .output_valid(hl2_output_valid[i])
             );
 
-            // Per-neuron membrane buffer with writes delayed by 1 cycle to capture new membrane value after LIF processing
+            // Per-neuron membrane buffer writes are aligned to delayed output_valid.
             neuron_membrane_buffer #(
                 .NUM_TIMESTEPS(NUM_TIMESTEPS),
                 .MEMBRANE_WIDTH(MEMBRANE_WIDTH)
@@ -293,7 +307,7 @@ module neural_network #(
                 .clk(clk),
                 .reset(reset),
                 .clear(hl2_clear),
-                .write_en(hl2_enable_delayed[i]),
+                .write_en(hl2_output_valid_delayed[i]),
                 .write_timestep(membrane_write_timestep_delayed),
                 .membrane_in(hl2_membranes[i]),
                 .read_timestep(q_read_timestep),
@@ -306,7 +320,7 @@ module neural_network #(
     // HL2 enable logic: enable the neuron one cycle after fc2 outputs its current
     always_comb begin
         for (int i = 0; i < HL2_SIZE; i++) begin
-            hl2_enable[i] = hl2_process_valid && (hl2_process_idx == i[$clog2(HL2_SIZE)-1:0]);
+            hl2_enable[i] = hl2_process_valid && (hl2_process_idx == i[$clog2(HL2_SIZE)-1:0]) && !hl2_busy[i];
         end
     end
 

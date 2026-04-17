@@ -232,6 +232,8 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network.NUM_INPUTS=4 -Pneural_network.HL1_SIZE=64
         COMPILE_ARGS += -Pneural_network.HL2_SIZE=16 -Pneural_network.NUM_ACTIONS=2
         COMPILE_ARGS += -Pneural_network.NUM_TIMESTEPS=30 -Pneural_network.Q_BATCH_SIZE=4
+        # FC2 output transport width must be wide enough to avoid clipping before FC_OUT.
+        COMPILE_ARGS += -Pneural_network.FC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fc1_weights.mem\"
         COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE=\"$(PWD)/weights/fc1_bias.mem\"
         COMPILE_ARGS += -Pneural_network.FC2_WEIGHTS_FILE=\"$(PWD)/weights/fc2_weights.mem\"
