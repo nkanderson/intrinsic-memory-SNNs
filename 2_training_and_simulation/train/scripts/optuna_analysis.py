@@ -129,6 +129,40 @@ def analyze(study: optuna.study.Study, threshold: float) -> Dict[str, Any]:
             "trial_summaries": trial_summaries,
         }
     )
+    # For studies that reference "leaky", also include the smallest-neuron
+    # successful trial(s) in the returned results so callers can consume them
+    # programmatically.
+    try:
+        study_name = (study.study_name or "").lower()
+    except Exception:
+        study_name = ""
+    if "leaky" in study_name:
+        total_candidates = [
+            t for t in trial_summaries if t["total_neurons"] is not None
+        ]
+        if total_candidates:
+            best_smallest_total = min(
+                total_candidates,
+                key=lambda t: (
+                    t["total_neurons"],
+                    -float(t["value"]),
+                    t["history"] if t["history"] is not None else 10**9,
+                    t["trial_number"],
+                ),
+            )
+            best_smallest_total_history_first = min(
+                total_candidates,
+                key=lambda t: (
+                    t["total_neurons"],
+                    t["history"] if t["history"] is not None else 10**9,
+                    -float(t["value"]),
+                    t["trial_number"],
+                ),
+            )
+            results["best_smallest_total"] = best_smallest_total
+            results["best_smallest_total_history_first"] = (
+                best_smallest_total_history_first
+            )
     return results
 
 
