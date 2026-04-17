@@ -1,0 +1,52 @@
+Fractional LIF Demo Power Metrics (onehot-fsm)
+==============================================
+
+Design: top_fractional_lif_demo
+Device: xc7a100tcsg324-1
+Flow state: Routed (vectorless power estimate)
+Vivado report date: Fri Apr 17 13:55:51 2026
+
+Primary source report:
+- /home/stonepine/intrinsic-memory-SNNs/1_design_space/results/fractional_lif/vivado_project/top_fractional_lif_demo.runs/impl_1/top_fractional_lif_demo_power_routed.rpt
+
+1) Summary (from report_power)
+------------------------------
+- Total On-Chip Power (W): 0.088
+- Dynamic (W): 0.004
+- Device Static (W): 0.084
+- Junction Temperature (C): 25.4
+- Effective TJA (C/W): 4.6
+- Max Ambient (C): 84.6
+- Confidence Level: Medium
+
+2) On-Chip Component Breakdown
+------------------------------
+- Clocks:        0.003 W
+- Slice Logic:  <0.001 W
+- Signals:      <0.001 W
+- DSPs:         <0.001 W
+- I/O:          <0.001 W
+- Static Power:  0.084 W
+
+3) Power Supply Summary (selected rails)
+----------------------------------------
+- Vccint:    1.000 V, 0.019 A total (0.004 A dynamic, 0.015 A static)
+- Vccaux:    1.800 V, 0.018 A total
+- Vcco33:    3.300 V, 0.000 A total
+- Vccadc:    1.800 V, 0.020 A total
+
+4) Comparison vs previous baseline file
+---------------------------------------
+Compared against:
+- /home/stonepine/intrinsic-memory-SNNs/1_design_space/metrics/power_fractional_lif.txt
+
+Delta summary:
+- Total On-Chip Power: 0.103 -> 0.088 W  (Δ -0.015 W, -14.6%)
+- Dynamic Power:       0.006 -> 0.004 W  (Δ -0.002 W, -33.3%)
+- Device Static:       0.097 -> 0.084 W  (Δ -0.013 W, -13.4%)
+- Junction Temp:       25.5 -> 25.4 C    (Δ -0.1 C)
+
+Notes:
+- This remains a vectorless estimate (no SAIF/VCD), confidence level is Medium.
+- Internal and I/O activity assumptions can materially shift dynamic estimates.
+

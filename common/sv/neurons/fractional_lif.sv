@@ -69,14 +69,16 @@ module fractional_lif #(
     localparam signed [MEMBRANE_WIDTH-1:0] MEMBRANE_MAX = {1'b0, {(MEMBRANE_WIDTH-1){1'b1}}};
     localparam signed [MEMBRANE_WIDTH-1:0] MEMBRANE_MIN = {1'b1, {(MEMBRANE_WIDTH-1){1'b0}}};
 
-    typedef enum logic [1:0] {
-        ST_IDLE     = 2'b00,
-        ST_MAC      = 2'b01,
-        ST_FINALIZE = 2'b10
+    typedef enum logic [4:0] {
+        ST_IDLE         = 5'b00001,
+        ST_MAC          = 5'b00010,
+        ST_PREP_NUM     = 5'b00100,
+        ST_MUL_DIV      = 5'b01000,
+        ST_FINALIZE     = 5'b10000
     } state_t;
 
     // Internal state
-    state_t state;
+    (* fsm_encoding = "one_hot" *) state_t state;
     logic signed [MEMBRANE_WIDTH-1:0] membrane_potential;
     logic spike_prev;
 
@@ -101,13 +103,15 @@ module fractional_lif #(
     logic signed [HISTORY_SUM_WIDTH-1:0] mac_product_ext;
     logic signed [HISTORY_SUM_WIDTH-1:0] mac_acc_next;
 
-    // Finalize stage combinational helper signals
+    // Pipeline combinational helper signals
     logic signed [MEMBRANE_WIDTH-1:0] reset_subtract;
-    (* use_dsp = "yes" *) logic signed [SCALED_HISTORY_WIDTH-1:0] scaled_history_mult;
-    logic signed [SCALED_HISTORY_WIDTH-1:0] scaled_history;
-    logic signed [NUMERATOR_WIDTH-1:0] numerator;
-    (* use_dsp = "yes" *) logic signed [SCALED_RESULT_WIDTH-1:0] scaled_result;
-    logic signed [SCALED_RESULT_WIDTH-1:0] membrane_pre_reset;
+    (* use_dsp = "yes" *) logic signed [SCALED_HISTORY_WIDTH-1:0] prep_scaled_history_mult;
+    logic signed [SCALED_HISTORY_WIDTH-1:0] prep_scaled_history;
+    logic signed [NUMERATOR_WIDTH-1:0] prep_numerator;
+    logic signed [NUMERATOR_WIDTH-1:0] numerator_reg;
+    (* use_dsp = "yes" *) logic signed [SCALED_RESULT_WIDTH-1:0] mul_scaled_result;
+    logic signed [SCALED_RESULT_WIDTH-1:0] mul_membrane_pre_reset;
+    logic signed [SCALED_RESULT_WIDTH-1:0] membrane_pre_reset_reg;
     logic signed [SCALED_RESULT_WIDTH-1:0] membrane_after_reset;
     logic signed [SCALED_RESULT_WIDTH-1:0] membrane_max_ext;
     logic signed [SCALED_RESULT_WIDTH-1:0] membrane_min_ext;
@@ -135,19 +139,26 @@ module fractional_lif #(
         mac_acc_next = history_sum_acc + mac_product_ext;
     end
 
-    // Finalize stage: V[n] = (I[n] + C*sum) / (C+lambda), then delayed reset subtraction
+    // ST_PREP_NUM stage: compute numerator = I[n] + C * history_sum
+    always_comb begin
+        prep_scaled_history_mult = $signed({1'b0, C_SCALED}) * history_sum_acc;
+        prep_scaled_history = prep_scaled_history_mult >>> (C_SCALED_FRAC_BITS + COEFF_FRAC_BITS);
+
+        prep_numerator = {{(NUMERATOR_WIDTH-MEMBRANE_WIDTH){current_latched[MEMBRANE_WIDTH-1]}}, current_latched} +
+                         {{(NUMERATOR_WIDTH-SCALED_HISTORY_WIDTH){prep_scaled_history[SCALED_HISTORY_WIDTH-1]}}, prep_scaled_history};
+    end
+
+    // ST_MUL_DIV stage: divide by (C+lambda) using INV_DENOM reciprocal
+    always_comb begin
+        mul_scaled_result = numerator_reg * $signed({1'b0, INV_DENOM});
+        mul_membrane_pre_reset = mul_scaled_result >>> INV_DENOM_FRAC_BITS;
+    end
+
+    // ST_FINALIZE stage: delayed reset subtraction, saturation, spike generation
     always_comb begin
         reset_subtract = spike_prev ? MEMBRANE_WIDTH'($signed(THRESHOLD)) : '0;
 
-        scaled_history_mult = $signed({1'b0, C_SCALED}) * history_sum_acc;
-        scaled_history = scaled_history_mult >>> (C_SCALED_FRAC_BITS + COEFF_FRAC_BITS);
-
-        numerator = {{(NUMERATOR_WIDTH-MEMBRANE_WIDTH){current_latched[MEMBRANE_WIDTH-1]}}, current_latched} +
-                    {{(NUMERATOR_WIDTH-SCALED_HISTORY_WIDTH){scaled_history[SCALED_HISTORY_WIDTH-1]}}, scaled_history};
-
-        scaled_result = numerator * $signed({1'b0, INV_DENOM});
-        membrane_pre_reset = scaled_result >>> INV_DENOM_FRAC_BITS;
-        membrane_after_reset = membrane_pre_reset -
+        membrane_after_reset = membrane_pre_reset_reg -
                                {{(SCALED_RESULT_WIDTH-MEMBRANE_WIDTH){reset_subtract[MEMBRANE_WIDTH-1]}}, reset_subtract};
 
         membrane_max_ext = {{(SCALED_RESULT_WIDTH-MEMBRANE_WIDTH){MEMBRANE_MAX[MEMBRANE_WIDTH-1]}}, MEMBRANE_MAX};
@@ -177,6 +188,8 @@ module fractional_lif #(
             current_latched <= '0;
             mac_index <= '0;
             history_sum_acc <= '0;
+            numerator_reg <= '0;
+            membrane_pre_reset_reg <= '0;
 
             for (int i = 0; i < HISTORY_LENGTH; i++) begin
                 history_buffer[i] <= '0;
@@ -192,6 +205,8 @@ module fractional_lif #(
             current_latched <= '0;
             mac_index <= '0;
             history_sum_acc <= '0;
+            numerator_reg <= '0;
+            membrane_pre_reset_reg <= '0;
 
             for (int i = 0; i < HISTORY_LENGTH; i++) begin
                 history_buffer[i] <= '0;
@@ -206,10 +221,10 @@ module fractional_lif #(
                         history_sum_acc <= '0;
                         mac_index <= '0;
 
-                        if (HISTORY_LENGTH <= 1) begin
-                            state <= ST_FINALIZE;
-                        end else begin
+                        if (HISTORY_LENGTH > 1) begin
                             state <= ST_MAC;
+                        end else begin
+                            state <= ST_PREP_NUM;
                         end
                     end
                 end
@@ -217,10 +232,20 @@ module fractional_lif #(
                 ST_MAC: begin
                     history_sum_acc <= mac_acc_next;
                     if (mac_index == ADDR_WIDTH'(HISTORY_LENGTH - 2)) begin
-                        state <= ST_FINALIZE;
+                        state <= ST_PREP_NUM;
                     end else begin
                         mac_index <= mac_index + 1'b1;
                     end
+                end
+
+                ST_PREP_NUM: begin
+                    numerator_reg <= prep_numerator;
+                    state <= ST_MUL_DIV;
+                end
+
+                ST_MUL_DIV: begin
+                    membrane_pre_reset_reg <= mul_membrane_pre_reset;
+                    state <= ST_FINALIZE;
                 end
 
                 ST_FINALIZE: begin
