@@ -28,6 +28,8 @@ module top_bitshift_lif_demo (
     logic signed [DATA_WIDTH-1:0] current_in;
     logic spike;
     logic signed [MEMBRANE_WIDTH-1:0] membrane;
+    logic neuron_busy;
+    logic neuron_output_valid;
 
     logic [15:0] spike_count;
     logic [RUN_CNT_W-1:0] step_count;
@@ -88,7 +90,9 @@ module top_bitshift_lif_demo (
         .enable(step_pulse),
         .current(current_in),
         .spike_out(spike),
-        .membrane_out(membrane)
+        .membrane_out(membrane),
+        .busy(neuron_busy),
+        .output_valid(neuron_output_valid)
     );
 
     always_ff @(posedge CLK100MHZ) begin

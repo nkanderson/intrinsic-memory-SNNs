@@ -2,6 +2,7 @@
 
 set script_dir [file dirname [file normalize [info script]]]
 set root_dir [file normalize [file join $script_dir ..]]
+set common_neuron_dir [file normalize [file join $root_dir .. common sv neurons]]
 
 set proj_name top_fractional_lif_demo
 set proj_dir [file join $root_dir results fractional_lif vivado_project]
@@ -14,7 +15,7 @@ file mkdir $proj_dir
 create_project $proj_name $proj_dir -part xc7a100tcsg324-1 -force
 set_property target_language Verilog [current_project]
 
-add_files [file join $root_dir sv fractional_lif.sv]
+add_files [file join $common_neuron_dir fractional_lif.sv]
 add_files [file join $root_dir sv hex7seg.sv]
 add_files [file join $root_dir sv top_fractional_lif_demo.sv]
 add_files [file join $root_dir sv gl_coefficients.mem]

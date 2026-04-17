@@ -173,7 +173,17 @@ async def step_dut(dut, current_signed: int):
     dut.enable.value = 1
     await RisingEdge(dut.clk)
     dut.enable.value = 0
-    await RisingEdge(dut.clk)
+
+    if int(dut.output_valid.value) == 0:
+        max_wait_cycles = 512
+        for _ in range(max_wait_cycles):
+            await RisingEdge(dut.clk)
+            if int(dut.output_valid.value) == 1:
+                break
+        else:
+            raise AssertionError(
+                f"Timed out waiting for output_valid after {max_wait_cycles} cycles"
+            )
 
     spike = int(dut.spike_out.value)
     membrane = signal_to_signed(int(dut.membrane_out.value), MEMBRANE_WIDTH)

@@ -27,7 +27,9 @@ module lif #(
     input wire enable,                                    // Process one timestep
     input wire signed [DATA_WIDTH-1:0] current,          // Input current (QS2.13 format)
     output logic spike_out,                               // Spike output this timestep
-    output logic signed [MEMBRANE_WIDTH-1:0] membrane_out // Membrane potential after update
+    output logic signed [MEMBRANE_WIDTH-1:0] membrane_out, // Membrane potential after update
+    output logic busy,                                    // High while update is in progress
+    output logic output_valid                             // 1-cycle pulse when outputs update
 );
 
     // Internal state
@@ -76,29 +78,32 @@ module lif #(
 
     // Sequential logic - update state on clock edge
     always_ff @(posedge clk or posedge reset) begin
-        // Default: hold state when not enabled
-        membrane_potential <= membrane_potential;
-        spike_prev <= spike_prev;
-        spike_out <= spike_out;
-        membrane_out <= membrane_out;
         if (reset) begin
             membrane_potential <= '0;
             spike_prev <= 1'b0;
             spike_out <= 1'b0;
             membrane_out <= '0;
+            output_valid <= 1'b0;
         end else if (clear) begin
             // Synchronous clear for new inference (if needed)
             membrane_potential <= '0;
             spike_prev <= 1'b0;
             spike_out <= 1'b0;
             membrane_out <= '0;
+            output_valid <= 1'b0;
         end else if (enable) begin
             // Process one timestep
             membrane_potential <= next_membrane;
             spike_prev <= next_spike;
             spike_out <= next_spike;
             membrane_out <= next_membrane;
+            output_valid <= 1'b1;
+        end else begin
+            output_valid <= 1'b0;
         end
     end
+
+    // Single-cycle neuron is always ready to accept a new request.
+    assign busy = 1'b0;
 
 endmodule

@@ -65,22 +65,36 @@ async def reset_dut(dut):
     await ClockCycles(dut.clk, 2)
 
 
+async def step_dut(dut, current_value: int, max_wait_cycles: int = 512):
+    """Apply one timestep and sample outputs on `output_valid`."""
+    dut.current.value = current_value
+    dut.enable.value = 1
+    await RisingEdge(dut.clk)
+    dut.enable.value = 0
+
+    if int(dut.output_valid.value) == 0:
+        for _ in range(max_wait_cycles):
+            await RisingEdge(dut.clk)
+            if int(dut.output_valid.value) == 1:
+                break
+        else:
+            raise AssertionError(
+                f"Timed out waiting for output_valid after {max_wait_cycles} cycles"
+            )
+
+    spike = int(dut.spike_out.value)
+    membrane = int(dut.membrane_out.value)
+    return spike, membrane
+
+
 async def run_timesteps(dut, current_value: int, num_timesteps: int = NUM_TIMESTEPS):
     """Run the LIF for multiple timesteps with the same current.
 
     Returns list of (spike, membrane) tuples for each timestep.
     """
     results = []
-    dut.current.value = current_value
-
     for _ in range(num_timesteps):
-        dut.enable.value = 1
-        await RisingEdge(dut.clk)
-        dut.enable.value = 0
-        await RisingEdge(dut.clk)  # Wait for registered outputs
-
-        spike = int(dut.spike_out.value)
-        membrane = int(dut.membrane_out.value)
+        spike, membrane = await step_dut(dut, current_value)
         results.append((spike, membrane))
 
     return results
@@ -381,13 +395,7 @@ async def test_lif_enable_hold(dut):
     await reset_dut(dut)
 
     # Run one timestep with significant input
-    dut.current.value = float_to_fixed(0.5)
-    dut.enable.value = 1
-    await RisingEdge(dut.clk)
-    dut.enable.value = 0
-    await RisingEdge(dut.clk)
-
-    membrane_after_enable = int(dut.membrane_out.value)
+    _, membrane_after_enable = await step_dut(dut, float_to_fixed(0.5))
     dut._log.info(
         f"Membrane after enable: {membrane_to_float(membrane_after_enable):.4f}"
     )
@@ -420,14 +428,7 @@ async def test_lif_varying_current(dut):
 
     results = []
     for i, current in enumerate(currents):
-        dut.current.value = float_to_fixed(current)
-        dut.enable.value = 1
-        await RisingEdge(dut.clk)
-        dut.enable.value = 0
-        await RisingEdge(dut.clk)
-
-        spike = int(dut.spike_out.value)
-        membrane = int(dut.membrane_out.value)
+        spike, membrane = await step_dut(dut, float_to_fixed(current))
         results.append((spike, membrane))
         dut._log.info(
             f"Timestep {i}: current={current:.2f}, spike={spike}, "

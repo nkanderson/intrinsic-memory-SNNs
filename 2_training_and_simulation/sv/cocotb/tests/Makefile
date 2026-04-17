@@ -20,9 +20,13 @@
 # Default test module
 TEST ?= lif
 
+# Shared neuron source location (canonical, in-container volume path)
+# docker-compose mounts ../../../common/sv/neurons -> /workspace/common/neurons
+COMMON_NEURON_DIR ?= /workspace/common/neurons
+
 # Configuration based on TEST variable
 ifeq ($(TEST),lif)
-    VERILOG_SOURCES = $(PWD)/../sv/lif.sv
+    VERILOG_SOURCES = $(COMMON_NEURON_DIR)/lif.sv
     TOPLEVEL = lif
     MODULE = test_lif
 else ifeq ($(TEST),lif_timestep)
@@ -30,31 +34,31 @@ else ifeq ($(TEST),lif_timestep)
     TOPLEVEL = lif_timestep
     MODULE = test_lif_timestep
 else ifeq ($(TEST),fractional_lif)
-    VERILOG_SOURCES = $(PWD)/../sv/fractional_lif.sv
+    VERILOG_SOURCES = $(COMMON_NEURON_DIR)/fractional_lif.sv
     TOPLEVEL = fractional_lif
     MODULE = test_fractional_lif
 else ifeq ($(TEST),fractional_lif_hist64)
-    VERILOG_SOURCES = $(PWD)/../sv/fractional_lif.sv
+    VERILOG_SOURCES = $(COMMON_NEURON_DIR)/fractional_lif.sv
     TOPLEVEL = fractional_lif
     MODULE = test_fractional_lif
 else ifeq ($(TEST),bitshift_lif)
-    VERILOG_SOURCES = $(PWD)/../sv/bitshift_lif.sv
+    VERILOG_SOURCES = $(COMMON_NEURON_DIR)/bitshift_lif.sv
     TOPLEVEL = bitshift_lif
     MODULE = test_bitshift_lif
 else ifeq ($(TEST),bitshift_lif_mode0)
-    VERILOG_SOURCES = $(PWD)/../sv/bitshift_lif.sv
+    VERILOG_SOURCES = $(COMMON_NEURON_DIR)/bitshift_lif.sv
     TOPLEVEL = bitshift_lif
     MODULE = test_bitshift_lif
 else ifeq ($(TEST),bitshift_lif_mode1)
-    VERILOG_SOURCES = $(PWD)/../sv/bitshift_lif.sv
+    VERILOG_SOURCES = $(COMMON_NEURON_DIR)/bitshift_lif.sv
     TOPLEVEL = bitshift_lif
     MODULE = test_bitshift_lif
 else ifeq ($(TEST),bitshift_lif_mode2)
-    VERILOG_SOURCES = $(PWD)/../sv/bitshift_lif.sv
+    VERILOG_SOURCES = $(COMMON_NEURON_DIR)/bitshift_lif.sv
     TOPLEVEL = bitshift_lif
     MODULE = test_bitshift_lif
 else ifeq ($(TEST),bitshift_lif_mode3)
-    VERILOG_SOURCES = $(PWD)/../sv/bitshift_lif.sv
+    VERILOG_SOURCES = $(COMMON_NEURON_DIR)/bitshift_lif.sv
     TOPLEVEL = bitshift_lif
     MODULE = test_bitshift_lif
 else ifeq ($(TEST),linear_layer)
@@ -84,7 +88,7 @@ else ifeq ($(TEST),q_accumulator)
 else ifeq ($(TEST),neural_network)
     VERILOG_SOURCES = $(PWD)/../sv/neural_network.sv \
                       $(PWD)/../sv/linear_layer.sv \
-                      $(PWD)/../sv/lif.sv \
+                      $(COMMON_NEURON_DIR)/lif.sv \
                       $(PWD)/../sv/neuron_membrane_buffer.sv \
                       $(PWD)/../sv/q_accumulator.sv
     TOPLEVEL = neural_network
@@ -93,7 +97,7 @@ else ifeq ($(TEST),cartpole_integration)
     # Full model integration test with gymnasium
     VERILOG_SOURCES = $(PWD)/../sv/neural_network.sv \
                       $(PWD)/../sv/linear_layer.sv \
-                      $(PWD)/../sv/lif.sv \
+                      $(COMMON_NEURON_DIR)/lif.sv \
                       $(PWD)/../sv/neuron_membrane_buffer.sv \
                       $(PWD)/../sv/q_accumulator.sv
     TOPLEVEL = neural_network
@@ -102,7 +106,7 @@ else ifeq ($(TEST),cartpole_integration_fractional)
     # Full model integration test with gymnasium using fractional LIF neurons
     VERILOG_SOURCES = $(PWD)/../sv/neural_network_fractional.sv \
                       $(PWD)/../sv/linear_layer.sv \
-                      $(PWD)/../sv/fractional_lif.sv \
+                      $(COMMON_NEURON_DIR)/fractional_lif.sv \
                       $(PWD)/../sv/neuron_membrane_buffer.sv \
                       $(PWD)/../sv/q_accumulator.sv
     TOPLEVEL = neural_network_fractional
@@ -111,7 +115,7 @@ else ifeq ($(TEST),cartpole_integration_fractional_hist8)
     # Full model integration test with gymnasium using fractional LIF neurons (history_length=8)
     VERILOG_SOURCES = $(PWD)/../sv/neural_network_fractional.sv \
                       $(PWD)/../sv/linear_layer.sv \
-                      $(PWD)/../sv/fractional_lif.sv \
+                      $(COMMON_NEURON_DIR)/fractional_lif.sv \
                       $(PWD)/../sv/neuron_membrane_buffer.sv \
                       $(PWD)/../sv/q_accumulator.sv
     TOPLEVEL = neural_network_fractional
@@ -120,7 +124,7 @@ else ifeq ($(TEST),cartpole_integration_fractional_hist256)
     # Full model integration test with gymnasium using fractional LIF neurons (history_length=256)
     VERILOG_SOURCES = $(PWD)/../sv/neural_network_fractional.sv \
                       $(PWD)/../sv/linear_layer.sv \
-                      $(PWD)/../sv/fractional_lif.sv \
+                      $(COMMON_NEURON_DIR)/fractional_lif.sv \
                       $(PWD)/../sv/neuron_membrane_buffer.sv \
                       $(PWD)/../sv/q_accumulator.sv
     TOPLEVEL = neural_network_fractional
@@ -129,7 +133,7 @@ else ifeq ($(TEST),cartpole_integration_bitshift_custom_slow_decay)
     # Full model integration test with gymnasium using bitshift custom_slow_decay neurons
     VERILOG_SOURCES = $(PWD)/../sv/neural_network_bitshift.sv \
                       $(PWD)/../sv/linear_layer.sv \
-                      $(PWD)/../sv/bitshift_lif.sv \
+                      $(COMMON_NEURON_DIR)/bitshift_lif.sv \
                       $(PWD)/../sv/neuron_membrane_buffer.sv \
                       $(PWD)/../sv/q_accumulator.sv
     TOPLEVEL = neural_network_bitshift

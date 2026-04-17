@@ -17,6 +17,8 @@ services:
       # Mount parent directory (cartpole_snn/sv) for SystemVerilog source files
       # Read-only mount - Docker will detect changes to files on host and reflect them in container
       - ..:/workspace/sv:ro
+      # Mount canonical shared neuron RTL directory from repo root
+      - ../../../common/sv/neurons:/workspace/common/neurons:ro
       # Mount test directory for Python test files
       # Read-write allows container to create __pycache__ and pytest artifacts
       # Docker detects changes to .py test files on host
@@ -29,6 +31,8 @@ services:
       # Cocotb configuration
       - COCOTB_REDUCED_LOG_FMT=1
       - PYTHONUNBUFFERED=1
+      # Canonical shared neuron source directory (mounted above)
+      - COMMON_NEURON_DIR=/workspace/common/neurons
       # Simulator configuration
       - SIM=verilator
       - WAVES=1
