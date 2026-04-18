@@ -1,0 +1,30 @@
+Fractional LIF Guard-Bit Sweep Metrics
+======================================
+
+Design: top_fractional_lif_demo
+Device: xc7a100tcsg324-1
+Clock target: 100 MHz (10.0 ns)
+
+Columns:
+- Run: short identifier for sweep point
+- ACC_GB: FRACTIONAL_ACCUM_GUARD_BITS
+- NUM_GB: FRACTIONAL_NUMERATOR_GUARD_BITS
+- WNS/TNS: from impl_timing_summary.rpt
+- LUT/FF/DSP: from synth_utilization.rpt
+- P_total/P_dyn/P_static: from power_routed.rpt
+- Notes: optional context
+
+| Run      | ACC_GB | NUM_GB | WNS (ns) | TNS (ns) | LUT | FF   | DSP | P_total (W) | P_dyn (W) | P_static (W) | Notes |
+|----------|--------|--------|----------|----------|-----|------|-----|-------------|-----------|--------------|-------|
+| baseline | 5      | 1      | -0.399   | -6.722   | 700 | 1054 | 5   | 0.088       | 0.004     | 0.084        | Post-FSM-split default guard bits |
+| acc4     | 4      | 1      | -0.330   | -5.232   | 694 | 1051 | 5   | 0.088       | 0.004     | 0.084        | Improved timing vs baseline; minor LUT/FF reduction |
+| acc3     | 3      | 1      | -0.015   | -0.017   | 690 | 1048 | 5   | 0.088       | 0.004     | 0.084        | Near timing closure at 100 MHz; best result so far |
+| acc2     | 2      | 1      | -0.741   | -14.923  | 682 | 1045 | 5   | 0.088       | 0.004     | 0.084        | Timing regressed significantly despite slightly lower LUT/FF |
+| acc3_num2| 3      | 2      | -0.246   | -1.961   | 693 | 1050 | 5   | 0.088       | 0.004     | 0.084        | Worse than acc3/num1; extra numerator guard bit hurt timing |
+
+Sources used for baseline:
+- results/fractional_lif/impl_timing_summary.rpt
+- results/fractional_lif/synth_utilization.rpt
+- results/fractional_lif/vivado_project/top_fractional_lif_demo.runs/impl_1/top_fractional_lif_demo_power_routed.rpt
+- results/fractional_lif/vivado_project/top_fractional_lif_demo.runs/synth_1/runme.log
+

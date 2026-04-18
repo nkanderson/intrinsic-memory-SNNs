@@ -9,6 +9,16 @@ set proj_dir [file join $root_dir results bitshift_lif vivado_project]
 set top_name top_bitshift_lif_demo
 set results_dir [file join $root_dir results bitshift_lif]
 
+# Optional guard-bit overrides (can be passed via env vars)
+set bitshift_accum_guard_bits 5
+set bitshift_numerator_guard_bits 1
+if {[info exists ::env(BITSHIFT_ACCUM_GUARD_BITS)]} {
+    set bitshift_accum_guard_bits $::env(BITSHIFT_ACCUM_GUARD_BITS)
+}
+if {[info exists ::env(BITSHIFT_NUMERATOR_GUARD_BITS)]} {
+    set bitshift_numerator_guard_bits $::env(BITSHIFT_NUMERATOR_GUARD_BITS)
+}
+
 file mkdir $results_dir
 file mkdir $proj_dir
 
@@ -21,7 +31,11 @@ add_files [file join $root_dir sv top_bitshift_lif_demo.sv]
 add_files -fileset constrs_1 [file join $root_dir sv top_lif_demo.xdc]
 
 set_property top $top_name [current_fileset]
+set_property generic [format "BITSHIFT_ACCUM_GUARD_BITS=%s BITSHIFT_NUMERATOR_GUARD_BITS=%s" \
+    $bitshift_accum_guard_bits $bitshift_numerator_guard_bits] [current_fileset]
 update_compile_order -fileset sources_1
+
+puts "INFO: Guard-bit config: BITSHIFT_ACCUM_GUARD_BITS=$bitshift_accum_guard_bits BITSHIFT_NUMERATOR_GUARD_BITS=$bitshift_numerator_guard_bits"
 
 launch_runs synth_1 -jobs 8
 wait_on_run synth_1

@@ -9,6 +9,16 @@ set proj_dir [file join $root_dir results fractional_lif vivado_project]
 set top_name top_fractional_lif_demo
 set results_dir [file join $root_dir results fractional_lif]
 
+# Optional guard-bit overrides (can be passed via env vars)
+set fractional_accum_guard_bits 3
+set fractional_numerator_guard_bits 1
+if {[info exists ::env(FRACTIONAL_ACCUM_GUARD_BITS)]} {
+    set fractional_accum_guard_bits $::env(FRACTIONAL_ACCUM_GUARD_BITS)
+}
+if {[info exists ::env(FRACTIONAL_NUMERATOR_GUARD_BITS)]} {
+    set fractional_numerator_guard_bits $::env(FRACTIONAL_NUMERATOR_GUARD_BITS)
+}
+
 file mkdir $results_dir
 file mkdir $proj_dir
 
@@ -22,7 +32,11 @@ add_files [file join $root_dir sv gl_coefficients.mem]
 add_files -fileset constrs_1 [file join $root_dir sv top_lif_demo.xdc]
 
 set_property top $top_name [current_fileset]
+set_property generic [format "FRACTIONAL_ACCUM_GUARD_BITS=%s FRACTIONAL_NUMERATOR_GUARD_BITS=%s" \
+    $fractional_accum_guard_bits $fractional_numerator_guard_bits] [current_fileset]
 update_compile_order -fileset sources_1
+
+puts "INFO: Guard-bit config: FRACTIONAL_ACCUM_GUARD_BITS=$fractional_accum_guard_bits FRACTIONAL_NUMERATOR_GUARD_BITS=$fractional_numerator_guard_bits"
 
 launch_runs synth_1 -jobs 8
 wait_on_run synth_1

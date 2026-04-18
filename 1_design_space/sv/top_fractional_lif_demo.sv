@@ -1,4 +1,9 @@
-module top_fractional_lif_demo (
+module top_fractional_lif_demo #(
+    // Guard-bit sweep knobs for synthesis studies.
+    // Defaults match results with best slack time.
+    parameter int FRACTIONAL_ACCUM_GUARD_BITS = 3,
+    parameter int FRACTIONAL_NUMERATOR_GUARD_BITS = 1
+) (
     input  wire        CLK100MHZ,
     input  wire [1:0]  sw,
     output logic [15:0] LED,
@@ -72,6 +77,8 @@ module top_fractional_lif_demo (
         .DATA_WIDTH(DATA_WIDTH),
         .MEMBRANE_WIDTH(MEMBRANE_WIDTH),
         .HISTORY_LENGTH(32),
+        .ACCUM_GUARD_BITS(FRACTIONAL_ACCUM_GUARD_BITS),
+        .NUMERATOR_GUARD_BITS(FRACTIONAL_NUMERATOR_GUARD_BITS),
         .GL_COEFF_FILE("gl_coefficients.mem")
     ) u_neuron (
         .clk(CLK100MHZ),

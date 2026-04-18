@@ -37,6 +37,16 @@ module fractional_lif #(
     parameter [15:0] INV_DENOM = 16'd58982,
     parameter integer INV_DENOM_FRAC_BITS = 16,
 
+    // Internal precision controls
+    // ACCUM_GUARD_BITS controls accumulation headroom in history_sum_acc.
+    // NUMERATOR_GUARD_BITS controls extra headroom before reciprocal multiply.
+    // Default ACCUM_GUARD_BITS is set to the current best timing/area sweep point.
+    // ACCUM_GUARD_BITS formerly set to $clog2(HISTORY_LENGTH) to prevent overflow
+    // with all-positive inputs, but this is overly conservative for signed values
+    // and typical coefficient magnitudes.
+    parameter integer ACCUM_GUARD_BITS = 3,
+    parameter integer NUMERATOR_GUARD_BITS = 1,
+
     // Coefficient file (GL coefficient magnitudes |g_1| to |g_{H-1}|)
     parameter GL_COEFF_FILE = "gl_coefficients.mem"
 ) (
@@ -57,12 +67,15 @@ module fractional_lif #(
     // Width derivation notes:
     // - product = signed(hist_val) * unsigned(coeff_mag) => MEMBRANE_WIDTH + COEFF_WIDTH + 1 bits
     // - history accumulator adds up to (HISTORY_LENGTH-1) products
+    localparam integer ACCUM_GUARD_BITS_EFF = (ACCUM_GUARD_BITS < 0) ? 0 : ACCUM_GUARD_BITS;
+    localparam integer NUMERATOR_GUARD_BITS_EFF = (NUMERATOR_GUARD_BITS < 0) ? 0 : NUMERATOR_GUARD_BITS;
+
     localparam integer PRODUCT_WIDTH = MEMBRANE_WIDTH + COEFF_WIDTH + 1;
-    localparam integer HISTORY_SUM_WIDTH = PRODUCT_WIDTH + $clog2(HISTORY_LENGTH);
+    localparam integer HISTORY_SUM_WIDTH = PRODUCT_WIDTH + ACCUM_GUARD_BITS_EFF;
     localparam integer C_SCALED_WIDTH = $bits(C_SCALED) + 1;
     localparam integer SCALED_HISTORY_WIDTH = HISTORY_SUM_WIDTH + C_SCALED_WIDTH;
     localparam integer NUMERATOR_INPUT_WIDTH = (SCALED_HISTORY_WIDTH > MEMBRANE_WIDTH) ? SCALED_HISTORY_WIDTH : MEMBRANE_WIDTH;
-    localparam integer NUMERATOR_WIDTH = NUMERATOR_INPUT_WIDTH + 1;
+    localparam integer NUMERATOR_WIDTH = NUMERATOR_INPUT_WIDTH + NUMERATOR_GUARD_BITS_EFF;
     localparam integer INV_DENOM_WIDTH = $bits(INV_DENOM) + 1;
     localparam integer SCALED_RESULT_WIDTH = NUMERATOR_WIDTH + INV_DENOM_WIDTH;
 

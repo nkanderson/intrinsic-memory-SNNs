@@ -31,7 +31,14 @@ module bitshift_lif #(
   parameter [15:0] C_SCALED = 16'd256,
   parameter integer C_SCALED_FRAC_BITS = 8,
   parameter [15:0] INV_DENOM = 16'd58982,
-  parameter integer INV_DENOM_FRAC_BITS = 16
+  parameter integer INV_DENOM_FRAC_BITS = 16,
+
+  // Internal precision controls
+  // ACCUM_GUARD_BITS controls accumulation headroom in history_sum_acc.
+  // NUMERATOR_GUARD_BITS controls extra headroom before reciprocal multiply.
+  // Defaults preserve behavior validated across multiple configurations and models.
+  parameter integer ACCUM_GUARD_BITS = $clog2(HISTORY_LENGTH),
+  parameter integer NUMERATOR_GUARD_BITS = 1
 ) (
   input wire clk,
   input wire reset,
@@ -45,11 +52,14 @@ module bitshift_lif #(
 );
 
   localparam integer ADDR_WIDTH = $clog2(HISTORY_LENGTH);
-  localparam integer HISTORY_SUM_WIDTH = MEMBRANE_WIDTH + $clog2(HISTORY_LENGTH);
+  localparam integer ACCUM_GUARD_BITS_EFF = (ACCUM_GUARD_BITS < 0) ? 0 : ACCUM_GUARD_BITS;
+  localparam integer NUMERATOR_GUARD_BITS_EFF = (NUMERATOR_GUARD_BITS < 0) ? 0 : NUMERATOR_GUARD_BITS;
+
+  localparam integer HISTORY_SUM_WIDTH = MEMBRANE_WIDTH + ACCUM_GUARD_BITS_EFF;
   localparam integer C_SCALED_WIDTH = $bits(C_SCALED) + 1;
   localparam integer SCALED_HISTORY_WIDTH = HISTORY_SUM_WIDTH + C_SCALED_WIDTH;
   localparam integer NUMERATOR_INPUT_WIDTH = (SCALED_HISTORY_WIDTH > MEMBRANE_WIDTH) ? SCALED_HISTORY_WIDTH : MEMBRANE_WIDTH;
-  localparam integer NUMERATOR_WIDTH = NUMERATOR_INPUT_WIDTH + 1;
+  localparam integer NUMERATOR_WIDTH = NUMERATOR_INPUT_WIDTH + NUMERATOR_GUARD_BITS_EFF;
   localparam integer INV_DENOM_WIDTH = $bits(INV_DENOM) + 1;
   localparam integer SCALED_RESULT_WIDTH = NUMERATOR_WIDTH + INV_DENOM_WIDTH;
 

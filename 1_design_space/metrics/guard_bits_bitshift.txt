@@ -1,0 +1,30 @@
+Bitshift LIF Guard-Bit Sweep Metrics
+====================================
+
+Design: top_bitshift_lif_demo
+Device: xc7a100tcsg324-1
+Clock target: 100 MHz (10.0 ns)
+
+Columns:
+- Run: short identifier for sweep point
+- ACC_GB: BITSHIFT_ACCUM_GUARD_BITS
+- NUM_GB: BITSHIFT_NUMERATOR_GUARD_BITS
+- WNS/TNS: from impl_timing_summary.rpt
+- LUT/FF/DSP: from synth_utilization.rpt
+- P_total/P_dyn/P_static: from power_routed.rpt
+- Notes: optional context
+
+| Run      | ACC_GB | NUM_GB | WNS (ns) | TNS (ns) | LUT | FF   | DSP | P_total (W) | P_dyn (W) | P_static (W) | Notes |
+|----------|--------|--------|----------|----------|-----|------|-----|-------------|-----------|--------------|-------|
+| baseline | 5      | 1      | -0.067   | -0.189   | 960 | 1042 | 0   | 0.087       | 0.004     | 0.084        | Starting defaults after FSM split |
+| acc4     | 4      | 1      | -0.525   | -3.873   | 953 | 1039 | 0   | 0.088       | 0.004     | 0.084        | Timing regressed; slight area reduction |
+| acc3     | 3      | 1      | -0.348   | -2.466   | 939 | 1036 | 0   | 0.088       | 0.004     | 0.084        | Still worse timing than baseline; lower LUT/FF |
+| acc2     | 2      | 1      | -0.095   | -0.106   | 954 | 1033 | 0   | 0.088       | 0.004     | 0.084        | Close to baseline timing; lower FF but slightly worse WNS |
+| acc5_num2| 5      | 2      | -0.319   | -1.660   |1001 | 1044 | 0   | 0.088       | 0.004     | 0.084        | Extra numerator guard bit increases area and hurts timing |
+
+Sources used for baseline:
+- results/bitshift_lif/impl_timing_summary.rpt
+- results/bitshift_lif/synth_utilization.rpt
+- results/bitshift_lif/vivado_project/top_bitshift_lif_demo.runs/impl_1/top_bitshift_lif_demo_power_routed.rpt
+- results/bitshift_lif/vivado_project/top_bitshift_lif_demo.runs/synth_1/runme.log
+
