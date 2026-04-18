@@ -22,12 +22,12 @@ from pathlib import Path
 
 import numpy as np
 
-# Ensure train/ is on sys.path when running this script from train/scripts/
-TRAIN_DIR = Path(__file__).resolve().parents[1]
-if str(TRAIN_DIR) not in sys.path:
-    sys.path.insert(0, str(TRAIN_DIR))
+# Ensure project root is on sys.path when running this script directly.
+ROOT_DIR = Path(__file__).resolve().parents[3]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
-from utils import compute_gl_coefficients
+from common.scripts.utils import compute_gl_coefficients
 
 
 def beta_to_lam(beta: float) -> float:

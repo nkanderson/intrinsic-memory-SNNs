@@ -11,7 +11,14 @@ Inherits from snnTorch Leaky neuron, overriding only the state function.
 import torch
 import snntorch as snn
 from collections import OrderedDict
-from utils import compute_gl_coefficients
+import sys
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from common.scripts.utils import compute_gl_coefficients
 
 
 # Module-level cache for GL coefficients
@@ -24,7 +31,7 @@ def get_gl_coefficients(alpha: float, history_length: int) -> torch.Tensor:
     """
     Get GL coefficients with caching.
 
-    Wraps compute_gl_coefficients from utils with caching to avoid recomputation
+    Wraps compute_gl_coefficients from common.scripts.utils with caching to avoid recomputation
     for the same (alpha, history_length) pairs.
 
     Args:

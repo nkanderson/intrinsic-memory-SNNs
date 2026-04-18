@@ -9,11 +9,13 @@ order derivatives.
 import sys
 from pathlib import Path
 
-# Add parent directory to path to import utils
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Add project root to path for shared imports.
+ROOT_DIR = Path(__file__).resolve().parents[3]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
 # Import after path is set
-from utils import compute_gl_coefficients  # noqa: E402
+from common.scripts.utils import compute_gl_coefficients  # noqa: E402
 
 
 def get_gl_coefficients(alpha: float, history_length: int) -> list[float]:

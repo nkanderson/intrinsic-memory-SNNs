@@ -21,13 +21,17 @@ from typing import List, Tuple, Dict
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Ensure train/ is on sys.path when running this script from train/scripts/
-TRAIN_DIR = Path(__file__).resolve().parents[1]
-if str(TRAIN_DIR) not in sys.path:
-    sys.path.insert(0, str(TRAIN_DIR))
+# Ensure project root is on sys.path when running this script from train/scripts/.
+ROOT_DIR = Path(__file__).resolve().parents[3]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
-from utils import compute_gl_coefficients  # type: ignore
-import history_coefficients as hc  # type: ignore
+from common.scripts.utils import compute_gl_coefficients  # type: ignore
+
+try:
+    import history_coefficients as hc  # type: ignore
+except ModuleNotFoundError:
+    from scripts import history_coefficients as hc  # type: ignore
 
 
 def quantize_magnitude(
