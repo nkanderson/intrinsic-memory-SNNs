@@ -26,7 +26,6 @@ module fractional_lif #(
     parameter HISTORY_LENGTH = 64,           // Number of past values for GL approximation
     parameter COEFF_WIDTH = 16,              // GL coefficient magnitude width (QU1.15 unsigned)
     parameter COEFF_FRAC_BITS = 15,          // Fractional bits in coefficients
-    parameter integer MAC_LANES = 1,         // Parallel GL MAC terms per cycle (>=1)
 
     // Precomputed constants (from generate_coefficients.py)
     // For α=0.5, dt=1.0, β=0.9 (→ λ=0.111): C=1.0, denom=1.111
@@ -64,10 +63,6 @@ module fractional_lif #(
 
     // Address width for history indexing
     localparam integer ADDR_WIDTH = $clog2(HISTORY_LENGTH);
-    localparam integer TERM_COUNT = (HISTORY_LENGTH > 1) ? (HISTORY_LENGTH - 1) : 1;
-    localparam integer MAC_LANES_NONZERO = (MAC_LANES < 1) ? 1 : MAC_LANES;
-    localparam integer MAC_LANES_EFF = (MAC_LANES_NONZERO > TERM_COUNT) ? TERM_COUNT : MAC_LANES_NONZERO;
-
     // Width derivation notes:
     // - product = signed(hist_val) * unsigned(coeff_mag) => MEMBRANE_WIDTH + COEFF_WIDTH + 1 bits
     // - history accumulator adds up to (HISTORY_LENGTH-1) products
@@ -76,8 +71,6 @@ module fractional_lif #(
 
     localparam integer PRODUCT_WIDTH = MEMBRANE_WIDTH + COEFF_WIDTH + 1;
     localparam integer HISTORY_SUM_WIDTH = PRODUCT_WIDTH + ACCUM_GUARD_BITS_EFF;
-    localparam integer MAC_REDUCE_GUARD_BITS = $clog2(MAC_LANES_EFF);
-    localparam integer MAC_BATCH_SUM_WIDTH = HISTORY_SUM_WIDTH + MAC_REDUCE_GUARD_BITS;
     localparam integer C_SCALED_WIDTH = $bits(C_SCALED) + 1;
     localparam integer SCALED_HISTORY_WIDTH = HISTORY_SUM_WIDTH + C_SCALED_WIDTH;
     localparam integer NUMERATOR_INPUT_WIDTH = (SCALED_HISTORY_WIDTH > MEMBRANE_WIDTH) ? SCALED_HISTORY_WIDTH : MEMBRANE_WIDTH;
@@ -114,15 +107,13 @@ module fractional_lif #(
     logic [ADDR_WIDTH-1:0] mac_index;
     logic signed [HISTORY_SUM_WIDTH-1:0] history_sum_acc;
 
-    // MAC combinational helper signals (parallel lanes)
-    logic [ADDR_WIDTH-1:0] mac_term_idx_lane [0:MAC_LANES_EFF-1];
-    logic [ADDR_WIDTH-1:0] mac_k_plus_1_lane [0:MAC_LANES_EFF-1];
-    logic [ADDR_WIDTH-1:0] mac_hist_idx_lane [0:MAC_LANES_EFF-1];
-    logic [COEFF_WIDTH-1:0] mac_coeff_mag_lane [0:MAC_LANES_EFF-1];
-    logic signed [MEMBRANE_WIDTH-1:0] mac_hist_val_lane [0:MAC_LANES_EFF-1];
-    logic mac_lane_active [0:MAC_LANES_EFF-1];
-    (* use_dsp = "yes" *) logic signed [PRODUCT_WIDTH-1:0] mac_product_lane [0:MAC_LANES_EFF-1];
-    logic signed [MAC_BATCH_SUM_WIDTH-1:0] mac_batch_sum;
+    // MAC combinational helper signals
+    logic [ADDR_WIDTH-1:0] mac_k_plus_1;
+    logic [ADDR_WIDTH-1:0] mac_hist_idx;
+    logic signed [MEMBRANE_WIDTH-1:0] mac_hist_val;
+    logic [COEFF_WIDTH-1:0] mac_coeff_mag;
+    (* use_dsp = "yes" *) logic signed [PRODUCT_WIDTH-1:0] mac_product;
+    logic signed [HISTORY_SUM_WIDTH-1:0] mac_product_ext;
     logic signed [HISTORY_SUM_WIDTH-1:0] mac_acc_next;
 
     // Pipeline combinational helper signals
@@ -146,37 +137,20 @@ module fractional_lif #(
         $readmemh(GL_COEFF_FILE, gl_coeffs_mag, 0, HISTORY_LENGTH-2);
     end
 
-    // Parallel MAC terms per cycle: sum_lanes (|g_(k+1)| * V[n-(k+1)])
+    // One MAC term per cycle: |g_(k+1)| * V[n-(k+1)]
     always_comb begin
-        mac_batch_sum = '0;
-
-        for (int lane = 0; lane < MAC_LANES_EFF; lane++) begin
-            mac_term_idx_lane[lane] = mac_index + ADDR_WIDTH'(lane);
-            mac_lane_active[lane] = (mac_term_idx_lane[lane] < ADDR_WIDTH'(HISTORY_LENGTH - 1));
-
-            if (mac_lane_active[lane]) begin
-                mac_k_plus_1_lane[lane] = mac_term_idx_lane[lane] + ADDR_WIDTH'(1);
-                if (history_ptr >= mac_k_plus_1_lane[lane]) begin
-                    mac_hist_idx_lane[lane] = history_ptr - mac_k_plus_1_lane[lane];
-                end else begin
-                    mac_hist_idx_lane[lane] = history_ptr + ADDR_WIDTH'(HISTORY_LENGTH) - mac_k_plus_1_lane[lane];
-                end
-
-                mac_hist_val_lane[lane] = history_buffer[mac_hist_idx_lane[lane]];
-                mac_coeff_mag_lane[lane] = gl_coeffs_mag[mac_term_idx_lane[lane]];
-                mac_product_lane[lane] = $signed({1'b0, mac_coeff_mag_lane[lane]}) * mac_hist_val_lane[lane];
-                mac_batch_sum = mac_batch_sum +
-                                {{(MAC_BATCH_SUM_WIDTH-PRODUCT_WIDTH){mac_product_lane[lane][PRODUCT_WIDTH-1]}}, mac_product_lane[lane]};
-            end else begin
-                mac_k_plus_1_lane[lane] = '0;
-                mac_hist_idx_lane[lane] = '0;
-                mac_hist_val_lane[lane] = '0;
-                mac_coeff_mag_lane[lane] = '0;
-                mac_product_lane[lane] = '0;
-            end
+        mac_k_plus_1 = ADDR_WIDTH'(mac_index + 1'b1);
+        if (history_ptr >= mac_k_plus_1) begin
+            mac_hist_idx = history_ptr - mac_k_plus_1;
+        end else begin
+            mac_hist_idx = history_ptr + ADDR_WIDTH'(HISTORY_LENGTH) - mac_k_plus_1;
         end
 
-        mac_acc_next = history_sum_acc + mac_batch_sum[HISTORY_SUM_WIDTH-1:0];
+        mac_hist_val = history_buffer[mac_hist_idx];
+        mac_coeff_mag = gl_coeffs_mag[mac_index];
+        mac_product = $signed({1'b0, mac_coeff_mag}) * mac_hist_val;
+        mac_product_ext = {{(HISTORY_SUM_WIDTH-PRODUCT_WIDTH){mac_product[PRODUCT_WIDTH-1]}}, mac_product};
+        mac_acc_next = history_sum_acc + mac_product_ext;
     end
 
     // ST_PREP_NUM stage: compute numerator = I[n] + C * history_sum
@@ -277,10 +251,10 @@ module fractional_lif #(
 
                 ST_MAC: begin
                     history_sum_acc <= mac_acc_next;
-                    if (($unsigned(mac_index) + MAC_LANES_EFF) >= (HISTORY_LENGTH - 1)) begin
+                    if (mac_index == ADDR_WIDTH'(HISTORY_LENGTH - 2)) begin
                         state <= ST_PREP_NUM;
                     end else begin
-                        mac_index <= mac_index + ADDR_WIDTH'(MAC_LANES_EFF);
+                        mac_index <= mac_index + 1'b1;
                     end
                 end
 

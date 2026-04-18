@@ -1,0 +1,4 @@
+variant,total_cells_approx,slice_luts,slice_registers,carry4,f7_muxes,f8_muxes,dsp,bram_tiles,wns_ns,tns_ns,whs_ns,clock_period_ns,fmax_est_mhz,power_total_w,power_dynamic_w,power_static_w,junction_temp_c,power_confidence
+lif,,93,82,22,0,0,1,0,1.29,0.0,0.242,10.0,114.81056257175659,0.101,0.003,0.097,25.5,Medium
+fractional_lif,,690,1048,72,96,0,5,0,-0.015,-0.017,0.186,10.0,99.85022466300549,0.088,0.004,0.084,25.4,Medium
+bitshift_lif,,960,1042,130,89,5,0,0,-0.067,-0.189,0.046,10.0,99.33445912387008,0.087,0.004,0.084,25.4,Medium

@@ -2,8 +2,7 @@ module top_bitshift_lif_demo #(
     // Guard-bit sweep knobs for synthesis studies.
     // Defaults match validated precision behavior.
     parameter int BITSHIFT_ACCUM_GUARD_BITS = 5,
-    parameter int BITSHIFT_NUMERATOR_GUARD_BITS = 1,
-    parameter int BITSHIFT_ACCUM_LANES = 1
+    parameter int BITSHIFT_NUMERATOR_GUARD_BITS = 1
 ) (
     input  wire        CLK100MHZ,
     input  wire [1:0]  sw,
@@ -83,7 +82,6 @@ module top_bitshift_lif_demo #(
         .DATA_WIDTH(DATA_WIDTH),
         .MEMBRANE_WIDTH(MEMBRANE_WIDTH),
         .HISTORY_LENGTH(BITSHIFT_HISTORY_LENGTH),
-        .ACCUM_LANES(BITSHIFT_ACCUM_LANES),
         .ACCUM_GUARD_BITS(BITSHIFT_ACCUM_GUARD_BITS),
         .NUMERATOR_GUARD_BITS(BITSHIFT_NUMERATOR_GUARD_BITS)
     ) u_neuron (
