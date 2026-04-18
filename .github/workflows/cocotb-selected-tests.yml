@@ -4,16 +4,14 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - common/sv/neurons/**
-      - 2_training_and_simulation/sv/**
-      - 2_training_and_simulation/sv/cocotb/**
+      - common/sv/**
+      - common/sv/cocotb/**
       - .github/workflows/cocotb-selected-tests.yml
   push:
     branches: [main]
     paths:
-      - common/sv/neurons/**
-      - 2_training_and_simulation/sv/**
-      - 2_training_and_simulation/sv/cocotb/**
+      - common/sv/**
+      - common/sv/cocotb/**
       - .github/workflows/cocotb-selected-tests.yml
 
 jobs:
@@ -32,18 +30,18 @@ jobs:
 
       - name: Ensure writable cocotb results dir
         run: |
-          mkdir -p 2_training_and_simulation/sv/cocotb/results
-          chmod -R u+rwX 2_training_and_simulation/sv/cocotb/results
+          mkdir -p common/sv/cocotb/results
+          chmod -R u+rwX common/sv/cocotb/results
 
       - name: Build cocotb Docker image
-        working-directory: 2_training_and_simulation/sv/cocotb
+        working-directory: common/sv/cocotb
         env:
           USER_ID: ${{ env.USER_ID }}
           GROUP_ID: ${{ env.GROUP_ID }}
         run: docker compose build
 
       - name: Run selected cocotb tests (ordered)
-        working-directory: 2_training_and_simulation/sv/cocotb
+        working-directory: common/sv/cocotb
         env:
           USER_ID: ${{ env.USER_ID }}
           GROUP_ID: ${{ env.GROUP_ID }}
@@ -106,5 +104,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cocotb-results
-          path: 2_training_and_simulation/sv/cocotb/results
+          path: common/sv/cocotb/results
           if-no-files-found: ignore

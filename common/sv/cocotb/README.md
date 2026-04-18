@@ -181,7 +181,7 @@ If this width is too small, FC2 values clip/saturate and policy behavior can col
 
 #### Current project setting
 
-For both fractional integration profiles currently in `sv/cocotb/tests/Makefile`:
+For both fractional integration profiles currently in `common/sv/cocotb/tests/Makefile`:
 
 - `cartpole_integration_fractional` (history length 64)
 - `cartpole_integration_fractional_hist8` (history length 8)

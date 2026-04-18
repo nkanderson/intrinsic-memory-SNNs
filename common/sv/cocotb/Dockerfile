@@ -57,7 +57,8 @@ RUN groupadd --non-unique -g ${GROUP_ID} cocotb_user || true && \
   useradd -m -u ${USER_ID} -g ${GROUP_ID} -s /bin/bash cocotb_user && \
   chown -R cocotb_user:cocotb_user /opt/oss-cad-suite
 
-# Create workspace directories
+# Create workspace mount points used by docker-compose
+# /workspace/sv maps to common/sv on the host
 RUN mkdir -p /workspace/sv /workspace/tests /workspace/results \
   && chown -R cocotb_user:cocotb_user /workspace
 
