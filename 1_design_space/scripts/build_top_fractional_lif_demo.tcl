@@ -12,11 +12,15 @@ set results_dir [file join $root_dir results fractional_lif]
 # Optional guard-bit overrides (can be passed via env vars)
 set fractional_accum_guard_bits 3
 set fractional_numerator_guard_bits 1
+set fractional_mac_lanes 4
 if {[info exists ::env(FRACTIONAL_ACCUM_GUARD_BITS)]} {
     set fractional_accum_guard_bits $::env(FRACTIONAL_ACCUM_GUARD_BITS)
 }
 if {[info exists ::env(FRACTIONAL_NUMERATOR_GUARD_BITS)]} {
     set fractional_numerator_guard_bits $::env(FRACTIONAL_NUMERATOR_GUARD_BITS)
+}
+if {[info exists ::env(FRACTIONAL_MAC_LANES)]} {
+    set fractional_mac_lanes $::env(FRACTIONAL_MAC_LANES)
 }
 
 file mkdir $results_dir
@@ -32,11 +36,11 @@ add_files [file join $root_dir sv gl_coefficients.mem]
 add_files -fileset constrs_1 [file join $root_dir sv top_lif_demo.xdc]
 
 set_property top $top_name [current_fileset]
-set_property generic [format "FRACTIONAL_ACCUM_GUARD_BITS=%s FRACTIONAL_NUMERATOR_GUARD_BITS=%s" \
-    $fractional_accum_guard_bits $fractional_numerator_guard_bits] [current_fileset]
+set_property generic [format "FRACTIONAL_ACCUM_GUARD_BITS=%s FRACTIONAL_NUMERATOR_GUARD_BITS=%s FRACTIONAL_MAC_LANES=%s" \
+    $fractional_accum_guard_bits $fractional_numerator_guard_bits $fractional_mac_lanes] [current_fileset]
 update_compile_order -fileset sources_1
 
-puts "INFO: Guard-bit config: FRACTIONAL_ACCUM_GUARD_BITS=$fractional_accum_guard_bits FRACTIONAL_NUMERATOR_GUARD_BITS=$fractional_numerator_guard_bits"
+puts "INFO: Config: FRACTIONAL_ACCUM_GUARD_BITS=$fractional_accum_guard_bits FRACTIONAL_NUMERATOR_GUARD_BITS=$fractional_numerator_guard_bits FRACTIONAL_MAC_LANES=$fractional_mac_lanes"
 
 launch_runs synth_1 -jobs 8
 wait_on_run synth_1

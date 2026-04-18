@@ -16,6 +16,7 @@ module bitshift_lif #(
 
   // Bit-shift approximation parameters
   parameter HISTORY_LENGTH = 64,
+  parameter integer ACCUM_LANES = 1,       // Parallel history terms per cycle (>=1)
   parameter SHIFT_WIDTH = 8,
   // SHIFT_MODE selection (compile-time):
   //   0: simple            -> [0,1,2,3,4,...]
@@ -52,10 +53,15 @@ module bitshift_lif #(
 );
 
   localparam integer ADDR_WIDTH = $clog2(HISTORY_LENGTH);
+  localparam integer TERM_COUNT = (HISTORY_LENGTH > 1) ? (HISTORY_LENGTH - 1) : 1;
+  localparam integer ACCUM_LANES_NONZERO = (ACCUM_LANES < 1) ? 1 : ACCUM_LANES;
+  localparam integer ACCUM_LANES_EFF = (ACCUM_LANES_NONZERO > TERM_COUNT) ? TERM_COUNT : ACCUM_LANES_NONZERO;
   localparam integer ACCUM_GUARD_BITS_EFF = (ACCUM_GUARD_BITS < 0) ? 0 : ACCUM_GUARD_BITS;
   localparam integer NUMERATOR_GUARD_BITS_EFF = (NUMERATOR_GUARD_BITS < 0) ? 0 : NUMERATOR_GUARD_BITS;
 
   localparam integer HISTORY_SUM_WIDTH = MEMBRANE_WIDTH + ACCUM_GUARD_BITS_EFF;
+  localparam integer ACCUM_REDUCE_GUARD_BITS = $clog2(ACCUM_LANES_EFF);
+  localparam integer ACCUM_BATCH_SUM_WIDTH = HISTORY_SUM_WIDTH + ACCUM_REDUCE_GUARD_BITS;
   localparam integer C_SCALED_WIDTH = $bits(C_SCALED) + 1;
   localparam integer SCALED_HISTORY_WIDTH = HISTORY_SUM_WIDTH + C_SCALED_WIDTH;
   localparam integer NUMERATOR_INPUT_WIDTH = (SCALED_HISTORY_WIDTH > MEMBRANE_WIDTH) ? SCALED_HISTORY_WIDTH : MEMBRANE_WIDTH;
@@ -89,13 +95,15 @@ module bitshift_lif #(
   logic [ADDR_WIDTH-1:0] accum_index;
   logic signed [HISTORY_SUM_WIDTH-1:0] history_sum_acc;
 
-  // Intermediate helper signals
-  logic [ADDR_WIDTH-1:0] accum_k_plus_1;
-  logic [ADDR_WIDTH-1:0] accum_hist_idx;
-  logic signed [MEMBRANE_WIDTH-1:0] accum_hist_val;
-  logic [SHIFT_WIDTH-1:0] accum_shift_amt;
-  logic signed [MEMBRANE_WIDTH-1:0] accum_shifted_hist;
-  logic signed [HISTORY_SUM_WIDTH-1:0] accum_shifted_hist_ext;
+  // Intermediate helper signals (parallel lanes)
+  logic [ADDR_WIDTH-1:0] accum_term_idx_lane [0:ACCUM_LANES_EFF-1];
+  logic [ADDR_WIDTH-1:0] accum_k_plus_1_lane [0:ACCUM_LANES_EFF-1];
+  logic [ADDR_WIDTH-1:0] accum_hist_idx_lane [0:ACCUM_LANES_EFF-1];
+  logic signed [MEMBRANE_WIDTH-1:0] accum_hist_val_lane [0:ACCUM_LANES_EFF-1];
+  logic [SHIFT_WIDTH-1:0] accum_shift_amt_lane [0:ACCUM_LANES_EFF-1];
+  logic signed [MEMBRANE_WIDTH-1:0] accum_shifted_hist_lane [0:ACCUM_LANES_EFF-1];
+  logic accum_lane_active [0:ACCUM_LANES_EFF-1];
+  logic signed [ACCUM_BATCH_SUM_WIDTH-1:0] accum_batch_sum;
   logic signed [HISTORY_SUM_WIDTH-1:0] accum_next;
 
   (* use_dsp = "yes" *) logic signed [SCALED_HISTORY_WIDTH-1:0] prep_scaled_history_mult;
@@ -190,21 +198,37 @@ module bitshift_lif #(
     end
   endfunction
 
-  // One accumulation term per cycle: V[n-k] >> shift[k], k=1..H-1
+  // Parallel accumulation terms per cycle: sum_lanes (V[n-k] >> shift[k]), k=1..H-1
   always_comb begin
-    accum_k_plus_1 = ADDR_WIDTH'(accum_index + 1'b1);
-    if (history_ptr >= accum_k_plus_1) begin
-      accum_hist_idx = history_ptr - accum_k_plus_1;
-    end else begin
-      accum_hist_idx = history_ptr + ADDR_WIDTH'(HISTORY_LENGTH) - accum_k_plus_1;
+    accum_batch_sum = '0;
+
+    for (int lane = 0; lane < ACCUM_LANES_EFF; lane++) begin
+      accum_term_idx_lane[lane] = accum_index + ADDR_WIDTH'(lane);
+      accum_lane_active[lane] = (accum_term_idx_lane[lane] < ADDR_WIDTH'(HISTORY_LENGTH - 1));
+
+      if (accum_lane_active[lane]) begin
+        accum_k_plus_1_lane[lane] = accum_term_idx_lane[lane] + ADDR_WIDTH'(1);
+        if (history_ptr >= accum_k_plus_1_lane[lane]) begin
+          accum_hist_idx_lane[lane] = history_ptr - accum_k_plus_1_lane[lane];
+        end else begin
+          accum_hist_idx_lane[lane] = history_ptr + ADDR_WIDTH'(HISTORY_LENGTH) - accum_k_plus_1_lane[lane];
+        end
+
+        accum_hist_val_lane[lane] = history_buffer[accum_hist_idx_lane[lane]];
+        accum_shift_amt_lane[lane] = SHIFT_WIDTH'(get_shift_amount_const(accum_term_idx_lane[lane] + 1));
+        accum_shifted_hist_lane[lane] = accum_hist_val_lane[lane] >>> accum_shift_amt_lane[lane];
+        accum_batch_sum = accum_batch_sum +
+          {{(ACCUM_BATCH_SUM_WIDTH-MEMBRANE_WIDTH){accum_shifted_hist_lane[lane][MEMBRANE_WIDTH-1]}}, accum_shifted_hist_lane[lane]};
+      end else begin
+        accum_k_plus_1_lane[lane] = '0;
+        accum_hist_idx_lane[lane] = '0;
+        accum_hist_val_lane[lane] = '0;
+        accum_shift_amt_lane[lane] = '0;
+        accum_shifted_hist_lane[lane] = '0;
+      end
     end
 
-    accum_hist_val = history_buffer[accum_hist_idx];
-    accum_shift_amt = SHIFT_WIDTH'(get_shift_amount_const(accum_index + 1));
-    accum_shifted_hist = accum_hist_val >>> accum_shift_amt;
-    accum_shifted_hist_ext =
-      {{(HISTORY_SUM_WIDTH-MEMBRANE_WIDTH){accum_shifted_hist[MEMBRANE_WIDTH-1]}}, accum_shifted_hist};
-    accum_next = history_sum_acc + accum_shifted_hist_ext;
+    accum_next = history_sum_acc + accum_batch_sum[HISTORY_SUM_WIDTH-1:0];
   end
 
   // ST_PREP_NUM stage: numerator = I[n] - C*sum
@@ -301,10 +325,10 @@ module bitshift_lif #(
 
         ST_ACCUM: begin
           history_sum_acc <= accum_next;
-          if (accum_index == ADDR_WIDTH'(HISTORY_LENGTH - 2)) begin
+          if (($unsigned(accum_index) + ACCUM_LANES_EFF) >= (HISTORY_LENGTH - 1)) begin
             state <= ST_PREP_NUM;
           end else begin
-            accum_index <= accum_index + 1'b1;
+            accum_index <= accum_index + ADDR_WIDTH'(ACCUM_LANES_EFF);
           end
         end
 

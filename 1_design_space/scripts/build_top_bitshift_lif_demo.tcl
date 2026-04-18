@@ -12,11 +12,15 @@ set results_dir [file join $root_dir results bitshift_lif]
 # Optional guard-bit overrides (can be passed via env vars)
 set bitshift_accum_guard_bits 5
 set bitshift_numerator_guard_bits 1
+set bitshift_accum_lanes 4
 if {[info exists ::env(BITSHIFT_ACCUM_GUARD_BITS)]} {
     set bitshift_accum_guard_bits $::env(BITSHIFT_ACCUM_GUARD_BITS)
 }
 if {[info exists ::env(BITSHIFT_NUMERATOR_GUARD_BITS)]} {
     set bitshift_numerator_guard_bits $::env(BITSHIFT_NUMERATOR_GUARD_BITS)
+}
+if {[info exists ::env(BITSHIFT_ACCUM_LANES)]} {
+    set bitshift_accum_lanes $::env(BITSHIFT_ACCUM_LANES)
 }
 
 file mkdir $results_dir
@@ -31,11 +35,11 @@ add_files [file join $root_dir sv top_bitshift_lif_demo.sv]
 add_files -fileset constrs_1 [file join $root_dir sv top_lif_demo.xdc]
 
 set_property top $top_name [current_fileset]
-set_property generic [format "BITSHIFT_ACCUM_GUARD_BITS=%s BITSHIFT_NUMERATOR_GUARD_BITS=%s" \
-    $bitshift_accum_guard_bits $bitshift_numerator_guard_bits] [current_fileset]
+set_property generic [format "BITSHIFT_ACCUM_GUARD_BITS=%s BITSHIFT_NUMERATOR_GUARD_BITS=%s BITSHIFT_ACCUM_LANES=%s" \
+    $bitshift_accum_guard_bits $bitshift_numerator_guard_bits $bitshift_accum_lanes] [current_fileset]
 update_compile_order -fileset sources_1
 
-puts "INFO: Guard-bit config: BITSHIFT_ACCUM_GUARD_BITS=$bitshift_accum_guard_bits BITSHIFT_NUMERATOR_GUARD_BITS=$bitshift_numerator_guard_bits"
+puts "INFO: Config: BITSHIFT_ACCUM_GUARD_BITS=$bitshift_accum_guard_bits BITSHIFT_NUMERATOR_GUARD_BITS=$bitshift_numerator_guard_bits BITSHIFT_ACCUM_LANES=$bitshift_accum_lanes"
 
 launch_runs synth_1 -jobs 8
 wait_on_run synth_1

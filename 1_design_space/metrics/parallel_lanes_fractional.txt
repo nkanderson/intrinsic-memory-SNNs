@@ -1,0 +1,39 @@
+Fractional LIF Parallel-Lane Sweep Metrics
+==========================================
+
+Design: top_fractional_lif_demo
+Device: xc7a100tcsg324-1
+Clock target: 100 MHz (10.0 ns)
+
+Fixed settings for this sweep:
+- FRACTIONAL_ACCUM_GUARD_BITS = 3
+- FRACTIONAL_NUMERATOR_GUARD_BITS = 1
+
+Sweep variable:
+- FRACTIONAL_MAC_LANES in {1, 2, 4, 8}
+
+Suggested run order:
+1) lanes=1 (new post-change baseline)
+2) lanes=2
+3) lanes=4
+4) lanes=8
+
+Columns:
+- Run: short identifier for sweep point
+- MAC_LANES: FRACTIONAL_MAC_LANES
+- WNS/TNS: from impl_timing_summary.rpt
+- LUT/FF/DSP: from synth_utilization.rpt
+- P_total/P_dyn/P_static: from power_routed.rpt
+- Notes: optional context
+
+| Run      | MAC_LANES | WNS (ns) | TNS (ns) | LUT | FF | DSP | P_total (W) | P_dyn (W) | P_static (W) | Notes |
+|----------|-----------|----------|----------|-----|----|-----|-------------|-----------|--------------|-------|
+| lanes1   | 1         | -2.122   | -57.429  | 733 | 1063 | 5 | 0.088       | 0.004     | 0.084        | baseline after lane-support RTL merge |
+| lanes2   | 2         | -2.403   | -80.150  | 1288 | 1066 | 6 | 0.088       | 0.004     | 0.084        | Timing worsened; area increased significantly |
+| lanes4   | 4         | -6.635   | -264.327 | 1509 | 1068 | 8 | 0.090       | 0.006     | 0.084        | Severe timing regression; area/power increased |
+
+Source files per run:
+- results/fractional_lif/impl_timing_summary.rpt
+- results/fractional_lif/synth_utilization.rpt
+- results/fractional_lif/vivado_project/top_fractional_lif_demo.runs/impl_1/top_fractional_lif_demo_power_routed.rpt
+- results/fractional_lif/vivado_project/top_fractional_lif_demo.runs/synth_1/runme.log
