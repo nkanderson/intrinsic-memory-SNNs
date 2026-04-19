@@ -4,7 +4,9 @@
 #   make                                 # Run LIF tests (default)
 #   make test_lif                        # Run LIF (single-step) tests
 #   make test_fractional_lif             # Run fractional_lif (single-step) tests
+#   make test_fractional_lif_memory      # Run fractional_lif memory-effect tests
 #   make test_bitshift_lif               # Run bitshift_lif (single-step) tests
+#   make test_bitshift_lif_memory        # Run bitshift_lif memory-effect sweep (custom_slow_decay)
 #   make test_lif_timestep               # Run LIF with internal timestep loop tests
 #   make test_linear_layer               # Run linear_layer tests
 #   make test_spike_buffer               # Run spike_buffer tests
@@ -42,10 +44,18 @@ else ifeq ($(TEST),fractional_lif_hist64)
     VERILOG_SOURCES = $(COMMON_NEURON_DIR)/fractional_lif.sv
     TOPLEVEL = fractional_lif
     MODULE = test_fractional_lif
+else ifeq ($(TEST),fractional_lif_memory)
+    VERILOG_SOURCES = $(COMMON_NEURON_DIR)/fractional_lif.sv
+    TOPLEVEL = fractional_lif
+    MODULE = test_fractional_lif_memory
 else ifeq ($(TEST),bitshift_lif)
     VERILOG_SOURCES = $(COMMON_NEURON_DIR)/bitshift_lif.sv
     TOPLEVEL = bitshift_lif
     MODULE = test_bitshift_lif
+else ifeq ($(TEST),bitshift_lif_memory)
+    VERILOG_SOURCES = $(COMMON_NEURON_DIR)/bitshift_lif.sv
+    TOPLEVEL = bitshift_lif
+    MODULE = test_bitshift_lif_memory
 else ifeq ($(TEST),bitshift_lif_mode0)
     VERILOG_SOURCES = $(COMMON_NEURON_DIR)/bitshift_lif.sv
     TOPLEVEL = bitshift_lif
@@ -140,7 +150,7 @@ else ifeq ($(TEST),cartpole_integration_bitshift_custom_slow_decay)
     TOPLEVEL = neural_network_bitshift
     MODULE = test_cartpole_integration
 else
-    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'bitshift_lif', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'cartpole_integration', 'cartpole_integration_fractional', 'cartpole_integration_fractional_hist8', 'cartpole_integration_fractional_hist256', or 'cartpole_integration_bitshift_custom_slow_decay')
+    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'cartpole_integration', 'cartpole_integration_fractional', 'cartpole_integration_fractional_hist8', 'cartpole_integration_fractional_hist256', or 'cartpole_integration_bitshift_custom_slow_decay')
 endif
 
 # Simulator - use Icarus for all tests (event-driven, correct timing)
@@ -175,7 +185,20 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pfractional_lif.C_SCALED=256 -Pfractional_lif.INV_DENOM=58988
         COMPILE_ARGS += -Pfractional_lif.GL_COEFF_FILE=\"$(PWD)/weights/fractional_order/gl_coefficients.mem\"
     endif
+    ifeq ($(TEST),fractional_lif_memory)
+        # Memory-effect profile: maximize fractional history to amplify long-memory dynamics
+        COMPILE_ARGS += -Pfractional_lif.HISTORY_LENGTH=256
+        COMPILE_ARGS += -Pfractional_lif.COEFF_WIDTH=16 -Pfractional_lif.COEFF_FRAC_BITS=15
+        COMPILE_ARGS += -Pfractional_lif.C_SCALED=256 -Pfractional_lif.INV_DENOM=57553
+        COMPILE_ARGS += -Pfractional_lif.GL_COEFF_FILE=\"$(PWD)/weights/fractional_hist256/gl_coefficients.mem\"
+    endif
     ifeq ($(TEST),bitshift_lif)
+        COMPILE_ARGS += -Pbitshift_lif.HISTORY_LENGTH=64
+        COMPILE_ARGS += -Pbitshift_lif.SHIFT_WIDTH=8 -Pbitshift_lif.SHIFT_MODE=3
+        COMPILE_ARGS += -Pbitshift_lif.CUSTOM_DECAY_RATE=3
+        COMPILE_ARGS += -Pbitshift_lif.C_SCALED=256 -Pbitshift_lif.INV_DENOM=58982
+    endif
+    ifeq ($(TEST),bitshift_lif_memory)
         COMPILE_ARGS += -Pbitshift_lif.HISTORY_LENGTH=64
         COMPILE_ARGS += -Pbitshift_lif.SHIFT_WIDTH=8 -Pbitshift_lif.SHIFT_MODE=3
         COMPILE_ARGS += -Pbitshift_lif.CUSTOM_DECAY_RATE=3
@@ -348,7 +371,20 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=58988
         COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional_order/gl_coefficients.mem\"
     endif
+    ifeq ($(TEST),fractional_lif_memory)
+        # Match Icarus memory-effect profile for consistency when switching simulators
+        COMPILE_ARGS += -GHISTORY_LENGTH=256
+        COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=15
+        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=57553
+        COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional_hist256/gl_coefficients.mem\"
+    endif
     ifeq ($(TEST),bitshift_lif)
+        COMPILE_ARGS += -GHISTORY_LENGTH=64
+        COMPILE_ARGS += -GSHIFT_WIDTH=8 -GSHIFT_MODE=3
+        COMPILE_ARGS += -GCUSTOM_DECAY_RATE=3
+        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=58982
+    endif
+    ifeq ($(TEST),bitshift_lif_memory)
         COMPILE_ARGS += -GHISTORY_LENGTH=64
         COMPILE_ARGS += -GSHIFT_WIDTH=8 -GSHIFT_MODE=3
         COMPILE_ARGS += -GCUSTOM_DECAY_RATE=3
@@ -513,8 +549,14 @@ test_fractional_lif:
 test_fractional_lif_hist64:
 	$(MAKE) TEST=fractional_lif_hist64
 
+test_fractional_lif_memory:
+	$(MAKE) TEST=fractional_lif_memory
+
 test_bitshift_lif:
 	$(MAKE) TEST=bitshift_lif
+
+test_bitshift_lif_memory:
+	$(MAKE) TEST=bitshift_lif_memory
 
 # SHIFT_MODE=0 (simple): [0,1,2,3,...]
 test_bitshift_lif_mode0:
@@ -577,4 +619,4 @@ clean::
 	rm -rf __pycache__
 	rm -rf .pytest_cache
 
-.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_bitshift_lif test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_cartpole_integration test_cartpole_integration_fractional test_cartpole_integration_fractional_hist8 test_cartpole_integration_fractional_hist256 test_cartpole_integration_bitshift_custom_slow_decay
+.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_cartpole_integration test_cartpole_integration_fractional test_cartpole_integration_fractional_hist8 test_cartpole_integration_fractional_hist256 test_cartpole_integration_bitshift_custom_slow_decay

@@ -34,3 +34,4 @@ sympy==1.14.0
 torch==2.9.1
 tqdm==4.67.3
 typing_extensions==4.15.0
+vcdvcd==2.6.0
