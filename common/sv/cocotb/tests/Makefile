@@ -306,11 +306,11 @@ ifeq ($(SIM),icarus)
         # Fractional model with history_length=32 from weights/fractional-16-4-32: 16 HL1, 4 HL2, 32 timesteps
         COMPILE_ARGS += -Pneural_network_fractional.NUM_INPUTS=4 -Pneural_network_fractional.HL1_SIZE=16
         COMPILE_ARGS += -Pneural_network_fractional.HL2_SIZE=4 -Pneural_network_fractional.NUM_ACTIONS=2
-        COMPILE_ARGS += -Pneural_network_fractional.NUM_TIMESTEPS=32 -Pneural_network_fractional.Q_BATCH_SIZE=4
+        COMPILE_ARGS += -Pneural_network_fractional.NUM_TIMESTEPS=30 -Pneural_network_fractional.Q_BATCH_SIZE=4
         COMPILE_ARGS += -Pneural_network_fractional.FC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=32
-        COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=15
-        COMPILE_ARGS += -Pneural_network_fractional.C_SCALED=256 -Pneural_network_fractional.INV_DENOM=... # Set from fractional_constants.txt
+        COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=16
+        COMPILE_ARGS += -Pneural_network_fractional.C_SCALED=256 -Pneural_network_fractional.INV_DENOM=55727
         COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-32/gl_coefficients.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_weights.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_bias.mem\"
@@ -324,11 +324,11 @@ ifeq ($(SIM),icarus)
         # Fractional model with history_length=16 from weights/fractional-32-4-16: 32 HL1, 4 HL2, 16 timesteps
         COMPILE_ARGS += -Pneural_network_fractional.NUM_INPUTS=4 -Pneural_network_fractional.HL1_SIZE=32
         COMPILE_ARGS += -Pneural_network_fractional.HL2_SIZE=4 -Pneural_network_fractional.NUM_ACTIONS=2
-        COMPILE_ARGS += -Pneural_network_fractional.NUM_TIMESTEPS=16 -Pneural_network_fractional.Q_BATCH_SIZE=4
+        COMPILE_ARGS += -Pneural_network_fractional.NUM_TIMESTEPS=30 -Pneural_network_fractional.Q_BATCH_SIZE=4
         COMPILE_ARGS += -Pneural_network_fractional.FC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=16
-        COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=15
-        COMPILE_ARGS += -Pneural_network_fractional.C_SCALED=256 -Pneural_network_fractional.INV_DENOM=... # Set from fractional_constants.txt
+        COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=16
+        COMPILE_ARGS += -Pneural_network_fractional.C_SCALED=256 -Pneural_network_fractional.INV_DENOM=62259
         COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional-32-4-16/gl_coefficients.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_weights.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_bias.mem\"
@@ -562,11 +562,11 @@ ifeq ($(SIM),verilator)
         # Fractional model with history_length=32 from weights/fractional-16-4-32: 16 HL1, 4 HL2, 32 timesteps
         COMPILE_ARGS += -GNUM_INPUTS=4 -GHL1_SIZE=16
         COMPILE_ARGS += -GHL2_SIZE=4 -GNUM_ACTIONS=2
-        COMPILE_ARGS += -GNUM_TIMESTEPS=32 -GQ_BATCH_SIZE=4
+        COMPILE_ARGS += -GNUM_TIMESTEPS=30 -GQ_BATCH_SIZE=4
         COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -GHISTORY_LENGTH=32
-        COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=15
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=... # Set from fractional_constants.txt
+        COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=16
+        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=55727
         COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-32/gl_coefficients.mem\"
         COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_weights.mem\"
         COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_bias.mem\"
@@ -580,11 +580,11 @@ ifeq ($(SIM),verilator)
         # Fractional model with history_length=16 from weights/fractional-32-4-16: 32 HL1, 4 HL2, 16 timesteps
         COMPILE_ARGS += -GNUM_INPUTS=4 -GHL1_SIZE=32
         COMPILE_ARGS += -GHL2_SIZE=4 -GNUM_ACTIONS=2
-        COMPILE_ARGS += -GNUM_TIMESTEPS=16 -GQ_BATCH_SIZE=4
+        COMPILE_ARGS += -GNUM_TIMESTEPS=30 -GQ_BATCH_SIZE=4
         COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -GHISTORY_LENGTH=16
-        COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=15
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=... # Set from fractional_constants.txt
+        COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=16
+        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=62259
         COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional-32-4-16/gl_coefficients.mem\"
         COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_weights.mem\"
         COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_bias.mem\"

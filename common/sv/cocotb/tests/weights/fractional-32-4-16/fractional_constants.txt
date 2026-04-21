@@ -9,7 +9,7 @@
 //   1 / denominator = 0.949993
 //
 // SystemVerilog parameters:
-//   parameter HISTORY_LENGTH = 64;
+//   parameter HISTORY_LENGTH = 16;
 //   parameter COEFF_WIDTH = 16;
 //   parameter COEFF_FRAC_BITS = 16;
 //   parameter [15:0] C_SCALED = 16'd256;  // Q8.8
