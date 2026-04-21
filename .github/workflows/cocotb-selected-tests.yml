@@ -8,7 +8,7 @@ on:
       - common/sv/cocotb/**
       - .github/workflows/cocotb-selected-tests.yml
   push:
-    branches: [main]
+    branches: [ main ]
     paths:
       - common/sv/**
       - common/sv/cocotb/**
@@ -82,21 +82,25 @@ jobs:
             make clean
             make test_neural_network
 
-            echo "[9/12] test_cartpole_integration"
+            echo "[10/12] test_cp_integration_lif-32-16"
             make clean
-            make test_cartpole_integration
+            make test_cp_integration_lif-32-16
 
-            echo "[10/12] test_cartpole_integration_fractional_hist8"
+            echo "[10/12] test_cp_integration_lif-64-16"
             make clean
-            make test_cartpole_integration_fractional_hist8
+            make test_cp_integration_lif-64-16
 
-            echo "[11/12] test_cartpole_integration_bitshift_custom_slow_decay"
+            echo "[10/12] test_cp_integration_frac-16-4-32"
             make clean
-            make test_cartpole_integration_bitshift_custom_slow_decay
+            make test_cp_integration_frac-16-4-32
 
-            echo "[12/12] test_cartpole_integration_fractional"
+            echo "[10/12] test_cp_integration_frac-32-4-16"
             make clean
-            make test_cartpole_integration_fractional
+            make test_cp_integration_frac-32-4-16
+
+            echo "[11/12] test_cp_integration_bitshift_custom_slow_decay"
+            make clean
+            make test_cp_integration_bitshift_custom_slow_decay
           '
 
       - name: Upload cocotb artifacts
