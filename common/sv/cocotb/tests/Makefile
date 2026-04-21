@@ -104,6 +104,56 @@ else ifeq ($(TEST),neural_network)
                       $(SV_DIR)/q_accumulator.sv
     TOPLEVEL = neural_network
     MODULE = test_neural_network
+# Two fractional models, two LIF models, and the bitshift custom slow decay
+# are the core models used for testing and validation.
+else ifeq ($(TEST),cp_integration_frac-16-4-32)
+    # Full model integration test with gymnasium using fractional LIF neurons
+    VERILOG_SOURCES = $(SV_DIR)/neural_network_fractional.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/fractional_lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network_fractional
+    MODULE = test_cartpole_integration
+else ifeq ($(TEST),cp_integration_frac-32-4-16)
+    # Full model integration test with gymnasium using fractional LIF neurons
+    VERILOG_SOURCES = $(SV_DIR)/neural_network_fractional.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/fractional_lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network_fractional
+    MODULE = test_cartpole_integration
+else ifeq ($(TEST),cp_integration_lif-32-16)
+    # Full model integration test with gymnasium
+    VERILOG_SOURCES = $(SV_DIR)/neural_network.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network
+    MODULE = test_cartpole_integration
+else ifeq ($(TEST),cp_integration_lif-64-16)
+    # Full model integration test with gymnasium
+    VERILOG_SOURCES = $(SV_DIR)/neural_network.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network
+    MODULE = test_cartpole_integration
+else ifeq ($(TEST),cp_integration_bitshift_custom_slow_decay)
+    # Full model integration test with gymnasium using bitshift custom_slow_decay neurons
+    VERILOG_SOURCES = $(SV_DIR)/neural_network_bitshift.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/bitshift_lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network_bitshift
+    MODULE = test_cartpole_integration
+# The following cart-pole integration tests are legacy models, but are being
+# maintained as they may serve different purposes (e.g. stress testing in the case
+# of the 256-hist fractional model) and prevent regressions.
 else ifeq ($(TEST),cp_integration)
     # Full model integration test with gymnasium
     VERILOG_SOURCES = $(SV_DIR)/neural_network.sv \
@@ -122,6 +172,24 @@ else ifeq ($(TEST),cp_integration_frac-32-16-64)
                       $(SV_DIR)/q_accumulator.sv
     TOPLEVEL = neural_network_fractional
     MODULE = test_cartpole_integration
+else ifeq ($(TEST),cp_integration_frac-32-16-8)
+    # Full model integration test with gymnasium using fractional LIF neurons
+    VERILOG_SOURCES = $(SV_DIR)/neural_network_fractional.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/fractional_lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network_fractional
+    MODULE = test_cartpole_integration
+else ifeq ($(TEST),cp_integration_frac-16-4-256)
+    # Full model integration test with gymnasium using fractional LIF neurons
+    VERILOG_SOURCES = $(SV_DIR)/neural_network_fractional.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/fractional_lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network_fractional
+    MODULE = test_cartpole_integration
 else ifeq ($(TEST),cp_integration_frac)
     # Full model integration test with gymnasium using fractional LIF neurons (history_length=8)
     VERILOG_SOURCES = $(SV_DIR)/neural_network_fractional.sv \
@@ -130,24 +198,6 @@ else ifeq ($(TEST),cp_integration_frac)
                       $(SV_DIR)/neuron_membrane_buffer.sv \
                       $(SV_DIR)/q_accumulator.sv
     TOPLEVEL = neural_network_fractional
-    MODULE = test_cartpole_integration
-else ifeq ($(TEST),cp_integration_frac)
-    # Full model integration test with gymnasium using fractional LIF neurons (history_length=256)
-    VERILOG_SOURCES = $(SV_DIR)/neural_network_fractional.sv \
-                      $(SV_DIR)/linear_layer.sv \
-                      $(COMMON_NEURON_DIR)/fractional_lif.sv \
-                      $(SV_DIR)/neuron_membrane_buffer.sv \
-                      $(SV_DIR)/q_accumulator.sv
-    TOPLEVEL = neural_network_fractional
-    MODULE = test_cartpole_integration
-else ifeq ($(TEST),cp_integration_bitshift_custom_slow_decay)
-    # Full model integration test with gymnasium using bitshift custom_slow_decay neurons
-    VERILOG_SOURCES = $(SV_DIR)/neural_network_bitshift.sv \
-                      $(SV_DIR)/linear_layer.sv \
-                      $(COMMON_NEURON_DIR)/bitshift_lif.sv \
-                      $(SV_DIR)/neuron_membrane_buffer.sv \
-                      $(SV_DIR)/q_accumulator.sv
-    TOPLEVEL = neural_network_bitshift
     MODULE = test_cartpole_integration
 else
     $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_bitshift_custom_slow_decay')
@@ -738,6 +788,26 @@ test_q_accumulator:
 test_neural_network:
 	$(MAKE) TEST=neural_network
 
+# Two fractional models, two LIF models, and the bitshift custom slow decay
+# are the core models used for testing and validation.
+test_cp_integration_frac-16-4-32:
+	$(MAKE) TEST=cp_integration_frac-16-4-32
+
+test_cp_integration_frac-32-4-16:
+	$(MAKE) TEST=cp_integration_frac-32-4-16
+
+test_cp_integration_lif-32-16:
+	$(MAKE) TEST=cp_integration_lif-32-16
+
+test_cp_integration_lif-64-16:
+	$(MAKE) TEST=cp_integration_lif-64-16
+
+test_cp_integration_bitshift_custom_slow_decay:
+	$(MAKE) TEST=cp_integration_bitshift_custom_slow_decay
+
+# The following cart-pole integration tests are legacy models, but are being
+# maintained as they may serve different purposes (e.g. stress testing in the case
+# of the 256-hist fractional model) and prevent regressions.
 test_cp_integration:
 	$(MAKE) TEST=cp_integration
 
@@ -750,20 +820,8 @@ test_cp_integration_frac-32-16-8:
 test_cp_integration_frac-16-4-256:
 	$(MAKE) TEST=cp_integration_frac-16-4-256
 
-test_cp_integration_bitshift_custom_slow_decay:
-	$(MAKE) TEST=cp_integration_bitshift_custom_slow_decay
-
-test_cp_integration_frac-16-4-32:
-	$(MAKE) TEST=cp_integration_frac-16-4-32
-
-test_cp_integration_frac-32-4-16:
-	$(MAKE) TEST=cp_integration_frac-32-4-16
-
-test_cp_integration_lif-32-16:
-	$(MAKE) TEST=cp_integration_lif-32-16
-
-test_cp_integration_lif-64-16:
-	$(MAKE) TEST=cp_integration_lif-64-16
+test_cp_integration_frac:
+	$(MAKE) TEST=cp_integration_frac
 
 # Clean up generated files
 clean::
