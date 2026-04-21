@@ -74,6 +74,11 @@ class FractionalMemoryTester:
         for _ in range(steps):
             await self.record_step(current_signed)
 
+    async def run_profile(self, profile):
+        for current_signed, steps in profile:
+            for _ in range(steps):
+                await self.record_step(current_signed)
+
     def inter_spike_intervals(self):
         if len(self.spike_steps) < 2:
             return []
@@ -81,6 +86,12 @@ class FractionalMemoryTester:
             self.spike_steps[i] - self.spike_steps[i - 1]
             for i in range(1, len(self.spike_steps))
         ]
+
+    def inter_spike_intervals_in_window(self, start_step: int, end_step: int):
+        spikes = [s for s in self.spike_steps if start_step <= s < end_step]
+        if len(spikes) < 2:
+            return []
+        return [spikes[i] - spikes[i - 1] for i in range(1, len(spikes))]
 
     def export_spike_cycle_csv(self, filename: Path):
         if not self.spike_steps:
@@ -123,39 +134,13 @@ async def reset_dut(dut):
     await ClockCycles(dut.clk, 2)
 
 
-@cocotb.test()
-async def test_constant_current_memory_effect(dut):
-    """Find an operating point where constant current yields a rising spike rate."""
-    clock = Clock(dut.clk, 10, unit="ns")
-    cocotb.start_soon(clock.start())
-
-    tester = FractionalMemoryTester(dut)
-
-    history_length = int(dut.HISTORY_LENGTH.value)
-    coeff_frac_bits = int(dut.COEFF_FRAC_BITS.value)
-    inv_denom = int(dut.INV_DENOM.value)
-    dut._log.info(
-        "Memory test configuration: "
-        f"HISTORY_LENGTH={history_length}, COEFF_FRAC_BITS={coeff_frac_bits}, INV_DENOM={inv_denom}"
-    )
-
-    candidate_currents = [
-        0.160,
-        0.170,
-        0.180,
-        0.190,
-        0.200,
-        0.210,
-        0.220,
-        0.230,
-        0.240,
-        0.250,
-        0.260,
-        0.280,
-    ]
-    run_steps = 3000
-    min_spikes_required = 14
-
+async def sweep_best_constant_current(
+    dut,
+    tester: FractionalMemoryTester,
+    candidate_currents,
+    run_steps=3000,
+    min_spikes_required=14,
+):
     best = None
 
     for current_float in candidate_currents:
@@ -206,29 +191,155 @@ async def test_constant_current_memory_effect(dut):
                 "intervals": list(intervals),
             }
 
+    return best
+
+
+@cocotb.test()
+async def test_constant_current_memory_effect(dut):
+    """Case 1: constant current should yield increasing spike rate over time."""
+    clock = Clock(dut.clk, 10, unit="ns")
+    cocotb.start_soon(clock.start())
+
+    tester = FractionalMemoryTester(dut)
+
+    candidate_currents = [
+        0.160,
+        0.170,
+        0.180,
+        0.190,
+        0.200,
+        0.210,
+        0.220,
+        0.230,
+        0.240,
+        0.250,
+        0.260,
+        0.280,
+    ]
+
+    best = await sweep_best_constant_current(
+        dut=dut,
+        tester=tester,
+        candidate_currents=candidate_currents,
+        run_steps=3000,
+        min_spikes_required=14,
+    )
+
     assert best is not None, (
         "No candidate current produced enough spikes for memory analysis. "
-        "Try increasing HISTORY_LENGTH or current search range."
+        "Try increasing HISTORY_LENGTH or widening current range."
     )
 
     dut._log.info(
-        "Best operating point: "
+        "Case 1 best: "
         f"I={best['current_float']:.3f} (fixed={best['current_fixed']}), "
         f"gain={best['gain']:.3f}, acceleration={best['acceleration']:.2f}, "
         f"early={best['early_mean']:.2f}, late={best['late_mean']:.2f}, "
         f"spikes={best['spike_count']}"
     )
-    dut._log.info(f"First 10 intervals: {best['intervals'][:10]}")
-    dut._log.info(f"Last 10 intervals:  {best['intervals'][-10:]}")
+    dut._log.info(f"Case 1 first 10 intervals: {best['intervals'][:10]}")
+    dut._log.info(f"Case 1 last 10 intervals:  {best['intervals'][-10:]}")
 
     tester.spike_steps = best["spike_steps"]
     tester.membrane_trace = best["membrane_trace"]
     tester.current_trace = best["current_trace"]
-    results_csv = Path("../results/fractional_lif_memory_spike_cycles.csv")
-    tester.export_spike_cycle_csv(results_csv)
-    dut._log.info(f"Exported spike-cycle membrane traces to {results_csv}")
+    tester.export_spike_cycle_csv(
+        Path("../results/fractional_lif_memory_spike_cycles.csv")
+    )
 
     assert best["gain"] > 1.03, (
         "Expected increasing spike rate under constant current, "
         f"but best gain was {best['gain']:.3f} at I={best['current_float']:.3f}."
+    )
+
+
+@cocotb.test()
+async def test_dropout_recovery_memory_effect(dut):
+    """Case 2: spike rate after dropout/restart should exceed initial startup rate."""
+    clock = Clock(dut.clk, 10, unit="ns")
+    cocotb.start_soon(clock.start())
+
+    tester = FractionalMemoryTester(dut)
+
+    candidate_currents = [
+        0.160,
+        0.170,
+        0.180,
+        0.190,
+        0.200,
+        0.210,
+        0.220,
+        0.230,
+        0.240,
+        0.250,
+        0.260,
+        0.280,
+    ]
+
+    best = await sweep_best_constant_current(
+        dut=dut,
+        tester=tester,
+        candidate_currents=candidate_currents,
+        run_steps=2200,
+        min_spikes_required=10,
+    )
+
+    assert best is not None, "Could not find operating point for dropout/recovery test."
+
+    test_current_fixed = best["current_fixed"]
+    test_current_float = best["current_float"]
+
+    await reset_dut(dut)
+    tester.reset_traces()
+
+    startup_steps = 1200
+    dropout_steps = 120
+    recovery_steps = 1200
+    recovery_start = startup_steps + dropout_steps
+
+    profile = [
+        (test_current_fixed, startup_steps),
+        (0, dropout_steps),
+        (test_current_fixed, recovery_steps),
+    ]
+    await tester.run_profile(profile)
+
+    startup_intervals = tester.inter_spike_intervals_in_window(0, startup_steps)
+    recovery_intervals = tester.inter_spike_intervals_in_window(
+        recovery_start, recovery_start + recovery_steps
+    )
+
+    # Compare early startup against early recovery after current restarts.
+    startup_early = startup_intervals[:6]
+    recovery_early = recovery_intervals[:6]
+
+    assert (
+        len(startup_early) >= 4
+    ), f"Not enough startup intervals for analysis: got {len(startup_early)}"
+    assert (
+        len(recovery_early) >= 4
+    ), f"Not enough recovery intervals for analysis: got {len(recovery_early)}"
+
+    startup_mean = mean(startup_early)
+    recovery_mean = mean(recovery_early)
+    recovery_gain = startup_mean / recovery_mean if recovery_mean > 0 else 0.0
+
+    dut._log.info(
+        "Case 2 summary: "
+        f"I={test_current_float:.3f} (fixed={test_current_fixed}), "
+        f"startup_mean={startup_mean:.2f}, recovery_mean={recovery_mean:.2f}, "
+        f"recovery_gain={recovery_gain:.3f}"
+    )
+    dut._log.info(
+        f"Case 2 phase boundaries (steps): startup=[0,{startup_steps}), "
+        f"dropout=[{startup_steps},{recovery_start}), recovery=[{recovery_start},{recovery_start + recovery_steps})"
+    )
+
+    tester.export_spike_cycle_csv(
+        Path("../results/fractional_lif_dropout_recovery_spike_cycles.csv")
+    )
+
+    assert recovery_gain > 1.03, (
+        "Expected faster spiking after dropout recovery than initial startup, "
+        f"but recovery_gain={recovery_gain:.3f} (startup_mean={startup_mean:.2f}, recovery_mean={recovery_mean:.2f})."
     )
