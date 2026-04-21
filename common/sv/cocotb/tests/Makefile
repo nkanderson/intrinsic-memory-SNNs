@@ -200,7 +200,7 @@ else ifeq ($(TEST),cp_integration_frac)
     TOPLEVEL = neural_network_fractional
     MODULE = test_cartpole_integration
 else
-    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_bitshift_custom_slow_decay')
+    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
 endif
 
 # Simulator - use Icarus for all tests (event-driven, correct timing)
@@ -311,13 +311,13 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=32
         COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=15
         COMPILE_ARGS += -Pneural_network_fractional.C_SCALED=256 -Pneural_network_fractional.INV_DENOM=... # Set from fractional_constants.txt
-        COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE="$(PWD)/weights/fractional-16-4-32/gl_coefficients.mem"
-        COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE="$(PWD)/weights/fractional-16-4-32/fc1_weights.mem"
-        COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE="$(PWD)/weights/fractional-16-4-32/fc1_bias.mem"
-        COMPILE_ARGS += -Pneural_network_fractional.FC2_WEIGHTS_FILE="$(PWD)/weights/fractional-16-4-32/fc2_weights.mem"
-        COMPILE_ARGS += -Pneural_network_fractional.FC2_BIAS_FILE="$(PWD)/weights/fractional-16-4-32/fc2_bias.mem"
-        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_WEIGHTS_FILE="$(PWD)/weights/fractional-16-4-32/fc_out_weights.mem"
-        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_BIAS_FILE="$(PWD)/weights/fractional-16-4-32/fc_out_bias.mem"
+        COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-32/gl_coefficients.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cp_integration_frac-32-4-16)
         # NOTE: This is one of the core models for testing and validation.
@@ -329,13 +329,13 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=16
         COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=15
         COMPILE_ARGS += -Pneural_network_fractional.C_SCALED=256 -Pneural_network_fractional.INV_DENOM=... # Set from fractional_constants.txt
-        COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE="$(PWD)/weights/fractional-32-4-16/gl_coefficients.mem"
-        COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE="$(PWD)/weights/fractional-32-4-16/fc1_weights.mem"
-        COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE="$(PWD)/weights/fractional-32-4-16/fc1_bias.mem"
-        COMPILE_ARGS += -Pneural_network_fractional.FC2_WEIGHTS_FILE="$(PWD)/weights/fractional-32-4-16/fc2_weights.mem"
-        COMPILE_ARGS += -Pneural_network_fractional.FC2_BIAS_FILE="$(PWD)/weights/fractional-32-4-16/fc2_bias.mem"
-        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_WEIGHTS_FILE="$(PWD)/weights/fractional-32-4-16/fc_out_weights.mem"
-        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_BIAS_FILE="$(PWD)/weights/fractional-32-4-16/fc_out_bias.mem"
+        COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional-32-4-16/gl_coefficients.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_BIAS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_BIAS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cp_integration_lif-32-16)
         # NOTE: This is one of the core models for testing and validation.
@@ -344,12 +344,12 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network.HL2_SIZE=16 -Pneural_network.NUM_ACTIONS=2
         COMPILE_ARGS += -Pneural_network.NUM_TIMESTEPS=30 -Pneural_network.Q_BATCH_SIZE=4
         COMPILE_ARGS += -Pneural_network.FC2_OUTPUT_WIDTH=24
-        COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE="$(PWD)/weights/lif-32-16/fc1_weights.mem"
-        COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE="$(PWD)/weights/lif-32-16/fc1_bias.mem"
-        COMPILE_ARGS += -Pneural_network.FC2_WEIGHTS_FILE="$(PWD)/weights/lif-32-16/fc2_weights.mem"
-        COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE="$(PWD)/weights/lif-32-16/fc2_bias.mem"
-        COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE="$(PWD)/weights/lif-32-16/fc_out_weights.mem"
-        COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE="$(PWD)/weights/lif-32-16/fc_out_bias.mem"
+        COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE=\"$(PWD)/weights/lif-32-16/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE=\"$(PWD)/weights/lif-32-16/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_WEIGHTS_FILE=\"$(PWD)/weights/lif-32-16/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE=\"$(PWD)/weights/lif-32-16/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/lif-32-16/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/lif-32-16/fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cp_integration_lif-64-16)
         # NOTE: This is one of the core models for testing and validation.
@@ -358,12 +358,12 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network.HL2_SIZE=16 -Pneural_network.NUM_ACTIONS=2
         COMPILE_ARGS += -Pneural_network.NUM_TIMESTEPS=30 -Pneural_network.Q_BATCH_SIZE=4
         COMPILE_ARGS += -Pneural_network.FC2_OUTPUT_WIDTH=24
-        COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE="$(PWD)/weights/lif-64-16/fc1_weights.mem"
-        COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE="$(PWD)/weights/lif-64-16/fc1_bias.mem"
-        COMPILE_ARGS += -Pneural_network.FC2_WEIGHTS_FILE="$(PWD)/weights/lif-64-16/fc2_weights.mem"
-        COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE="$(PWD)/weights/lif-64-16/fc2_bias.mem"
-        COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE="$(PWD)/weights/lif-64-16/fc_out_weights.mem"
-        COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE="$(PWD)/weights/lif-64-16/fc_out_bias.mem"
+        COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE=\"$(PWD)/weights/lif-64-16/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE=\"$(PWD)/weights/lif-64-16/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/lif-64-16/fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cp_integration_bitshift_custom_slow_decay)
         # NOTE: This is one of the core models for testing and validation.
@@ -567,13 +567,13 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GHISTORY_LENGTH=32
         COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=15
         COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=... # Set from fractional_constants.txt
-        COMPILE_ARGS += -GGL_COEFF_FILE="$(PWD)/weights/fractional-16-4-32/gl_coefficients.mem"
-        COMPILE_ARGS += -GFC1_WEIGHTS_FILE="$(PWD)/weights/fractional-16-4-32/fc1_weights.mem"
-        COMPILE_ARGS += -GFC1_BIAS_FILE="$(PWD)/weights/fractional-16-4-32/fc1_bias.mem"
-        COMPILE_ARGS += -GFC2_WEIGHTS_FILE="$(PWD)/weights/fractional-16-4-32/fc2_weights.mem"
-        COMPILE_ARGS += -GFC2_BIAS_FILE="$(PWD)/weights/fractional-16-4-32/fc2_bias.mem"
-        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE="$(PWD)/weights/fractional-16-4-32/fc_out_weights.mem"
-        COMPILE_ARGS += -GFC_OUT_BIAS_FILE="$(PWD)/weights/fractional-16-4-32/fc_out_bias.mem"
+        COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-32/gl_coefficients.mem\"
+        COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_weights.mem\"
+        COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_bias.mem\"
+        COMPILE_ARGS += -GFC2_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc2_weights.mem\"
+        COMPILE_ARGS += -GFC2_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc2_bias.mem\"
+        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc_out_weights.mem\"
+        COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cp_integration_frac-32-4-16)
         # NOTE: This is one of the core models for testing and validation.
@@ -585,13 +585,13 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GHISTORY_LENGTH=16
         COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=15
         COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=... # Set from fractional_constants.txt
-        COMPILE_ARGS += -GGL_COEFF_FILE="$(PWD)/weights/fractional-32-4-16/gl_coefficients.mem"
-        COMPILE_ARGS += -GFC1_WEIGHTS_FILE="$(PWD)/weights/fractional-32-4-16/fc1_weights.mem"
-        COMPILE_ARGS += -GFC1_BIAS_FILE="$(PWD)/weights/fractional-32-4-16/fc1_bias.mem"
-        COMPILE_ARGS += -GFC2_WEIGHTS_FILE="$(PWD)/weights/fractional-32-4-16/fc2_weights.mem"
-        COMPILE_ARGS += -GFC2_BIAS_FILE="$(PWD)/weights/fractional-32-4-16/fc2_bias.mem"
-        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE="$(PWD)/weights/fractional-32-4-16/fc_out_weights.mem"
-        COMPILE_ARGS += -GFC_OUT_BIAS_FILE="$(PWD)/weights/fractional-32-4-16/fc_out_bias.mem"
+        COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional-32-4-16/gl_coefficients.mem\"
+        COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_weights.mem\"
+        COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_bias.mem\"
+        COMPILE_ARGS += -GFC2_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc2_weights.mem\"
+        COMPILE_ARGS += -GFC2_BIAS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc2_bias.mem\"
+        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc_out_weights.mem\"
+        COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cp_integration_lif-32-16)
         # NOTE: This is one of the core models for testing and validation.
@@ -600,12 +600,12 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GHL2_SIZE=16 -GNUM_ACTIONS=2
         COMPILE_ARGS += -GNUM_TIMESTEPS=30 -GQ_BATCH_SIZE=4
         COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
-        COMPILE_ARGS += -GFC1_WEIGHTS_FILE="$(PWD)/weights/lif-32-16/fc1_weights.mem"
-        COMPILE_ARGS += -GFC1_BIAS_FILE="$(PWD)/weights/lif-32-16/fc1_bias.mem"
-        COMPILE_ARGS += -GFC2_WEIGHTS_FILE="$(PWD)/weights/lif-32-16/fc2_weights.mem"
-        COMPILE_ARGS += -GFC2_BIAS_FILE="$(PWD)/weights/lif-32-16/fc2_bias.mem"
-        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE="$(PWD)/weights/lif-32-16/fc_out_weights.mem"
-        COMPILE_ARGS += -GFC_OUT_BIAS_FILE="$(PWD)/weights/lif-32-16/fc_out_bias.mem"
+        COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/lif-32-16/fc1_weights.mem\"
+        COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/lif-32-16/fc1_bias.mem\"
+        COMPILE_ARGS += -GFC2_WEIGHTS_FILE=\"$(PWD)/weights/lif-32-16/fc2_weights.mem\"
+        COMPILE_ARGS += -GFC2_BIAS_FILE=\"$(PWD)/weights/lif-32-16/fc2_bias.mem\"
+        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/lif-32-16/fc_out_weights.mem\"
+        COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/lif-32-16/fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cp_integration_lif-64-16)
         # NOTE: This is one of the core models for testing and validation.
@@ -614,12 +614,12 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GHL2_SIZE=16 -GNUM_ACTIONS=2
         COMPILE_ARGS += -GNUM_TIMESTEPS=30 -GQ_BATCH_SIZE=4
         COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
-        COMPILE_ARGS += -GFC1_WEIGHTS_FILE="$(PWD)/weights/lif-64-16/fc1_weights.mem"
-        COMPILE_ARGS += -GFC1_BIAS_FILE="$(PWD)/weights/lif-64-16/fc1_bias.mem"
-        COMPILE_ARGS += -GFC2_WEIGHTS_FILE="$(PWD)/weights/lif-64-16/fc2_weights.mem"
-        COMPILE_ARGS += -GFC2_BIAS_FILE="$(PWD)/weights/lif-64-16/fc2_bias.mem"
-        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE="$(PWD)/weights/lif-64-16/fc_out_weights.mem"
-        COMPILE_ARGS += -GFC_OUT_BIAS_FILE="$(PWD)/weights/lif-64-16/fc_out_bias.mem"
+        COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16/fc1_weights.mem\"
+        COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/lif-64-16/fc1_bias.mem\"
+        COMPILE_ARGS += -GFC2_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16/fc2_weights.mem\"
+        COMPILE_ARGS += -GFC2_BIAS_FILE=\"$(PWD)/weights/lif-64-16/fc2_bias.mem\"
+        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16/fc_out_weights.mem\"
+        COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/lif-64-16/fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cp_integration_bitshift_custom_slow_decay)
         # NOTE: This is one of the core models for testing and validation.
@@ -829,4 +829,4 @@ clean::
 	rm -rf __pycache__
 	rm -rf .pytest_cache
 
-.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16
+.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac
