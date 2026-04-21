@@ -3,15 +3,15 @@
 //
 // Fractional parameters:
 //   alpha = 0.5
-//   lambda = 0.095503
+//   lambda = 0.052640
 //   C = 1 / dt^alpha = 1.000000
-//   denominator = C + lambda = 1.095503
-//   1 / denominator = 0.912823
+//   denominator = C + lambda = 1.052640
+//   1 / denominator = 0.949993
 //
 // SystemVerilog parameters:
-//   parameter HISTORY_LENGTH = 8;
+//   parameter HISTORY_LENGTH = 64;
 //   parameter COEFF_WIDTH = 16;
-//   parameter COEFF_FRAC_BITS = 15;
+//   parameter COEFF_FRAC_BITS = 16;
 //   parameter [15:0] C_SCALED = 16'd256;  // Q8.8
-//   parameter [15:0] INV_DENOM = 16'd59823;  // Q0.16
+//   parameter [15:0] INV_DENOM = 16'd62259;  // Q0.16
 //

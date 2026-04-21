@@ -258,12 +258,12 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network.NUM_TIMESTEPS=30 -Pneural_network.Q_BATCH_SIZE=4
         # FC2 output transport width must be wide enough to avoid clipping before FC_OUT.
         COMPILE_ARGS += -Pneural_network.FC2_OUTPUT_WIDTH=24
-        COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fc1_weights.mem\"
-        COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE=\"$(PWD)/weights/fc1_bias.mem\"
-        COMPILE_ARGS += -Pneural_network.FC2_WEIGHTS_FILE=\"$(PWD)/weights/fc2_weights.mem\"
-        COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE=\"$(PWD)/weights/fc2_bias.mem\"
-        COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fc_out_weights.mem\"
-        COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/fc_out_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16-orig/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE=\"$(PWD)/weights/lif-64-16-orig/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16-orig/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE=\"$(PWD)/weights/lif-64-16-orig/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16-orig/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/lif-64-16-orig/fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cartpole_integration_fractional)
         # Fractional model from weights/fractional_order: 32 HL1, 16 HL2, 30 timesteps
@@ -442,12 +442,12 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GNUM_INPUTS=4 -GHL1_SIZE=64
         COMPILE_ARGS += -GHL2_SIZE=16 -GNUM_ACTIONS=2
         COMPILE_ARGS += -GNUM_TIMESTEPS=30 -GQ_BATCH_SIZE=4
-        COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/fc1_weights.mem\"
-        COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/fc1_bias.mem\"
-        COMPILE_ARGS += -GFC2_WEIGHTS_FILE=\"$(PWD)/weights/fc2_weights.mem\"
-        COMPILE_ARGS += -GFC2_BIAS_FILE=\"$(PWD)/weights/fc2_bias.mem\"
-        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fc_out_weights.mem\"
-        COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/fc_out_bias.mem\"
+        COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16-orig/fc1_weights.mem\"
+        COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/lif-64-16-orig/fc1_bias.mem\"
+        COMPILE_ARGS += -GFC2_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16-orig/fc2_weights.mem\"
+        COMPILE_ARGS += -GFC2_BIAS_FILE=\"$(PWD)/weights/lif-64-16-orig/fc2_bias.mem\"
+        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16-orig/fc_out_weights.mem\"
+        COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/lif-64-16-orig/fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cartpole_integration_fractional)
         # Fractional model from weights/fractional_order: 32 HL1, 16 HL2, 30 timesteps

@@ -1,0 +1,10 @@
+// Parameter: fc2.bias
+// Shape: [4]
+// Format: QS2_13 (16-bit signed, 2 integer bits, 13 fractional bits)
+// Range: [-4.000000, 3.999878], Resolution: 7.999878
+// Total values: 4
+//
+E166  // [0] = -0.956299
+0F9A  // [1] = 0.487549
+0E2D  // [2] = 0.442993
+1C30  // [3] = 0.880859

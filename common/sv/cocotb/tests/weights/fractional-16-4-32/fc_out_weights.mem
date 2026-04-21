@@ -1,0 +1,14 @@
+// Parameter: fc_out.weight
+// Shape: [2, 4]
+// Format: QS2_13 (16-bit signed, 2 integer bits, 13 fractional bits)
+// Range: [-4.000000, 3.999878], Resolution: 7.999878
+// Total values: 8
+//
+D960  // [0] = -1.207031
+007C  // [1] = 0.015137
+D9F0  // [2] = -1.189453
+18AE  // [3] = 0.771240
+D586  // [4] = -1.327393
+0F3D  // [5] = 0.476196
+DE99  // [6] = -1.043823
+0D87  // [7] = 0.422729
