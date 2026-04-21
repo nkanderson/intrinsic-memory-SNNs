@@ -1,0 +1,18 @@
+Using device: cuda
+Using config: bitshift-custom_slow_decay-32hl1-8hl2-8hist
+Loading pre-trained model from models/dqn_bitshift-custom_slow_decay-32hl1-8hl2-8hist-best-generalization.pth
+Loaded mode for evaluation: neuron_type=bitshift, hidden_sizes=(32, 8)
+Resuming from episode 299 (prev avg: 500.00)
+Running evaluation for 10 episodes with fixed seeds: [42, 49, 56, 63, 70, 77, 84, 91, 98, 105]
+Episode 1 (seed=42): 10000.0 steps
+Episode 2 (seed=49): 10000.0 steps
+Episode 3 (seed=56): 10000.0 steps
+Episode 4 (seed=63): 10000.0 steps
+Episode 5 (seed=70): 10000.0 steps
+Episode 6 (seed=77): 10000.0 steps
+Episode 7 (seed=84): 10000.0 steps
+Episode 8 (seed=91): 10000.0 steps
+Episode 9 (seed=98): 10000.0 steps
+Episode 10 (seed=105): 10000.0 steps
+Average reward over 10 episodes: 10000.00
+Evaluation complete. Exiting.
