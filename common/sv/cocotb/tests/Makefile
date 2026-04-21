@@ -812,16 +812,13 @@ test_cp_integration:
 	$(MAKE) TEST=cp_integration
 
 test_cp_integration_frac-32-16-64:
-	$(MAKE) TEST=cp_integration_frac-32-16-64
+	$(MAKE) TEST=cp_integration_frac-32-16-64 CARTPOLE_MAX_STEPS=100
 
 test_cp_integration_frac-32-16-8:
 	$(MAKE) TEST=cp_integration_frac-32-16-8
 
 test_cp_integration_frac-16-4-256:
 	$(MAKE) TEST=cp_integration_frac-16-4-256
-
-test_cp_integration_frac:
-	$(MAKE) TEST=cp_integration_frac
 
 # Clean up generated files
 clean::

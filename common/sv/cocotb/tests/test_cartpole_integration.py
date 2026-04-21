@@ -34,7 +34,18 @@ UNSIGNED_RANGE = 2**TOTAL_BITS
 NUM_INPUTS = 4
 NUM_ACTIONS = 2
 NUM_TIMESTEPS = 30
+DEFAULT_CARTPOLE_MAX_STEPS = 500
 FULL_DEBUG = os.getenv("FULL_DEBUG", os.getenv("SNAPSHOT_FULL_DEBUG", "0")) == "1"
+
+
+def get_cartpole_max_steps() -> int:
+    """Return configured CartPole max steps, defaulting to 500."""
+    raw = os.getenv("CARTPOLE_MAX_STEPS", str(DEFAULT_CARTPOLE_MAX_STEPS))
+    try:
+        steps = int(raw)
+    except ValueError:
+        return DEFAULT_CARTPOLE_MAX_STEPS
+    return steps if steps > 0 else DEFAULT_CARTPOLE_MAX_STEPS
 
 
 def _read_int_param(dut, name: str, default: int) -> int:
@@ -560,7 +571,7 @@ async def test_cartpole_single_episode(dut):
     Run a single CartPole episode using the hardware neural network.
 
     This test validates that the trained model can balance the pole.
-    A successful episode should last close to 500 steps (the CartPole max).
+    A successful episode should last close to the configured max steps.
     """
     clock = Clock(dut.clk, 10, unit="ns")  # 100 MHz
     cocotb.start_soon(clock.start())
@@ -575,7 +586,8 @@ async def test_cartpole_single_episode(dut):
 
     total_reward = 0
     step_count = 0
-    max_steps = 500  # CartPole-v1 limit
+    max_steps = get_cartpole_max_steps()
+    min_passing_steps = int(np.ceil(0.95 * max_steps))
 
     dut._log.info("Starting CartPole episode...")
 
@@ -599,9 +611,10 @@ async def test_cartpole_single_episode(dut):
 
     dut._log.info(f"Episode finished: {step_count} steps, total reward: {total_reward}")
 
-    # A well-trained model should balance for at least 200 steps on average
-    # The model was trained to 495+ average reward, so expect good performance
-    assert step_count >= 100, f"Episode too short: {step_count} steps (expected >= 100)"
+    assert step_count >= min_passing_steps, (
+        f"Episode too short: {step_count} steps "
+        f"(expected >= {min_passing_steps}, 95% of max_steps={max_steps})"
+    )
 
     dut._log.info(f"SUCCESS: CartPole balanced for {step_count} steps")
 
@@ -622,14 +635,14 @@ async def test_cartpole_multiple_episodes(dut):
     # Create CartPole environment
     env = gym.make("CartPole-v1")
 
+    max_steps = get_cartpole_max_steps()
+
     async def run_episode(seed: int) -> tuple[float, int]:
         await reset_dut(dut)
 
         observation, _ = env.reset(seed=seed)
         total_reward = 0.0
         step_count = 0
-        max_steps = 500
-
         while step_count < max_steps:
             action = await run_inference(dut, observation)
             observation, reward, terminated, truncated, _ = env.step(action)
@@ -679,10 +692,13 @@ async def test_cartpole_multiple_episodes(dut):
     dut._log.info(f"  Min reward: {min_reward:.1f}")
     dut._log.info(f"  Max reward: {max_reward:.1f}")
 
-    expected_avg = 400
+    expected_avg = 0.90 * max_steps
     assert (
         avg_reward >= expected_avg
-    ), f"Average reward too low: {avg_reward:.1f} (expected >= {expected_avg})"
+    ), (
+        f"Average reward too low: {avg_reward:.1f} "
+        f"(expected >= {expected_avg:.1f}, 90% of max_steps={max_steps})"
+    )
 
     dut._log.info(f"SUCCESS: Average reward {avg_reward:.1f} meets threshold")
 

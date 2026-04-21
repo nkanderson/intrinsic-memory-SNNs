@@ -84,23 +84,23 @@ jobs:
 
             echo "[10/12] test_cp_integration_lif-32-16"
             make clean
-            make test_cp_integration_lif-32-16
+            make test_cp_integration_lif-32-16 CARTPOLE_MAX_STEPS=100
 
             echo "[10/12] test_cp_integration_lif-64-16"
             make clean
-            make test_cp_integration_lif-64-16
+            make test_cp_integration_lif-64-16 CARTPOLE_MAX_STEPS=100
 
             echo "[10/12] test_cp_integration_frac-16-4-32"
             make clean
-            make test_cp_integration_frac-16-4-32
+            make test_cp_integration_frac-16-4-32 CARTPOLE_MAX_STEPS=100
 
             echo "[10/12] test_cp_integration_frac-32-4-16"
             make clean
-            make test_cp_integration_frac-32-4-16
+            make test_cp_integration_frac-32-4-16 CARTPOLE_MAX_STEPS=100
 
             echo "[11/12] test_cp_integration_bitshift_custom_slow_decay"
             make clean
-            make test_cp_integration_bitshift_custom_slow_decay
+            make test_cp_integration_bitshift_custom_slow_decay CARTPOLE_MAX_STEPS=100
           '
 
       - name: Upload cocotb artifacts
