@@ -244,12 +244,12 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network.NUM_INPUTS=4 -Pneural_network.HL1_SIZE=8
         COMPILE_ARGS += -Pneural_network.HL2_SIZE=4 -Pneural_network.NUM_ACTIONS=2
         COMPILE_ARGS += -Pneural_network.NUM_TIMESTEPS=4 -Pneural_network.Q_BATCH_SIZE=2
-        COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE=\"$(PWD)/weights/nn_fc1_weights.mem\"
-        COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE=\"$(PWD)/weights/nn_fc1_bias.mem\"
-        COMPILE_ARGS += -Pneural_network.FC2_WEIGHTS_FILE=\"$(PWD)/weights/nn_fc2_weights.mem\"
-        COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE=\"$(PWD)/weights/nn_fc2_bias.mem\"
-        COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/nn_fc_out_weights.mem\"
-        COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/nn_fc_out_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cartpole_integration)
         # Full model: 64 HL1, 16 HL2, 30 timesteps
@@ -430,12 +430,12 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GNUM_INPUTS=4 -GHL1_SIZE=8
         COMPILE_ARGS += -GHL2_SIZE=4 -GNUM_ACTIONS=2
         COMPILE_ARGS += -GNUM_TIMESTEPS=4 -GQ_BATCH_SIZE=2
-        COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/nn_fc1_weights.mem\"
-        COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/nn_fc1_bias.mem\"
-        COMPILE_ARGS += -GFC2_WEIGHTS_FILE=\"$(PWD)/weights/nn_fc2_weights.mem\"
-        COMPILE_ARGS += -GFC2_BIAS_FILE=\"$(PWD)/weights/nn_fc2_bias.mem\"
-        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/nn_fc_out_weights.mem\"
-        COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/nn_fc_out_bias.mem\"
+        COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc1_weights.mem\"
+        COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc1_bias.mem\"
+        COMPILE_ARGS += -GFC2_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc2_weights.mem\"
+        COMPILE_ARGS += -GFC2_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc2_bias.mem\"
+        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_weights.mem\"
+        COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cartpole_integration)
         # Full model: 64 HL1, 16 HL2, 30 timesteps
