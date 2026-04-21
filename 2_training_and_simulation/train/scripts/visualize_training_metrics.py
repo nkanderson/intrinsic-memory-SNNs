@@ -323,7 +323,9 @@ def plot_multi(
     style_handles: list[Line2D] = []
     if show_running_avg:
         style_handles.append(
-            Line2D([0], [0], color="black", linewidth=2.2, label="Running average (100)")
+            Line2D(
+                [0], [0], color="black", linewidth=2.2, label="Running average (100)"
+            )
         )
     if show_generalization:
         style_handles.append(
@@ -366,7 +368,7 @@ def main() -> None:
     script_dir = Path(__file__).resolve().parent
     train_dir = script_dir.parent
 
-    default_input = train_dir / "metrics"
+    default_input = train_dir / "metrics" / "training"
     default_output = train_dir / "images" / "training"
 
     parser = argparse.ArgumentParser(description="Visualize training metrics CSV files")
