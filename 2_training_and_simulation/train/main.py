@@ -366,8 +366,8 @@ if __name__ == "__main__":
     models_dir.mkdir(exist_ok=True)
 
     # Generate model filenames based on config name
-    best_model_filename = str(models_dir / f"dqn_{config_name}-best.pth")
-    final_model_filename = str(models_dir / f"dqn_{config_name}-final.pth")
+    best_model_filename = str(models_dir / f"{config_name}-best.pth")
+    final_model_filename = str(models_dir / f"{config_name}-final.pth")
 
     # Metrics logging path (CSV)
     metrics_dir = Path("metrics")
@@ -375,7 +375,7 @@ if __name__ == "__main__":
     metrics_csv_path = (
         Path(metrics_csv_arg)
         if metrics_csv_arg is not None
-        else metrics_dir / f"dqn_{config_name}-training-metrics.csv"
+        else metrics_dir / f"{config_name}-training-metrics.csv"
     )
 
     #
@@ -596,6 +596,7 @@ if __name__ == "__main__":
                 "running_avg_100",
                 "generalization_avg",
                 "generalization_seeds",
+                "generalization_rewards",
                 "best_running_avg_100",
                 "best_generalization_avg",
                 "saved_best_running_model",
@@ -695,6 +696,7 @@ if __name__ == "__main__":
                 # Optional fixed-seed evaluation for generalization-based model selection
                 saved_best_generalization_model = False
                 eval_seeds = []
+                eval_rewards = []
                 current_episode = i_episode - start_episode + 1
                 if eval_every_episodes > 0 and (
                     current_episode % eval_every_episodes == 0
@@ -703,7 +705,7 @@ if __name__ == "__main__":
                         eval_seed_base + i * eval_seed_stride
                         for i in range(eval_num_episodes)
                     ]
-                    _, eval_avg = agent.evaluate(
+                    eval_rewards, eval_avg = agent.evaluate(
                         env,
                         num_episodes=eval_num_episodes,
                         render=False,
@@ -719,7 +721,7 @@ if __name__ == "__main__":
                         agent.episode = i_episode
                         agent.avg_reward = eval_avg
                         generalization_best_model = (
-                            models_dir / f"dqn_{config_name}-best-generalization.pth"
+                            models_dir / f"{config_name}-best-generalization.pth"
                         )
                         agent.save(generalization_best_model)
                         print(
@@ -739,6 +741,7 @@ if __name__ == "__main__":
                             "running_avg_100",
                             "generalization_avg",
                             "generalization_seeds",
+                            "generalization_rewards",
                             "best_running_avg_100",
                             "best_generalization_avg",
                             "saved_best_running_model",
@@ -755,6 +758,9 @@ if __name__ == "__main__":
                             "generalization_avg": last_generalization_avg,
                             "generalization_seeds": (
                                 "|".join(map(str, eval_seeds)) if eval_seeds else ""
+                            ),
+                            "generalization_rewards": (
+                                "|".join(map(str, eval_rewards)) if eval_rewards else ""
                             ),
                             "best_running_avg_100": best_avg_reward,
                             "best_generalization_avg": best_eval_avg_reward,
