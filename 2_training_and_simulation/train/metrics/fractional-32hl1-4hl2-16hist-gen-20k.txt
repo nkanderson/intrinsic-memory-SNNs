@@ -1,0 +1,20 @@
+No config specified, will use config from loaded model
+Using device: cuda
+Using config: dqn_fractional-32hl1-4hl2-16hist-run2-best-generalization
+Loading pre-trained model from models/dqn_fractional-32hl1-4hl2-16hist-run2-best-generalization.pth
+Loaded mode for evaluation: neuron_type=fractional, hidden_sizes=(32, 4)
+  Fractional parameters: alpha=0.5, lam=0.05263950403873735, history_length=16, dt=1.0
+Resuming from episode 649 (prev avg: 500.00)
+Running evaluation for 10 episodes with fixed seeds: [43, 50, 57, 64, 71, 78, 85, 92, 99, 106]
+Episode 1 (seed=43): 20000.0 steps
+Episode 2 (seed=50): 20000.0 steps
+Episode 3 (seed=57): 20000.0 steps
+Episode 4 (seed=64): 20000.0 steps
+Episode 5 (seed=71): 20000.0 steps
+Episode 6 (seed=78): 20000.0 steps
+Episode 7 (seed=85): 20000.0 steps
+Episode 8 (seed=92): 20000.0 steps
+Episode 9 (seed=99): 20000.0 steps
+Episode 10 (seed=106): 20000.0 steps
+Average reward over 10 episodes: 20000.00
+Evaluation complete. Exiting.
