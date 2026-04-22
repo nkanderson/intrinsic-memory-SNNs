@@ -50,3 +50,12 @@ python scripts/manage_weights.py export hardware models/dqn_optimized-leaky-64hl
 python scripts/manage_weights.py export hardware models/dqn_fractional-16hl1-4hl2-32hist-best-generalization.pth --bits 16 --frac 13 --output ../../common/sv/cocotb/tests/weights/fractional-16-4-32
 python scripts/manage_weights.py export hardware models/dqn_fractional-32hl1-4hl2-16hist-run2-best-generalization.pth --bits 16 --frac 13 --output ../../common/sv/cocotb/tests/weights/fractional-32-4-16
 ```
+
+## V2 Models
+
+1. Training:
+```bash
+python main.py --config configs/bitshift-custom_slow_decay-32hl1-8hl2-8hist.yaml
+python main.py --config configs/fractional-16hl1-4hl2-32hist.yaml
+
+```
