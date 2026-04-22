@@ -1,449 +1,298 @@
 """
-Plot training metrics from CartPole SNN runs.
+visualize_training_metrics.py
+Visualizes SNN RL training data from a CSV log file.
 
-Default behavior:
-- Input:  train/metrics directory
-- Output: train/images/training directory
-- Plot: episode reward (light), running_avg_100 (line), generalization_avg (markers)
-
-If a directory is provided as input, all CSV files in that directory are combined
-into one multi-config comparison plot.
+Usage:
+    python visualize_training_metrics.py metrics/bitshift.csv
+    python visualize_training_metrics.py metrics/bitshift.csv --ema-alpha 0.1 --output images/training/bitshift-training.png
+    python visualize_training_metrics.py metrics/bitshift.csv --roll-window 100 --output images/training/bitshift-training.png
 """
 
-from __future__ import annotations
-
 import argparse
-import csv
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Iterable
-
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.lines import Line2D
+import pandas as pd
+
+# ── Defaults ──────────────────────────────────────────────────────────────────
+DEFAULT_EMA_ALPHA = 0.05  # lower = smoother / more lag
+DEFAULT_ROLL_WINDOW = 50  # window for rolling-std band on training panel
+SCATTER_ALPHA = 0.18
+BAND_ALPHA = 0.20
+# ─────────────────────────────────────────────────────────────────────────────
+
+DARK_BG = "#0f1117"
+PANEL_BG = "#161b22"
+SPINE_COLOR = "#30363d"
+TICK_COLOR = "#c9d1d9"
+RAW_COLOR = "#8b949e"
+ACCENT_TRAIN = "#58a6ff"
+ACCENT_GEN = "#3fb950"
+ACCENT_BEST = "#f78166"
+ACCENT_EPS = "#d2a8ff"
 
 
-@dataclass
-class MetricSeries:
-    label: str
-    episode: np.ndarray
-    episode_reward: np.ndarray
-    running_avg_100: np.ndarray
-    generalization_avg: np.ndarray
-    generalization_seeds: np.ndarray
+def ema(series, alpha):
+    return series.ewm(alpha=alpha, adjust=False).mean()
 
 
-def _parse_float(value: str | None) -> float:
-    if value is None:
-        return np.nan
-    value = value.strip()
-    if value == "":
-        return np.nan
-    return float(value)
+def parse_pipe_floats(cell):
+    if pd.isna(cell) or str(cell).strip() == "":
+        return None
+    try:
+        return [float(v) for v in str(cell).split("|")]
+    except ValueError:
+        return None
 
 
-def _parse_generalization_seeds(value: str | None) -> float:
-    """Parse generalization_seeds into a numeric indicator/count.
+def load(path):
+    df = pd.read_csv(path, header=0)
+    df.columns = df.columns.str.strip()
+    rename = {
+        "episode": "episode",
+        "episode_steps": "episode_steps",
+        "episode_reward": "episode_reward",
+        "epsilon": "epsilon",
+        "running_avg_100": "running_avg",
+        "generalization_avg": "gen_avg",
+        "generalization_seeds": "gen_seeds",
+        "generalization_rewards": "gen_rewards",
+        "best_running_avg_100": "best_running_avg",
+        "best_generalization_avg": "best_gen_avg",
+        "saved_best_running_model": "saved_running",
+        "saved_best_generalization_model": "saved_gen",
+    }
+    df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
 
-    Supports:
-    - numeric values (e.g., "30")
-    - pipe-delimited lists (e.g., "42|49|56|...")
-    """
-    if value is None:
-        return np.nan
-    value = value.strip()
-    if value == "":
-        return np.nan
+    if "gen_rewards" in df.columns:
+        reward_lists = df["gen_rewards"].apply(parse_pipe_floats)
+    else:
+        reward_lists = pd.Series([None] * len(df), index=df.index)
 
-    # Newer metric files may store a pipe-delimited list; treat as count.
-    if "|" in value:
-        items = [token for token in value.split("|") if token.strip()]
-        return float(len(items)) if items else np.nan
-
-    return float(value)
-
-
-def _label_from_filename(path: Path) -> str:
-    name = path.stem
-    if name.startswith("dqn_"):
-        name = name[4:]
-    if name.endswith("-training-metrics"):
-        name = name[: -len("-training-metrics")]
-
-    parts = [p for p in name.split("-") if p]
-    if not parts:
-        return name
-
-    # Find architecture/history tokens by suffix, keep all prior tokens as neuron-type descriptor.
-    hl1_idx = next((i for i, p in enumerate(parts) if p.endswith("hl1")), None)
-    hl2_idx = next((i for i, p in enumerate(parts) if p.endswith("hl2")), None)
-    hist_idx = next((i for i, p in enumerate(parts) if p.endswith("hist")), None)
-
-    if hl1_idx is None or hl2_idx is None:
-        return name
-
-    neuron_desc = "-".join(parts[:hl1_idx])
-    if not neuron_desc:
-        neuron_desc = parts[0]
-
-    # Human-readable neuron descriptor, e.g.:
-    # bitshift-custom_slow_decay -> Bitshift Custom Slow Decay
-    neuron_words: list[str] = []
-    for segment in neuron_desc.split("-"):
-        for sub in segment.split("_"):
-            if sub:
-                neuron_words.append(sub.capitalize())
-    neuron_label = " ".join(neuron_words) if neuron_words else neuron_desc.capitalize()
-
-    hl1_token = parts[hl1_idx]
-    hl2_token = parts[hl2_idx]
-    hl1_size = hl1_token[: -len("hl1")]
-    hl2_size = hl2_token[: -len("hl2")]
-
-    label_parts = [
-        neuron_label,
-        f"Hidden layer 1 size {hl1_size}",
-        f"Hidden layer 2 size {hl2_size}",
-    ]
-    if hist_idx is not None and hist_idx > hl2_idx:
-        hist_token = parts[hist_idx]
-        hist_size = hist_token[: -len("hist")]
-        label_parts.append(f"History length {hist_size}")
-
-    return " | ".join(label_parts)
+    df["gen_min"] = reward_lists.apply(lambda r: float(np.min(r)) if r else np.nan)
+    df["gen_max"] = reward_lists.apply(lambda r: float(np.max(r)) if r else np.nan)
+    df["gen_p25"] = reward_lists.apply(
+        lambda r: float(np.percentile(r, 25)) if r else np.nan
+    )
+    df["gen_p75"] = reward_lists.apply(
+        lambda r: float(np.percentile(r, 75)) if r else np.nan
+    )
+    df["gen_std"] = reward_lists.apply(lambda r: float(np.std(r)) if r else np.nan)
+    df["gen_n"] = reward_lists.apply(lambda r: len(r) if r else np.nan)
+    return df
 
 
-def load_metrics_csv(path: Path) -> MetricSeries:
-    episodes: list[float] = []
-    rewards: list[float] = []
-    running: list[float] = []
-    generalization: list[float] = []
-    generalization_seeds: list[float] = []
+def style_ax(ax):
+    ax.set_facecolor(PANEL_BG)
+    ax.tick_params(colors=TICK_COLOR, labelsize=9)
+    ax.xaxis.label.set_color(TICK_COLOR)
+    ax.yaxis.label.set_color(TICK_COLOR)
+    ax.title.set_color(TICK_COLOR)
+    for spine in ax.spines.values():
+        spine.set_edgecolor(SPINE_COLOR)
+    ax.grid(color=SPINE_COLOR, linewidth=0.5, linestyle="--", alpha=0.6)
 
-    with path.open("r", newline="") as f:
-        reader = csv.DictReader(f)
-        required = {"episode", "episode_reward"}
-        missing = required - set(reader.fieldnames or [])
-        if missing:
-            raise ValueError(f"{path.name}: missing required columns {sorted(missing)}")
 
-        for row in reader:
-            episodes.append(_parse_float(row.get("episode")))
-            rewards.append(_parse_float(row.get("episode_reward")))
-            running.append(_parse_float(row.get("running_avg_100")))
-            generalization.append(_parse_float(row.get("generalization_avg")))
-            generalization_seeds.append(
-                _parse_generalization_seeds(row.get("generalization_seeds"))
-            )
+def plot(df, ema_alpha, roll_window, output):
+    eps = df["episode"]
+    rewards = df["episode_reward"]
 
-    return MetricSeries(
-        label=_label_from_filename(path),
-        episode=np.array(episodes, dtype=float),
-        episode_reward=np.array(rewards, dtype=float),
-        running_avg_100=np.array(running, dtype=float),
-        generalization_avg=np.array(generalization, dtype=float),
-        generalization_seeds=np.array(generalization_seeds, dtype=float),
+    smooth = ema(rewards, ema_alpha)
+    roll_std = rewards.rolling(roll_window, min_periods=5).std()
+    band_hi = smooth + roll_std
+    band_lo = smooth - roll_std
+
+    gen_mask = df["gen_avg"].notna()
+    gen_eps = eps[gen_mask]
+    gen_avg = df["gen_avg"][gen_mask]
+    gen_min = df["gen_min"][gen_mask]
+    gen_max = df["gen_max"][gen_mask]
+    gen_p25 = df["gen_p25"][gen_mask]
+    gen_p75 = df["gen_p75"][gen_mask]
+    best_gen = df["best_gen_avg"][gen_mask]
+
+    has_minmax = gen_min.notna().any()
+    has_iqr = gen_p25.notna().any()
+
+    saved_run_eps = eps[df["saved_running"] == 1]
+    saved_gen_df = df[df["saved_gen"] == 1]
+
+    fig, axes = plt.subplots(
+        3,
+        1,
+        figsize=(14, 10),
+        sharex=True,
+        gridspec_kw={"height_ratios": [3, 2, 1], "hspace": 0.06},
+    )
+    fig.patch.set_facecolor(DARK_BG)
+    ax_train, ax_gen, ax_eps_panel = axes
+    for ax in axes:
+        style_ax(ax)
+
+    # ── Panel 1: Training ────────────────────────────────────────────────────
+    ax_train.scatter(
+        eps,
+        rewards,
+        s=5,
+        color=RAW_COLOR,
+        alpha=SCATTER_ALPHA,
+        linewidths=0,
+        zorder=1,
+        label="Episode reward",
+    )
+    ax_train.fill_between(
+        eps,
+        band_lo,
+        band_hi,
+        color=ACCENT_TRAIN,
+        alpha=BAND_ALPHA,
+        zorder=2,
+        label=f"EMA ± rolling std ({roll_window} ep)",
+    )
+    ax_train.plot(
+        eps,
+        smooth,
+        color=ACCENT_TRAIN,
+        linewidth=2.0,
+        zorder=3,
+        label=f"EMA  α={ema_alpha}",
+    )
+    ax_train.plot(
+        eps,
+        df["best_running_avg"],
+        color=ACCENT_BEST,
+        linewidth=1.1,
+        linestyle="--",
+        alpha=0.75,
+        zorder=3,
+        label="Best running avg",
+    )
+    for x in saved_run_eps:
+        ax_train.axvline(x, color=ACCENT_BEST, linewidth=0.8, alpha=0.35, zorder=2)
+
+    ax_train.set_ylabel("Reward", fontsize=10)
+    ax_train.set_title("Training Episode Rewards", fontsize=11, pad=6)
+    ax_train.legend(
+        loc="upper left",
+        fontsize=8,
+        framealpha=0.25,
+        labelcolor=TICK_COLOR,
+        facecolor=PANEL_BG,
+        edgecolor=SPINE_COLOR,
     )
 
-
-def _finite_mask(arr: np.ndarray) -> np.ndarray:
-    return np.isfinite(arr)
-
-
-def _generalization_mask(series: MetricSeries) -> np.ndarray:
-    # Plot only when generalization was actually run.
-    # Preferred signal: generalization_seeds > 0.
-    # Fallback: finite generalization_avg if seeds column is unavailable.
-    avg_ok = np.isfinite(series.generalization_avg)
-    seeds_ok = np.isfinite(series.generalization_seeds)
-    if seeds_ok.any():
-        return avg_ok & seeds_ok & (series.generalization_seeds > 0)
-    return avg_ok
-
-
-def _legend_multiline(label: str) -> str:
-    """Compact legend label with line breaks."""
-    return label.replace(" | ", "\n")
-
-
-def plot_single(
-    series: MetricSeries,
-    output_path: Path,
-    show_reward: bool,
-    show_running_avg: bool,
-    show_generalization: bool,
-) -> None:
-    fig, ax = plt.subplots(figsize=(11, 6))
-
-    if show_reward:
-        ax.plot(
-            series.episode,
-            series.episode_reward,
-            color="tab:blue",
-            alpha=0.25,
-            linewidth=1.0,
-            label="Episode reward",
+    # ── Panel 2: Generalization ───────────────────────────────────────────────
+    if has_minmax:
+        ax_gen.fill_between(
+            gen_eps,
+            gen_min,
+            gen_max,
+            color=ACCENT_GEN,
+            alpha=0.12,
+            zorder=1,
+            label="Seed min–max range",
+        )
+    if has_iqr:
+        ax_gen.fill_between(
+            gen_eps,
+            gen_p25,
+            gen_p75,
+            color=ACCENT_GEN,
+            alpha=0.28,
+            zorder=2,
+            label="Seed IQR (25–75%)",
+        )
+    ax_gen.plot(
+        gen_eps,
+        gen_avg,
+        color=ACCENT_GEN,
+        linewidth=2.0,
+        zorder=3,
+        marker="o",
+        markersize=4,
+        label="Gen mean",
+    )
+    ax_gen.plot(
+        gen_eps,
+        best_gen,
+        color=ACCENT_BEST,
+        linewidth=1.1,
+        linestyle="--",
+        alpha=0.8,
+        zorder=3,
+        label="Best gen avg",
+    )
+    if not saved_gen_df.empty:
+        ax_gen.scatter(
+            saved_gen_df["episode"],
+            saved_gen_df["best_gen_avg"],
+            color=ACCENT_BEST,
+            s=70,
+            zorder=5,
+            marker="*",
+            label="Best gen model saved",
         )
 
-    if show_running_avg:
-        mask = _finite_mask(series.running_avg_100)
-        if mask.any():
-            ax.plot(
-                series.episode[mask],
-                series.running_avg_100[mask],
-                color="tab:blue",
-                linewidth=2.5,
-                label="Running avg (100)",
-            )
-
-    if show_generalization:
-        mask = _generalization_mask(series)
-        if mask.any():
-            ax.scatter(
-                series.episode[mask],
-                series.generalization_avg[mask],
-                color="tab:orange",
-                marker="o",
-                s=45,
-                label="Generalization avg",
-                zorder=3,
-            )
-            ax.plot(
-                series.episode[mask],
-                series.generalization_avg[mask],
-                color="tab:orange",
-                linewidth=1.25,
-                alpha=0.8,
-                linestyle="--",
-            )
-
-    ax.set_xlabel("Episode")
-    ax.set_ylabel("Reward")
-    ax.grid(True, alpha=0.25)
-    ax.legend(loc="upper left", fontsize=9, framealpha=0.9)
-    fig.tight_layout()
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output_path, dpi=180)
-    plt.close(fig)
-
-
-def plot_multi(
-    series_list: Iterable[MetricSeries],
-    output_path: Path,
-    show_reward: bool,
-    show_running_avg: bool,
-    show_generalization: bool,
-    jitter_generalization: bool,
-) -> None:
-    fig, ax = plt.subplots(figsize=(12, 7))
-    color_handles: list[Line2D] = []
-    marker_styles = ["o", "s", "^", "D", "v", "P", "X", "*", "<", ">"]
-
-    for idx, series in enumerate(series_list):
-        color = f"C{idx % 10}"
-        marker = marker_styles[idx % len(marker_styles)]
-
-        if show_reward:
-            ax.plot(
-                series.episode,
-                series.episode_reward,
-                color=color,
-                alpha=0.12,
-                linewidth=0.8,
-            )
-
-        if show_running_avg:
-            mask = _finite_mask(series.running_avg_100)
-            if mask.any():
-                ax.plot(
-                    series.episode[mask],
-                    series.running_avg_100[mask],
-                    color=color,
-                    linewidth=2.0,
-                )
-                color_handles.append(
-                    Line2D(
-                        [0],
-                        [0],
-                        color=color,
-                        linewidth=3,
-                        label=_legend_multiline(series.label),
-                    )
-                )
-
-        if show_generalization:
-            mask = _generalization_mask(series)
-            if mask.any():
-                x_vals = series.episode[mask]
-                y_vals = series.generalization_avg[mask]
-
-                if jitter_generalization:
-                    rng = np.random.default_rng(12345 + idx)
-                    x_vals = x_vals + rng.normal(loc=0.0, scale=0.18, size=len(x_vals))
-
-                ax.scatter(
-                    x_vals,
-                    y_vals,
-                    facecolors="none",
-                    edgecolors=color,
-                    marker=marker,
-                    s=42,
-                    linewidths=1.4,
-                    alpha=0.75,
-                )
-                ax.plot(
-                    x_vals,
-                    y_vals,
-                    color=color,
-                    linewidth=1.1,
-                    alpha=0.75,
-                    linestyle="--",
-                )
-
-    ax.set_xlabel("Episode")
-    ax.set_ylabel("Reward")
-    ax.grid(True, alpha=0.25)
-
-    series_anchor_y = 0.63
-    if color_handles:
-        config_legend = ax.legend(
-            handles=color_handles,
-            loc="upper left",
-            fontsize=8,
-            framealpha=0.9,
-            title="Configuration (color)",
-            title_fontsize=9,
-        )
-        ax.add_artist(config_legend)
-        # Place the series legend directly beneath config legend.
-        # Approximate per-entry height in axes coords for compact stacked layout.
-        series_anchor_y = max(0.12, 1.0 - (0.12 + 0.075 * len(color_handles)))
-
-    style_handles: list[Line2D] = []
-    if show_running_avg:
-        style_handles.append(
-            Line2D(
-                [0], [0], color="black", linewidth=2.2, label="Running average (100)"
-            )
-        )
-    if show_generalization:
-        style_handles.append(
-            Line2D(
-                [0],
-                [0],
-                color="black",
-                linestyle="--",
-                linewidth=1.8,
-                label="Generalization average",
-            )
-        )
-    if style_handles:
-        ax.legend(
-            handles=style_handles,
-            loc="upper left",
-            bbox_to_anchor=(0.0, series_anchor_y),
-            fontsize=8,
-            framealpha=0.9,
-            title="Series type",
-            title_fontsize=9,
-        )
-
-    fig.tight_layout()
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output_path, dpi=180)
-    plt.close(fig)
-
-
-def discover_csvs(input_path: Path) -> list[Path]:
-    if input_path.is_file():
-        return [input_path]
-    if input_path.is_dir():
-        return sorted(p for p in input_path.glob("*.csv") if p.is_file())
-    raise FileNotFoundError(f"Input path not found: {input_path}")
-
-
-def main() -> None:
-    script_dir = Path(__file__).resolve().parent
-    train_dir = script_dir.parent
-
-    default_input = train_dir / "metrics" / "training"
-    default_output = train_dir / "images" / "training"
-
-    parser = argparse.ArgumentParser(description="Visualize training metrics CSV files")
-    parser.add_argument(
-        "input_path",
-        nargs="?",
-        default=str(default_input),
-        help="CSV file or directory of CSV files (default: train/metrics)",
-    )
-    parser.add_argument(
-        "--output-dir",
-        default=str(default_output),
-        help="Output image directory (default: train/images/training)",
-    )
-    parser.add_argument(
-        "--no-reward",
-        action="store_true",
-        help="Hide raw episode reward trace",
-    )
-    parser.add_argument(
-        "--no-running-avg",
-        action="store_true",
-        help="Hide running_avg_100",
-    )
-    parser.add_argument(
-        "--no-generalization",
-        action="store_true",
-        help="Hide generalization_avg markers",
-    )
-    parser.add_argument(
-        "--jitter-generalization",
-        action="store_true",
-        help="Apply small x-jitter to generalization markers/line in multi-config plots",
+    ax_gen.set_ylabel("Generalization Reward", fontsize=10)
+    ax_gen.set_title("Generalization Evaluations (across seeds)", fontsize=11, pad=6)
+    ax_gen.legend(
+        loc="upper left",
+        fontsize=8,
+        framealpha=0.25,
+        labelcolor=TICK_COLOR,
+        facecolor=PANEL_BG,
+        edgecolor=SPINE_COLOR,
     )
 
+    # ── Panel 3: Epsilon ──────────────────────────────────────────────────────
+    ax_eps_panel.plot(eps, df["epsilon"], color=ACCENT_EPS, linewidth=1.5, zorder=2)
+    ax_eps_panel.fill_between(
+        eps, 0, df["epsilon"], color=ACCENT_EPS, alpha=0.15, zorder=1
+    )
+    ax_eps_panel.set_ylabel("ε", fontsize=10)
+    ax_eps_panel.set_xlabel("Episode", fontsize=10)
+    ax_eps_panel.set_title("Exploration Rate (ε)", fontsize=11, pad=6)
+    ax_eps_panel.set_ylim(bottom=0)
+
+    fig.suptitle("SNN RL Training Run", fontsize=13, color=TICK_COLOR, y=0.998)
+    plt.tight_layout()
+
+    if output:
+        plt.savefig(output, dpi=150, bbox_inches="tight", facecolor=DARK_BG)
+        print(f"Saved to {output}")
+    else:
+        plt.show()
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Plot SNN RL training logs.")
+    parser.add_argument("csv", help="Path to the training CSV file")
+    parser.add_argument(
+        "--ema-alpha",
+        type=float,
+        default=DEFAULT_EMA_ALPHA,
+        help=f"EMA smoothing factor (default {DEFAULT_EMA_ALPHA})",
+    )
+    parser.add_argument(
+        "--roll-window",
+        type=int,
+        default=DEFAULT_ROLL_WINDOW,
+        help=f"Rolling std window (default {DEFAULT_ROLL_WINDOW})",
+    )
+    parser.add_argument(
+        "--output",
+        "-o",
+        default=None,
+        help="Save to file instead of displaying (e.g. plot.png)",
+    )
     args = parser.parse_args()
 
-    input_path = Path(args.input_path).resolve()
-    output_dir = Path(args.output_dir).resolve()
-
-    csv_files = discover_csvs(input_path)
-    if not csv_files:
-        raise ValueError(f"No CSV files found in {input_path}")
-
-    show_reward = not args.no_reward
-    show_running_avg = not args.no_running_avg
-    show_generalization = not args.no_generalization
-
-    if not (show_reward or show_running_avg or show_generalization):
-        raise ValueError("At least one plot series must be enabled")
-
-    all_series = [load_metrics_csv(path) for path in csv_files]
-
-    if len(all_series) == 1:
-        series = all_series[0]
-        output_path = output_dir / f"{series.label}.png"
-        plot_single(
-            series,
-            output_path,
-            show_reward=show_reward,
-            show_running_avg=show_running_avg,
-            show_generalization=show_generalization,
-        )
-        print(f"Saved: {output_path}")
-    else:
-        output_path = output_dir / "training_comparison.png"
-        plot_multi(
-            all_series,
-            output_path,
-            show_reward=show_reward,
-            show_running_avg=show_running_avg,
-            show_generalization=show_generalization,
-            jitter_generalization=args.jitter_generalization,
-        )
-        print(f"Saved: {output_path}")
+    df = load(args.csv)
+    n_gen = df["gen_avg"].notna().sum()
+    print(
+        f"Loaded {len(df)} episodes | {n_gen} gen checkpoints | "
+        f"ep {df['episode'].min()}–{df['episode'].max()}"
+    )
+    plot(df, args.ema_alpha, args.roll_window, args.output)
 
 
 if __name__ == "__main__":
