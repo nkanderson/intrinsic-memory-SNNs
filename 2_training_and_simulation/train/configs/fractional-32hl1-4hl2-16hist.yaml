@@ -1,6 +1,8 @@
 # Configuration for SNN-DQN on CartPole-v1 with minimal number of neurons
 # Comes from Optuna results of >= 490.0 on 1000 episode training
 # Trial number 78 from fractional-1000ep study.
+# TODO: Could add config for trial 84 params and update name
+# Could also consider trials 86, 87, or maybe 83
 
 training:
   batch_size: 64 # Transitions sampled from replay buffer
@@ -26,6 +28,6 @@ snn:
 
   # Fractional-order LIF specific parameters (used only when neuron_type: fractional)
   alpha: 0.5 # Fractional order for derivative (0 < alpha <= 1)
-  lam: 0.05263950403873735 # Leakage parameter (matches beta=0.9 for reasonable comparison to standard LIF)
+  lam: 0.05263950403873735 # Leakage parameter
   history_length: 16 # Number of past values for GL approximation
   dt: 1.0 # Discrete timestep for GL approximation
