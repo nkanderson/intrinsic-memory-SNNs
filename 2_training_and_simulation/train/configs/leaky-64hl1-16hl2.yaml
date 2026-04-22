@@ -1,0 +1,24 @@
+# Smallest neural network size which achieved >= 490 in Optuna leaky-1000ep study.
+# Study: leaky-1000ep
+# Trial 44
+
+training:
+  batch_size: 256
+  gamma: 0.9653727339988674
+  eps_start: 0.8627340198355602
+  eps_end: 0.01688932971279747
+  eps_decay: 1136
+  tau: 0.005216916735943032
+  lr: 0.0002180272289789983
+  num_episodes: 1000
+  eval_every_episodes: 50 # Run fixed-seed evaluation every N training episodes
+  eval_num_episodes: 30 # Number of episodes for each fixed-seed evaluation
+  eval_seed_base: 42 # First evaluation seed
+  eval_seed_stride: 7 # Seed increment between evaluation episodes
+snn:
+  num_steps: 10
+  beta: 0.876705572701904
+  surrogate_gradient_slope: 25
+  neuron_type: leaky
+  hidden1_size: 64
+  hidden2_size: 16

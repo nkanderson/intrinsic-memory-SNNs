@@ -19,7 +19,7 @@ training:
   eval_seed_stride: 7 # Seed increment between evaluation episodes
 
 snn:
-  num_steps: 10 # SNN simulation timesteps per environment step
+  num_steps: 30 # SNN simulation timesteps per environment step
   beta: 0.9 # LIF neuron membrane decay rate (NOTE: not used for fractional neurons, see lam instead)
   surrogate_gradient_slope: 25 # Slope for fast_sigmoid surrogate gradient
   neuron_type: fractional # Neuron type: 'leaky', 'leakysv', or 'fractional'
