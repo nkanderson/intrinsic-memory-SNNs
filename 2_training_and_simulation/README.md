@@ -57,5 +57,7 @@ python scripts/manage_weights.py export hardware models/dqn_fractional-32hl1-4hl
 ```bash
 python main.py --config configs/bitshift-custom_slow_decay-32hl1-8hl2-8hist.yaml
 python main.py --config configs/fractional-16hl1-4hl2-32hist.yaml
-
+python main.py --config configs/fractional-32hl1-4hl2-16hist.yaml
+python main.py --config configs/leaky-32hl1-16hl2.yaml
+python main.py --config configs/leaky-64hl1-16hl2.yaml
 ```
