@@ -366,7 +366,7 @@ if __name__ == "__main__":
     models_dir.mkdir(exist_ok=True)
 
     # Generate model filenames based on config name
-    best_model_filename = str(models_dir / f"{config_name}-best.pth")
+    best_model_filename = str(models_dir / f"{config_name}.pth")
     final_model_filename = str(models_dir / f"{config_name}-final.pth")
 
     # Metrics logging path (CSV)
@@ -721,7 +721,7 @@ if __name__ == "__main__":
                         agent.episode = i_episode
                         agent.avg_reward = eval_avg
                         generalization_best_model = (
-                            models_dir / f"{config_name}-best-generalization.pth"
+                            models_dir / f"{config_name}-gen.pth"
                         )
                         agent.save(generalization_best_model)
                         print(
