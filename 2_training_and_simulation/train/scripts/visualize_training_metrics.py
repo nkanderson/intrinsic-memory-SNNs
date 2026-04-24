@@ -2,8 +2,12 @@
 Visualize training metrics from the SNN RL CSV logs written by train/main.py.
 
 Given a single CSV or a directory of CSVs, produces:
-  1. A comparison figure overlaying every model's running-average reward and
-     generalization evaluations.
+  1. A comparison output across models. Selected via --compare:
+       running     — overlaid running-average learning curves (default).
+       both        — running average plus generalization trace.
+       efficiency  — scatter of sample efficiency (first ep at gen=500) vs.
+                     sustained performance (max running avg).
+       summary     — markdown table to stdout + CSV on disk. No figure.
   2. One detail figure per CSV: a 2-panel view of (top) training reward with
      a rolling-std band and (bottom) generalization reward with per-seed
      min-max and IQR bands.
@@ -154,11 +158,24 @@ def save_fig(fig: plt.Figure, out_dir: Path, stem: str, fmt: str) -> Path:
     return out_path
 
 
-def plot_comparison(frames: dict[str, pd.DataFrame], out_dir: Path, fmt: str) -> Path:
-    """Overlay every model's running_avg_100 and generalization_avg."""
+def plot_comparison_lines(
+    frames: dict[str, pd.DataFrame],
+    out_dir: Path,
+    fmt: str,
+    *,
+    mode: str,
+) -> Path:
+    """Overlay every model's running_avg_100 and/or generalization_avg over episodes.
+
+    ``mode`` is one of:
+      - "running": running-average learning curves only (cleanest).
+      - "both": running average solid + generalization dashed (busier, shows
+        the train-vs-eval gap).
+    """
     fig, ax = plt.subplots(figsize=(12, 7), constrained_layout=True)
 
     model_handles: list[Line2D] = []
+    show_gen = mode == "both"
 
     for idx, (label, df) in enumerate(frames.items()):
         color = OKABE_ITO[idx % len(OKABE_ITO)]
@@ -173,35 +190,34 @@ def plot_comparison(frames: dict[str, pd.DataFrame], out_dir: Path, fmt: str) ->
                 df.loc[run_mask, "episode"],
                 df.loc[run_mask, "running_avg_100"],
                 color=color, linewidth=2.0, zorder=3,
+                solid_joinstyle="round", solid_capstyle="round",
             )
 
-        # Generalization: in core-v2 runs, generalization_avg is populated
-        # on ~every episode (not just periodic checkpoints), so rendering it
-        # as hundreds of scatter points per model produces a solid "bar".
-        # Instead, draw it as a thin dashed line in the same color and add a
-        # sparse set of marker anchors so each model's shape is still
-        # identifiable in the legend.
-        gen_mask = df["generalization_avg"].notna()
-        if gen_mask.any():
-            gen_eps = df.loc[gen_mask, "episode"].to_numpy()
-            gen_vals = df.loc[gen_mask, "generalization_avg"].to_numpy()
-            ax.plot(
-                gen_eps, gen_vals,
-                color=color, linewidth=1.0, linestyle="--", alpha=0.75,
-                zorder=2,
-            )
-
-            # Anchor markers at ~8 evenly-spaced positions along the eval
-            # series so color+shape remain visible without clutter.
-            n_anchors = min(8, len(gen_eps))
-            if n_anchors >= 2:
-                anchor_idx = np.linspace(0, len(gen_eps) - 1, n_anchors, dtype=int)
-                ax.scatter(
-                    gen_eps[anchor_idx], gen_vals[anchor_idx],
-                    facecolors="none", edgecolors=color,
-                    marker=marker, s=55, linewidths=1.6,
-                    alpha=0.95, zorder=4,
+        # In "both" mode, add a thin dashed generalization trace behind the
+        # solid running-average line. In core-v2 runs generalization_avg is
+        # populated on ~every episode, so rendering as scatter would blur
+        # into a solid bar — a line with sparse anchor markers keeps each
+        # model's shape readable.
+        if show_gen:
+            gen_mask = df["generalization_avg"].notna()
+            if gen_mask.any():
+                gen_eps = df.loc[gen_mask, "episode"].to_numpy()
+                gen_vals = df.loc[gen_mask, "generalization_avg"].to_numpy()
+                ax.plot(
+                    gen_eps, gen_vals,
+                    color=color, linewidth=1.0, linestyle="--", alpha=0.75,
+                    zorder=2,
+                    solid_joinstyle="round", solid_capstyle="round",
                 )
+                n_anchors = min(8, len(gen_eps))
+                if n_anchors >= 2:
+                    anchor_idx = np.linspace(0, len(gen_eps) - 1, n_anchors, dtype=int)
+                    ax.scatter(
+                        gen_eps[anchor_idx], gen_vals[anchor_idx],
+                        facecolors="none", edgecolors=color,
+                        marker=marker, s=55, linewidths=1.6,
+                        alpha=0.95, zorder=4,
+                    )
 
         # Single legend entry per model: colored line + hollow marker, so the
         # legend encodes both color and marker shape in one row.
@@ -217,18 +233,192 @@ def plot_comparison(frames: dict[str, pd.DataFrame], out_dir: Path, fmt: str) ->
 
     ax.set_xlabel("Episode")
     ax.set_ylabel("Reward")
-    ax.set_title("Training comparison: running average (line) & generalization (markers)")
+    title_suffix = {
+        "running": "running average",
+        "both": "running average (solid) & generalization (dashed)",
+    }[mode]
+    ax.set_title(f"Training comparison: {title_suffix}")
     ax.grid(True, alpha=0.3)
 
     if model_handles:
+        # Upper-left corner: models converge toward 500 at high episodes, so
+        # the upper-left region (low rewards, early training) is the most
+        # reliably empty area for legend placement.
         ax.legend(
             handles=model_handles,
-            loc="lower right",
+            loc="upper left",
             fontsize=9, framealpha=0.9,
             title="Model", title_fontsize=9,
         )
 
-    return save_fig(fig, out_dir, "training_comparison", fmt)
+    stem = {
+        "running": "training_comparison_running",
+        "both": "training_comparison",
+    }[mode]
+    return save_fig(fig, out_dir, stem, fmt)
+
+
+CARTPOLE_MAX_REWARD = 500.0
+
+
+def compute_summary(frames: dict[str, pd.DataFrame]) -> pd.DataFrame:
+    """Build a one-row-per-model summary from the raw metrics frames.
+
+    Columns are the handful of scalars that actually distinguish the models:
+      - best_gen_avg         max(generalization_avg) seen during training
+      - first_ep_at_gen_500  sample efficiency: episode at which
+                             generalization_avg first reached the CartPole-v1
+                             ceiling. NaN if the model never hit it.
+      - best_running_avg     max(running_avg_100): best 100-ep smoothed
+                             training reward — proxy for how well the policy
+                             held up across training episodes, not just peak
+                             evaluation runs.
+      - final_running_avg    last non-NaN running_avg_100 — where the model
+                             ended up at training end.
+    """
+    rows = []
+    for label, df in frames.items():
+        gen_mask = df["generalization_avg"].notna()
+        run_mask = df["running_avg_100"].notna()
+
+        best_gen = (
+            float(df.loc[gen_mask, "generalization_avg"].max())
+            if gen_mask.any() else float("nan")
+        )
+        ceiling = df[gen_mask & (df["generalization_avg"] >= CARTPOLE_MAX_REWARD)]
+        first_500 = (
+            int(ceiling["episode"].min()) if not ceiling.empty else None
+        )
+        best_run = (
+            float(df.loc[run_mask, "running_avg_100"].max())
+            if run_mask.any() else float("nan")
+        )
+        final_run = (
+            float(df.loc[run_mask, "running_avg_100"].iloc[-1])
+            if run_mask.any() else float("nan")
+        )
+
+        rows.append({
+            "model": label,
+            "best_gen_avg": best_gen,
+            "first_ep_at_gen_500": first_500,
+            "best_running_avg": best_run,
+            "final_running_avg": final_run,
+        })
+    return pd.DataFrame(rows)
+
+
+def _markdown_table(df: pd.DataFrame) -> str:
+    """Render a DataFrame as a GitHub-flavored markdown table.
+
+    Hand-rolled to avoid a tabulate dependency. Numeric cells get one
+    decimal; None/NaN renders as an em dash.
+    """
+    def fmt(v: object) -> str:
+        if v is None:
+            return "—"
+        if isinstance(v, float):
+            if pd.isna(v):
+                return "—"
+            # Integer-valued floats render without trailing ".0".
+            return f"{v:.1f}" if v != int(v) else f"{int(v)}"
+        return str(v)
+
+    headers = list(df.columns)
+    rows = [[fmt(v) for v in row] for row in df.itertuples(index=False, name=None)]
+
+    widths = [len(h) for h in headers]
+    for row in rows:
+        for i, cell in enumerate(row):
+            widths[i] = max(widths[i], len(cell))
+
+    def pad_row(cells: list[str]) -> str:
+        return "| " + " | ".join(c.ljust(widths[i]) for i, c in enumerate(cells)) + " |"
+
+    lines = [
+        pad_row(headers),
+        "| " + " | ".join("-" * widths[i] for i in range(len(headers))) + " |",
+    ]
+    lines.extend(pad_row(row) for row in rows)
+    return "\n".join(lines)
+
+
+def render_summary_table(
+    frames: dict[str, pd.DataFrame],
+    out_dir: Path,
+) -> Path:
+    """Print a markdown comparison table to stdout and write a CSV copy."""
+    table = compute_summary(frames)
+    print(_markdown_table(table))
+    out_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = out_dir / "training_comparison_summary.csv"
+    table.to_csv(csv_path, index=False)
+    return csv_path
+
+
+def plot_comparison_efficiency(
+    frames: dict[str, pd.DataFrame],
+    out_dir: Path,
+    fmt: str,
+) -> Path:
+    """Sample-efficiency vs. sustained-performance scatter.
+
+    One point per model at (first_ep_at_gen_500, max(running_avg_100)).
+    Upper-left = best: hit perfect generalization early AND held a high
+    running average. Lower-right = late convergence with weak sustained
+    performance. Models that never reached gen=500 are omitted (with a
+    warning to stderr) because there's no honest x-value for them.
+    """
+    fig, ax = plt.subplots(figsize=(10, 7), constrained_layout=True)
+
+    plotted_any = False
+    skipped: list[str] = []
+
+    for idx, (label, df) in enumerate(frames.items()):
+        color = OKABE_ITO[idx % len(OKABE_ITO)]
+        gen_mask = df["generalization_avg"].notna()
+        run_mask = df["running_avg_100"].notna()
+
+        ceiling = df[gen_mask & (df["generalization_avg"] >= CARTPOLE_MAX_REWARD)]
+        if ceiling.empty or not run_mask.any():
+            skipped.append(label)
+            continue
+
+        x = float(ceiling["episode"].min())
+        y = float(df.loc[run_mask, "running_avg_100"].max())
+        ax.scatter(
+            [x], [y],
+            color=color, s=180, marker="o", zorder=3,
+            edgecolors="black", linewidths=0.8,
+        )
+        # Inline annotation labels each point directly, so no legend is
+        # needed — and this avoids a legend box covering a data point.
+        ax.annotate(
+            label, (x, y),
+            xytext=(9, 7), textcoords="offset points",
+            fontsize=9, zorder=4,
+        )
+        plotted_any = True
+
+    ax.set_xlabel("First episode reaching generalization avg = 500 (sample efficiency →)")
+    ax.set_ylabel("Best running avg (sustained performance ↑)")
+    ax.set_title("Sample efficiency vs. sustained performance")
+    ax.grid(True, alpha=0.3)
+    ax.set_axisbelow(True)
+
+    # Leave headroom on the right so long labels don't clip past the axis.
+    if plotted_any:
+        xmin, xmax = ax.get_xlim()
+        ax.set_xlim(xmin, xmax + 0.08 * (xmax - xmin))
+
+    if skipped:
+        print(
+            f"warning: skipped {len(skipped)} model(s) that never reached "
+            f"generalization avg = {CARTPOLE_MAX_REWARD}: {', '.join(skipped)}",
+            file=sys.stderr,
+        )
+
+    return save_fig(fig, out_dir, "training_comparison_efficiency", fmt)
 
 
 def plot_detail(
@@ -313,39 +503,48 @@ def plot_detail(
         )
 
     ax_train.set_ylabel("Reward")
-    ax_train.set_title(f"{label} — training reward")
+    ax_train.set_title("Training reward")
     ax_train.grid(True, alpha=0.3)
     ax_train.legend(loc="lower right", fontsize=9, framealpha=0.9)
 
     # ── Bottom panel: generalization ───────────────────────────────────────
+    # Bands are drawn at higher alpha (min-max 0.28, IQR 0.55) so spread is
+    # visible even when seeds agree tightly; darker IQR overlays lighter
+    # min-max for clear ordering.
     if has_minmax:
         ax_gen.fill_between(
             gen_eps, gen_min, gen_max,
-            color=COLOR_GEN, alpha=0.15, zorder=1,
+            color=COLOR_GEN, alpha=0.28, zorder=1,
             label="Seed min–max",
         )
     if has_iqr:
         ax_gen.fill_between(
             gen_eps, gen_p25, gen_p75,
-            color=COLOR_GEN, alpha=0.35, zorder=2,
+            color=COLOR_GEN, alpha=0.55, zorder=2,
             label="Seed IQR (25–75%)",
         )
+    # Rounded line joins soften the right-angle corners that step-function
+    # generalization data produces (consecutive evals often return the same
+    # value, then jump sharply).
     ax_gen.plot(
         gen_eps, gen_avg,
-        color=COLOR_GEN, linewidth=2.0, marker="o", markersize=4,
-        zorder=3, label="Generalization mean",
+        color=COLOR_GEN, linewidth=1.6, zorder=3,
+        solid_joinstyle="round", solid_capstyle="round",
+        label="Generalization mean",
     )
     if "best_generalization_avg" in df.columns:
         ax_gen.plot(
             gen_eps, df.loc[gen_mask, "best_generalization_avg"],
             color=COLOR_BEST, linewidth=1.2, linestyle="--", alpha=0.9,
-            zorder=3, label="Best generalization to date",
+            zorder=3,
+            solid_joinstyle="round", solid_capstyle="round",
+            label="Best generalization to date",
         )
     if not saved_gen_rows.empty and "best_generalization_avg" in saved_gen_rows.columns:
         ax_gen.scatter(
             saved_gen_rows["episode"],
             saved_gen_rows["best_generalization_avg"],
-            color=COLOR_SAVE, s=90, marker="*", zorder=5,
+            color=COLOR_SAVE, s=70, marker="^", zorder=5,
             edgecolors="black", linewidths=0.5,
             label="Best generalization model saved",
         )
@@ -402,6 +601,19 @@ def main() -> None:
         help="Only write per-model detail figures, skip the comparison figure.",
     )
     parser.add_argument(
+        "--compare",
+        choices=("running", "both", "efficiency", "summary"),
+        default="running",
+        help=(
+            "What the comparison output is: 'running' (default) = overlaid "
+            "running-average learning curves; 'both' = running average plus "
+            "generalization trace; 'efficiency' = one-point-per-model scatter "
+            "of sample efficiency (first ep at gen=500) vs sustained "
+            "performance (max running avg); 'summary' = markdown table to "
+            "stdout + CSV on disk, no figure."
+        ),
+    )
+    parser.add_argument(
         "--no-raw", action="store_true",
         help="Suppress the faint raw-episode-reward scatter in detail plots.",
     )
@@ -429,7 +641,14 @@ def main() -> None:
     want_details = not args.comparison_only
 
     if want_comparison:
-        out = plot_comparison(frames, output_dir, args.format)
+        if args.compare == "summary":
+            out = render_summary_table(frames, output_dir)
+        elif args.compare == "efficiency":
+            out = plot_comparison_efficiency(frames, output_dir, args.format)
+        else:
+            out = plot_comparison_lines(
+                frames, output_dir, args.format, mode=args.compare,
+            )
         print(f"Saved: {out}")
 
     if want_details:

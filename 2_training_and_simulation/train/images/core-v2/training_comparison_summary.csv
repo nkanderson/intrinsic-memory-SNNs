@@ -1,0 +1,6 @@
+model,best_gen_avg,first_ep_at_gen_500,best_running_avg,final_running_avg
+bitshift custom slow decay 32-8 (hist=8),500.0,649,214.66,10.9
+fractional 16-4 (hist=32),500.0,999,250.45,168.08
+fractional 32-4 (hist=16),500.0,999,179.92,123.4
+leaky 32-16,500.0,899,498.15,498.15
+leaky 64-16,500.0,749,500.0,495.3
