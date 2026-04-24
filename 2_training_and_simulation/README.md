@@ -86,22 +86,28 @@ python scripts/visualize_training_metrics.py \
 ```
 
 Useful flags:
-- `--compare {running,both,efficiency,summary}` — what the comparison
-  output is (default `running`). See the descriptions below.
+- `--compare {running,both,efficiency,summary,stack-running,stack-generalization}`
+  — what the comparison output is (default `running`). See the
+  descriptions below.
 - `--comparison-only` / `--details-only` — restrict output to one or the other.
-- `--no-raw` — drop the noisy per-episode scatter in detail figures.
+- `--no-raw` — drop the noisy per-episode scatter in detail figures and
+  in `stack-running`.
 - `--roll-window N` — width in episodes of the rolling-std band around the
-  running average (default 100).
+  running average in detail figures and `stack-running` (default 100).
 
 ### Reading the plots
 
-All plots use the Okabe–Ito colorblind-safe palette.
+All plots use the Okabe–Ito colorblind-safe palette. Comparison figures
+have no in-figure title (the surrounding caption supplies it).
 
-**Comparison outputs** — four options via `--compare`:
+**Comparison outputs** — six options via `--compare`:
 
 - `--compare running` (default) → `training_comparison_running.{png,svg}`.
   One solid line per model showing the 100-episode rolling mean of episode
-  reward (`running_avg_100`). Higher and earlier rise = faster learning.
+  reward (`running_avg_100`). Each model also gets a single filled marker
+  in its assigned shape at *(episode, value)* of `max(running_avg_100)`,
+  so the eye can immediately compare both **when** and **how high** each
+  model peaked. Higher and earlier rise = faster learning.
 - `--compare both` → `training_comparison.{png,svg}`. Same running-average
   lines plus a thin dashed trace of `generalization_avg` per model with
   sparse anchor markers (color + shape together identify each model).
@@ -115,13 +121,27 @@ All plots use the Okabe–Ito colorblind-safe palette.
 - `--compare summary` → markdown table printed to stdout, plus
   `training_comparison_summary.csv` saved on disk. No figure is written.
   Columns: `best_gen_avg`, `first_ep_at_gen_500`, `best_running_avg`,
-  `final_running_avg`. This is the right output for a small number of
-  models where precise numbers matter more than a visual pattern.
+  `final_running_avg`. Best when precise numbers matter more than a
+  visual pattern.
+- `--compare stack-running` →
+  `training_comparison_stack_running.{png,svg}`. Small-multiples: one row
+  per model showing the same content as the detail figure's top panel
+  (raw scatter, running-avg line, rolling-std band, dashed
+  best-running-avg-to-date). Save-event rug ticks are intentionally
+  omitted to keep the stacked view clean.
+- `--compare stack-generalization` →
+  `training_comparison_stack_generalization.{png,svg}`. Small-multiples:
+  one row per model showing a simplified version of the detail figure's
+  bottom panel (generalization mean line + dashed best-to-date line +
+  triangles only at episodes where the saved best-gen value hit 500).
+  Per-seed min-max and IQR bands are intentionally omitted to keep the
+  stacked view clean.
 
 **Per-model detail figure** (`{model}.{png,svg}`) — two stacked panels
-sharing the x-axis (episode).
+sharing the x-axis (episode). Both panels' legends sit in the upper-left
+because several models bottom out near zero late in training.
 
-Top panel — training reward:
+Top panel — training reward (rolling average):
 - Faint gray dots: raw `episode_reward` — every individual training
   episode. Very noisy. Hide with `--no-raw`.
 - Blue line: `running_avg_100` — the 100-episode rolling mean of the raw

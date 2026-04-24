@@ -3,11 +3,18 @@ Visualize training metrics from the SNN RL CSV logs written by train/main.py.
 
 Given a single CSV or a directory of CSVs, produces:
   1. A comparison output across models. Selected via --compare:
-       running     — overlaid running-average learning curves (default).
-       both        — running average plus generalization trace.
-       efficiency  — scatter of sample efficiency (first ep at gen=500) vs.
-                     sustained performance (max running avg).
-       summary     — markdown table to stdout + CSV on disk. No figure.
+       running               overlaid running-average learning curves
+                             with a peak marker per model (default).
+       both                  running average plus generalization trace.
+       efficiency            scatter of sample efficiency (first ep at
+                             gen=500) vs. sustained performance (max
+                             running avg).
+       summary               markdown table to stdout + CSV on disk.
+                             No figure.
+       stack-running         small-multiples: one row per model showing
+                             the training-reward rolling average panel.
+       stack-generalization  small-multiples: one row per model showing
+                             the generalization panel.
   2. One detail figure per CSV: a 2-panel view of (top) training reward with
      a rolling-std band and (bottom) generalization reward with per-seed
      min-max and IQR bands.
@@ -52,6 +59,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 
 # Okabe-Ito colorblind-safe palette. Deuteranopia-, protanopia-, and
 # tritanopia-distinguishable. Used by both the comparison and detail plots.
@@ -192,6 +200,38 @@ def plot_comparison_lines(
                 color=color, linewidth=2.0, zorder=3,
                 solid_joinstyle="round", solid_capstyle="round",
             )
+            # In "running" mode the line itself carries the trajectory but
+            # nothing punctuates the peak. Drop the model's marker shape at
+            # (episode, value) of max(running_avg_100), with the numeric
+            # value next to it, so the eye can immediately read both *when*
+            # and *how high* each model peaked. Hollow markers (only the
+            # model's color as edge, no fill) match the legend style.
+            # Skipped in "both" mode because the generalization anchor
+            # markers already use that shape.
+            if not show_gen:
+                best_run_row = df.loc[run_mask, "running_avg_100"].idxmax()
+                best_ep = df.loc[best_run_row, "episode"]
+                best_val = float(df.loc[best_run_row, "running_avg_100"])
+                ax.scatter(
+                    [best_ep], [best_val],
+                    marker=marker, s=110,
+                    facecolors="none", edgecolors=color,
+                    linewidths=1.8, zorder=5,
+                )
+                # Label sits above the marker with a semi-opaque white box
+                # so it stays readable when it crosses other models' lines
+                # in busy regions.
+                ax.annotate(
+                    f"{best_val:.0f}",
+                    (best_ep, best_val),
+                    xytext=(0, 9), textcoords="offset points",
+                    fontsize=9, color="black",
+                    va="bottom", ha="center", zorder=6,
+                    bbox=dict(
+                        facecolor="white", edgecolor="none",
+                        alpha=0.7, pad=1.5,
+                    ),
+                )
 
         # In "both" mode, add a thin dashed generalization trace behind the
         # solid running-average line. In core-v2 runs generalization_avg is
@@ -233,12 +273,15 @@ def plot_comparison_lines(
 
     ax.set_xlabel("Episode")
     ax.set_ylabel("Reward")
-    title_suffix = {
-        "running": "running average",
-        "both": "running average (solid) & generalization (dashed)",
-    }[mode]
-    ax.set_title(f"Training comparison: {title_suffix}")
+    # No title: comparison figures are inserted with a figure caption.
     ax.grid(True, alpha=0.3)
+
+    # Headroom for the peak-value labels (running mode): the labels sit
+    # above their markers, and several models peak near the top of the
+    # data range — without padding the text would clip past the axis.
+    if mode == "running":
+        ymin, ymax = ax.get_ylim()
+        ax.set_ylim(ymin, ymax + 0.06 * (ymax - ymin))
 
     if model_handles:
         # Upper-left corner: models converge toward 500 at high episodes, so
@@ -402,7 +445,7 @@ def plot_comparison_efficiency(
 
     ax.set_xlabel("First episode reaching generalization avg = 500 (sample efficiency →)")
     ax.set_ylabel("Best running avg (sustained performance ↑)")
-    ax.set_title("Sample efficiency vs. sustained performance")
+    # No title: comparison figures are inserted with a figure caption.
     ax.grid(True, alpha=0.3)
     ax.set_axisbelow(True)
 
@@ -419,6 +462,207 @@ def plot_comparison_efficiency(
         )
 
     return save_fig(fig, out_dir, "training_comparison_efficiency", fmt)
+
+
+# Shared y-axis configuration for the stacked comparison plots: every panel
+# uses the same ticks and limits so that vertical comparisons across rows
+# are honest, even when one model never gets close to 500.
+STACK_Y_LIMITS = (-25, 525)
+STACK_Y_TICKS = [100, 300, 500]
+
+
+def _stack_panel_label(ax: plt.Axes, label: str) -> None:
+    """Place a model name in the upper-left corner of a stacked panel."""
+    ax.text(
+        0.012, 0.92, label,
+        transform=ax.transAxes,
+        fontsize=9, fontweight="bold",
+        va="top", ha="left",
+        bbox=dict(facecolor="white", edgecolor="none", alpha=0.8, pad=2),
+    )
+
+
+def _apply_stack_y_axis(ax: plt.Axes) -> None:
+    """Apply the shared y-axis limits and tick marks for stacked panels."""
+    ax.set_ylim(*STACK_Y_LIMITS)
+    ax.set_yticks(STACK_Y_TICKS)
+
+
+def plot_comparison_stack_running(
+    frames: dict[str, pd.DataFrame],
+    out_dir: Path,
+    fmt: str,
+    *,
+    roll_window: int,
+    show_raw: bool,
+) -> Path:
+    """One row per model showing the same content as the detail top panel.
+
+    Simplifications relative to the detail figure (per user request):
+      - No save-event markers / rug ticks for the best-running model.
+      - Same raw scatter / running-avg line / std band / best-to-date line.
+    """
+    n = len(frames)
+    fig, axes = plt.subplots(
+        n, 1,
+        figsize=(11, 1.7 * n + 1.0),
+        sharex=True,
+        constrained_layout=True,
+    )
+    # `subplots(1, 1)` returns a single Axes, not an array; normalize.
+    if n == 1:
+        axes = [axes]
+
+    for idx, ((label, df), ax) in enumerate(zip(frames.items(), axes)):
+        color = OKABE_ITO[idx % len(OKABE_ITO)]
+        eps = df["episode"]
+        running_avg = df["running_avg_100"]
+
+        # Same band derivation as plot_detail: rolling std of raw
+        # episode_reward over --roll-window episodes, centered on the
+        # already-smoothed running_avg_100 line.
+        roll_std = df["episode_reward"].rolling(roll_window, min_periods=5).std()
+        band_hi = running_avg + roll_std
+        band_lo = running_avg - roll_std
+
+        if show_raw:
+            ax.scatter(
+                eps, df["episode_reward"],
+                s=4, color=COLOR_RAW, alpha=0.18, linewidths=0, zorder=1,
+            )
+        ax.fill_between(eps, band_lo, band_hi, color=color, alpha=0.2, zorder=2)
+        ax.plot(
+            eps, running_avg,
+            color=color, linewidth=1.8, zorder=3,
+            solid_joinstyle="round", solid_capstyle="round",
+        )
+        if "best_running_avg_100" in df.columns:
+            ax.plot(
+                eps, df["best_running_avg_100"],
+                color=COLOR_BEST, linewidth=1.0, linestyle="--",
+                alpha=0.9, zorder=3,
+            )
+
+        _apply_stack_y_axis(ax)
+        ax.grid(True, alpha=0.3)
+        ax.set_ylabel("Reward")
+        _stack_panel_label(ax, label)
+
+    axes[-1].set_xlabel("Episode")
+
+    # Figure-wide legend goes in the bottom panel — every panel uses the
+    # same encoding, so explaining it once is enough. Lower-right is the
+    # empty corner once the leaky model plateaus near 500. Neutral gray
+    # stands in for "the per-panel model color" since the legend is shared.
+    NEUTRAL = "#555555"
+    legend_handles = []
+    if show_raw:
+        legend_handles.append(Line2D(
+            [0], [0], linestyle="none",
+            marker="o", markersize=4, markerfacecolor=COLOR_RAW,
+            markeredgecolor=COLOR_RAW, alpha=0.5,
+            label="Episode reward (raw)",
+        ))
+    legend_handles.extend([
+        Line2D([0], [0], color=NEUTRAL, linewidth=1.8,
+               label="Running avg (100 ep)"),
+        Patch(facecolor=NEUTRAL, alpha=0.2,
+              label=f"Running avg ± rolling std ({roll_window} ep)"),
+        Line2D([0], [0], color=COLOR_BEST, linewidth=1.0, linestyle="--",
+               label="Best running avg to date"),
+    ])
+    axes[-1].legend(
+        handles=legend_handles, loc="lower right",
+        fontsize=8, framealpha=0.9,
+    )
+
+    return save_fig(fig, out_dir, "training_comparison_stack_running", fmt)
+
+
+def plot_comparison_stack_generalization(
+    frames: dict[str, pd.DataFrame],
+    out_dir: Path,
+    fmt: str,
+) -> Path:
+    """One row per model showing the same content as the detail bottom panel.
+
+    Simplifications relative to the detail figure (per user request):
+      - No seed min-max band, no IQR band.
+      - Save-event markers only at episodes where the saved best_gen value
+        was the CartPole ceiling (500) — the moments when the model first
+        produced a "perfect" generalization checkpoint.
+    """
+    n = len(frames)
+    fig, axes = plt.subplots(
+        n, 1,
+        figsize=(11, 1.7 * n + 1.0),
+        sharex=True,
+        constrained_layout=True,
+    )
+    if n == 1:
+        axes = [axes]
+
+    for idx, ((label, df), ax) in enumerate(zip(frames.items(), axes)):
+        color = OKABE_ITO[idx % len(OKABE_ITO)]
+        gen_mask = df["generalization_avg"].notna()
+        gen_eps = df.loc[gen_mask, "episode"]
+        gen_avg = df.loc[gen_mask, "generalization_avg"]
+
+        ax.plot(
+            gen_eps, gen_avg,
+            color=color, linewidth=1.6, zorder=3,
+            solid_joinstyle="round", solid_capstyle="round",
+        )
+        if "best_generalization_avg" in df.columns:
+            ax.plot(
+                gen_eps, df.loc[gen_mask, "best_generalization_avg"],
+                color=COLOR_BEST, linewidth=1.0, linestyle="--",
+                alpha=0.9, zorder=3,
+                solid_joinstyle="round", solid_capstyle="round",
+            )
+
+        # Save-event triangles only when the new best-gen value reached
+        # the CartPole ceiling. saved_best_generalization_model fires every
+        # time the running max increases, but we only mark "perfect" saves
+        # to keep the stacked view uncluttered.
+        saved = df[
+            (df.get("saved_best_generalization_model", 0) == 1)
+            & (df.get("best_generalization_avg", 0) >= CARTPOLE_MAX_REWARD)
+        ]
+        if not saved.empty:
+            ax.scatter(
+                saved["episode"], saved["best_generalization_avg"],
+                color=COLOR_SAVE, s=55, marker="^", zorder=5,
+                edgecolors="black", linewidths=0.5,
+            )
+
+        _apply_stack_y_axis(ax)
+        ax.grid(True, alpha=0.3)
+        ax.set_ylabel("Reward")
+        _stack_panel_label(ax, label)
+
+    axes[-1].set_xlabel("Episode")
+
+    # See plot_comparison_stack_running for why the legend lives in the
+    # bottom panel only (all panels share the same encoding).
+    NEUTRAL = "#555555"
+    legend_handles = [
+        Line2D([0], [0], color=NEUTRAL, linewidth=1.6,
+               label="Generalization mean"),
+        Line2D([0], [0], color=COLOR_BEST, linewidth=1.0, linestyle="--",
+               label="Best generalization to date"),
+        Line2D([0], [0], linestyle="none",
+               marker="^", markersize=7,
+               markerfacecolor=COLOR_SAVE, markeredgecolor="black",
+               markeredgewidth=0.5,
+               label="Best generalization model saved (= 500)"),
+    ]
+    axes[-1].legend(
+        handles=legend_handles, loc="lower right",
+        fontsize=8, framealpha=0.9,
+    )
+
+    return save_fig(fig, out_dir, "training_comparison_stack_generalization", fmt)
 
 
 def plot_detail(
@@ -503,9 +747,14 @@ def plot_detail(
         )
 
     ax_train.set_ylabel("Reward")
-    ax_train.set_title("Training reward")
+    # Disambiguates from the bottom panel: the top panel is *training*
+    # episodes (the rolling-mean smoothing of episode_reward), not the
+    # periodic generalization evaluations shown below.
+    ax_train.set_title("Training reward (rolling average)")
     ax_train.grid(True, alpha=0.3)
-    ax_train.legend(loc="lower right", fontsize=9, framealpha=0.9)
+    # Legends in upper-left of each panel: several models bottom out near
+    # zero late in training, which would sit under a lower-right legend.
+    ax_train.legend(loc="upper left", fontsize=9, framealpha=0.9)
 
     # ── Bottom panel: generalization ───────────────────────────────────────
     # Bands are drawn at higher alpha (min-max 0.28, IQR 0.55) so spread is
@@ -553,7 +802,7 @@ def plot_detail(
     ax_gen.set_ylabel("Generalization reward")
     ax_gen.set_title("Generalization (across 30 fixed seeds)")
     ax_gen.grid(True, alpha=0.3)
-    ax_gen.legend(loc="lower right", fontsize=9, framealpha=0.9)
+    ax_gen.legend(loc="upper left", fontsize=9, framealpha=0.9)
 
     return save_fig(fig, out_dir, slug(label), fmt)
 
@@ -602,15 +851,22 @@ def main() -> None:
     )
     parser.add_argument(
         "--compare",
-        choices=("running", "both", "efficiency", "summary"),
+        choices=(
+            "running", "both", "efficiency", "summary",
+            "stack-running", "stack-generalization",
+        ),
         default="running",
         help=(
             "What the comparison output is: 'running' (default) = overlaid "
-            "running-average learning curves; 'both' = running average plus "
-            "generalization trace; 'efficiency' = one-point-per-model scatter "
-            "of sample efficiency (first ep at gen=500) vs sustained "
-            "performance (max running avg); 'summary' = markdown table to "
-            "stdout + CSV on disk, no figure."
+            "running-average learning curves with a peak marker per model; "
+            "'both' = running average plus generalization trace; "
+            "'efficiency' = one-point-per-model scatter of sample efficiency "
+            "(first ep at gen=500) vs sustained performance (max running "
+            "avg); 'summary' = markdown table to stdout + CSV on disk, no "
+            "figure; 'stack-running' = small-multiples view of every model's "
+            "training-reward rolling average (one row each); "
+            "'stack-generalization' = small-multiples view of every model's "
+            "generalization (one row each)."
         ),
     )
     parser.add_argument(
@@ -645,6 +901,16 @@ def main() -> None:
             out = render_summary_table(frames, output_dir)
         elif args.compare == "efficiency":
             out = plot_comparison_efficiency(frames, output_dir, args.format)
+        elif args.compare == "stack-running":
+            out = plot_comparison_stack_running(
+                frames, output_dir, args.format,
+                roll_window=args.roll_window,
+                show_raw=not args.no_raw,
+            )
+        elif args.compare == "stack-generalization":
+            out = plot_comparison_stack_generalization(
+                frames, output_dir, args.format,
+            )
         else:
             out = plot_comparison_lines(
                 frames, output_dir, args.format, mode=args.compare,
