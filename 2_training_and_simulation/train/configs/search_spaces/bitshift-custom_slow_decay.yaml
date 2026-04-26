@@ -31,8 +31,8 @@ training:
     high: 0.01
   lr:
     type: float
-    low: 1e-4
-    high: 1e-2
+    low: 1.0e-4
+    high: 1.0e-2
     log: true
   num_episodes:
     type: fixed
