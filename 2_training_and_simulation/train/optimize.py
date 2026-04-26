@@ -244,7 +244,25 @@ def create_objective(
             f"Trial {trial.number} done: best_avg={best_avg:.1f}, final_avg={final_avg:.1f}"
         )
 
-        return best_avg
+        # Objective: final_avg_reward (trailing 100-episode mean at end of
+        # training). Selects for *sustained* performance, so a trial that
+        # briefly spikes to 500 and then forgets back to 10 scores 10 here
+        # — penalizing catastrophic forgetting rather than rewarding peak
+        # attainment.
+        #
+        # Why not best_avg_reward (the legacy objective)? It is the running
+        # max of the rolling mean — monotonically non-decreasing, so a
+        # spike-and-collapse trial scores identically to reach-and-hold.
+        # That hides exactly the stability signal we're now trying to find.
+        #
+        # Alternatives (swap the return below):
+        #   return best_avg                          # legacy: peak rolling avg
+        #   return 0.5 * best_avg + 0.5 * final_avg  # blend peak + sustained
+        #   return min(best_avg, final_avg)          # penalize both
+        #       "never reached high" AND "reached high but collapsed"
+        # The blend is gentler on trials that need more episodes to stabilize;
+        # min() is the strictest but rewards both fast learning AND retention.
+        return final_avg
 
     return objective
 
@@ -386,8 +404,7 @@ def run_importance_analysis(
         fig.write_html(str(plot_path))
     except Exception as exc:
         print(
-            "WARNING: failed to export Optuna importance plot "
-            f"to {plot_path}: {exc}"
+            "WARNING: failed to export Optuna importance plot " f"to {plot_path}: {exc}"
         )
         plot_path = None
 
@@ -618,9 +635,7 @@ Examples:
         f"--study-name {args.study_name} --n-trials <N>"
     )
     if args.get_importance:
-        print(
-            f"Importance artifacts: optuna_studies/importance/{args.study_name}/"
-        )
+        print(f"Importance artifacts: optuna_studies/importance/{args.study_name}/")
 
 
 if __name__ == "__main__":

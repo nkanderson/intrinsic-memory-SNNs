@@ -10,7 +10,7 @@
 training:
   batch_size:
     type: categorical
-    choices: [64, 128, 256]
+    choices: [ 64, 128, 256 ]
   gamma:
     type: float
     low: 0.95
@@ -26,15 +26,15 @@ training:
   eps_decay:
     type: int
     low: 1000
-    high: 5000
+    high: 3000
   tau:
     type: float
     low: 0.001
     high: 0.01
   lr:
     type: float
-    low: 1.0e-4
-    high: 1.0e-2
+    low: 1e-4
+    high: 1e-2
     log: true
   num_episodes:
     type: fixed
@@ -43,7 +43,7 @@ training:
 snn:
   num_steps:
     type: categorical
-    choices: [10, 20, 30, 50]
+    choices: [ 10, 20, 30 ]
   beta:
     type: float
     low: 0.7
@@ -56,7 +56,7 @@ snn:
     value: leaky
   hidden1_size:
     type: categorical
-    choices: [16, 32, 64]
+    choices: [ 16, 32, 64 ]
   hidden2_size:
     type: categorical
-    choices: [4, 8, 16, 32]
+    choices: [ 4, 8, 16, 32 ]
