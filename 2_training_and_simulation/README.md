@@ -33,7 +33,6 @@ python scripts/generate_coefficients.py --lam 0.09550310156350894 --output-dir .
 3. Generate quantized model .pth file for validation in software simulation (PyTorch):
 ```bash
 python scripts/manage_weights.py export pytorch models/dqn_64hl1-16hl2-best.pth --bits 16 --frac 13 --signed
-python scripts/generate_coefficients.py --lam 0.05263950403873735 --output-dir ../../common/sv/cocotb/tests/weights/fractional-32-4-16 --coeff-frac-bits 16 --history-length 16
 ```
 
 4. Run software simulation to validate quantized model:
@@ -60,6 +59,40 @@ python main.py --config configs/fractional-16hl1-4hl2-32hist.yaml
 python main.py --config configs/fractional-32hl1-4hl2-16hist.yaml
 python main.py --config configs/leaky-32hl1-16hl2.yaml
 python main.py --config configs/leaky-64hl1-16hl2.yaml
+```
+
+2. **NOTE:** Not re-doing this step because it's the same as what was done above, but including it here to show it is a part of the process: Generate coefficients .mem file and SV module constants (for fractional and bitshift only):
+```bash
+python scripts/generate_coefficients.py --lam 0.09550310156350894 --output-dir ../../common/sv/cocotb/tests/weights/bitshift-custom_slow_decay --history-length 8 --constants-only
+python scripts/generate_coefficients.py --lam 0.17601697332161148 --output-dir ../../common/sv/cocotb/tests/weights/fractional-16-4-32 --coeff-frac-bits 16 --history-length 32
+python scripts/generate_coefficients.py --lam 0.05263950403873735 --output-dir ../../common/sv/cocotb/tests/weights/fractional-32-4-16 --coeff-frac-bits 16 --history-length 16
+```
+
+3. Generate quantized model .pth file for validation in software simulation (PyTorch):
+```bash
+python scripts/manage_weights.py export pytorch models/leaky-32hl1-16hl2-gen.pth --bits 16 --frac 13 --signed
+python scripts/manage_weights.py export pytorch models/leaky-64hl1-16hl2-gen.pth --bits 16 --frac 13 --signed
+python scripts/manage_weights.py export pytorch models/fractional-16hl1-4hl2-32hist-gen.pth --bits 16 --frac 13 --signed
+python scripts/manage_weights.py export pytorch models/fractional-32hl1-4hl2-16hist-gen.pth --bits 16 --frac 13 --signed
+python scripts/manage_weights.py export pytorch models/bitshift-custom_slow_decay-32hl1-8hl2-8hist-gen.pth --bits 16 --frac 12 --signed
+```
+
+4. Run software simulation to validate quantized model:
+```bash
+python main.py --load models/leaky-32hl1-16hl2-gen-quantized-QS2_13.pth --evaluate-only --max-episode-steps 1000
+python main.py --load models/leaky-64hl1-16hl2-gen-quantized-QS2_13.pth --evaluate-only --max-episode-steps 1000
+python main.py --load models/fractional-32hl1-4hl2-16hist-gen-quantized-QS2_13.pth --evaluate-only --max-episode-steps 1000
+python main.py --load models/fractional-16hl1-4hl2-32hist-gen-quantized-QS2_13.pth --evaluate-only --max-episode-steps 1000
+python main.py --load models/bitshift-custom_slow_decay-32hl1-8hl2-8hist-gen-quantized-QS3_12.pth --evaluate-only --max-episode-steps 1000
+```
+
+5. Export quantized weights to .mem files use in hardware simulation (using cocotb):
+```bash
+python scripts/manage_weights.py export hardware models/leaky-64hl1-16hl2-gen.pth --bits 16 --frac 13 --output ../../common/sv/cocotb/tests/weights/lif-64-16
+python scripts/manage_weights.py export hardware models/leaky-32hl1-16hl2-gen.pth --bits 16 --frac 13 --output ../../common/sv/cocotb/tests/weights/lif-32-16
+python scripts/manage_weights.py export hardware models/fractional-16hl1-4hl2-32hist-gen.pth --bits 16 --frac 13 --output ../../common/sv/cocotb/tests/weights/fractional-16-4-32
+python scripts/manage_weights.py export hardware models/fractional-32hl1-4hl2-16hist-gen.pth --bits 16 --frac 13 --output ../../common/sv/cocotb/tests/weights/fractional-32-4-16 
+python scripts/manage_weights.py export hardware models/bitshift-custom_slow_decay-32hl1-8hl2-8hist-gen.pth --bits 16 --frac 12 --output ../../common/sv/cocotb/tests/weights/bitshift-custom_slow_decay
 ```
 
 ## Visualizing training metrics
