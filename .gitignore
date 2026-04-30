@@ -10,6 +10,8 @@ sim_build/
 **/cocotb/**/dump.fst
 **/cocotb/**/results.xml
 **/cocotb/results/
+# large files
+fractional_lif_constant_current.vcd 
 
 # Python
 venv/

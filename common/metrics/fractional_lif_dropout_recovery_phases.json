@@ -1,0 +1,25 @@
+{
+  "phases": [
+    {
+      "label": "startup",
+      "start_step": 0,
+      "end_step": 300,
+      "t_start_ns": 60.0,
+      "t_end_ns": 783060.0
+    },
+    {
+      "label": "dropout",
+      "start_step": 300,
+      "end_step": 420,
+      "t_start_ns": 783060.0,
+      "t_end_ns": 1096260.0
+    },
+    {
+      "label": "recovery",
+      "start_step": 420,
+      "end_step": 720,
+      "t_start_ns": 1096260.0,
+      "t_end_ns": 1879260.0
+    }
+  ]
+}

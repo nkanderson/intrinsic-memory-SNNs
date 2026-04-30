@@ -1,0 +1,11 @@
+{
+  "variant": "fractional_lif_memory",
+  "scenario": "constant",
+  "current_float": 0.28,
+  "current_fixed": 2294,
+  "frac_bits": 13,
+  "sweep_run_steps": 3000,
+  "best_gain": 1.2444444444444445,
+  "best_spike_count": 394,
+  "notes": "auto-selected from 12-point sweep"
+}

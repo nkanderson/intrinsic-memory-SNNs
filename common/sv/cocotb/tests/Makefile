@@ -742,11 +742,35 @@ test_fractional_lif_hist64:
 test_fractional_lif_memory:
 	$(MAKE) TEST=fractional_lif_memory
 
+test_fractional_lif_memory_constant_sweep:
+	$(MAKE) TEST=fractional_lif_memory TESTCASE=test_constant_current_sweep
+
+test_fractional_lif_memory_constant_capture:
+	$(MAKE) TEST=fractional_lif_memory TESTCASE=test_constant_current_capture
+
+test_fractional_lif_memory_dropout_sweep:
+	$(MAKE) TEST=fractional_lif_memory TESTCASE=test_dropout_recovery_sweep
+
+test_fractional_lif_memory_dropout_capture:
+	$(MAKE) TEST=fractional_lif_memory TESTCASE=test_dropout_recovery_capture
+
 test_bitshift_lif:
 	$(MAKE) TEST=bitshift_lif
 
 test_bitshift_lif_memory:
 	$(MAKE) TEST=bitshift_lif_memory
+
+test_bitshift_lif_memory_constant_sweep:
+	$(MAKE) TEST=bitshift_lif_memory TESTCASE=test_constant_current_bitshift_sweep
+
+test_bitshift_lif_memory_constant_capture:
+	$(MAKE) TEST=bitshift_lif_memory TESTCASE=test_constant_current_bitshift_capture
+
+test_bitshift_lif_memory_dropout_sweep:
+	$(MAKE) TEST=bitshift_lif_memory TESTCASE=test_dropout_recovery_bitshift_sweep
+
+test_bitshift_lif_memory_dropout_capture:
+	$(MAKE) TEST=bitshift_lif_memory TESTCASE=test_dropout_recovery_bitshift_capture
 
 # SHIFT_MODE=0 (simple): [0,1,2,3,...]
 test_bitshift_lif_mode0:
@@ -826,4 +850,4 @@ clean::
 	rm -rf __pycache__
 	rm -rf .pytest_cache
 
-.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac
+.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_fractional_lif_memory_constant_sweep test_fractional_lif_memory_constant_capture test_fractional_lif_memory_dropout_sweep test_fractional_lif_memory_dropout_capture test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_memory_constant_sweep test_bitshift_lif_memory_constant_capture test_bitshift_lif_memory_dropout_sweep test_bitshift_lif_memory_dropout_capture test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac

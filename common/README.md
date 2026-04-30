@@ -1,0 +1,222 @@
+# common/
+
+Shared assets used across the design-space, training, and FPGA-benchmarking work:
+
+- `sv/` — SystemVerilog neuron and network sources, plus the cocotb test bench
+- `scripts/` — Python utilities; primarily plotting and waveform analysis
+- `metrics/` — checked-in waveforms (`*.vcd`) and spike-cycle CSVs that back the figures
+- `images/` — generated SVG figures referenced by the paper / write-ups
+
+## Plotting scripts
+
+Two scripts produce the spike-frequency-adaptation figures. Both consume artifacts written by the cocotb memory tests in `sv/cocotb/tests/`:
+
+1. **`plot_membrane_potential.py`** — renders the per-step waveform: membrane, current, spike raster, and inter-spike interval (ISI). Reads a `.vcd` waveform produced by the cocotb capture testcases. Optionally takes a phase CSV (and its sidecar JSON) to shade the dropout window and switch to multi-panel layouts.
+2. **`plot_spike_cycles.py`** — renders the cycle-by-cycle ISI / firing-frequency trend that summarizes how the neuron adapts. Reads only the CSV exported by the capture tests; no waveform parsing.
+
+### Input artifacts and how they get to `metrics/`
+
+The cocotb capture testcases write to `sv/cocotb/results/`:
+
+- `sim_build/<toplevel>.fst` — Icarus waveform (binary FST format)
+- `<variant>_spike_cycles.csv` — per-cycle membrane traces with `phase` labels
+- `<variant>_phases.json` — sidecar with the actual current-on/current-off boundary times in nanoseconds (only written by the dropout/recovery captures)
+
+`plot_membrane_potential.py` parses VCD, not FST, so convert first (inside the cocotb container that has GTKWave / `fst2vcd` installed):
+
+```bash
+fst2vcd sv/cocotb/results/sim_build/fractional_lif.fst \
+    -o sv/cocotb/results/fractional_lif.vcd
+```
+
+The `metrics/` directory holds the canonical, regeneratable waveforms / CSVs used to produce the checked-in figures. Promote a fresh capture into it with:
+
+```bash
+cp sv/cocotb/results/fractional_lif_constant_current.vcd metrics/
+cp sv/cocotb/results/fractional_lif_memory_spike_cycles.csv metrics/fractional_lif_constant_current_spike_cycles.csv
+cp sv/cocotb/results/fractional_lif_dropout_current.vcd metrics/
+cp sv/cocotb/results/fractional_lif_dropout_recovery_spike_cycles.csv   metrics/
+cp sv/cocotb/results/fractional_lif_dropout_recovery_phases.json metrics/
+```
+
+The plot scripts auto-detect the phase sidecar by replacing `_spike_cycles.csv` with `_phases.json` next to the CSV — keep them paired.
+
+### Figure catalog
+
+Run from `common/`. Each command lists the SVG it writes.
+
+#### `plot_membrane_potential.py`
+
+**Constant-current capture (4-subplot view, auto-zoom to first 20 spikes):**
+```bash
+python scripts/plot_membrane_potential.py \
+    metrics/fractional_lif_constant_current.vcd \
+    --output images/fractional_lif_memory_constant.svg
+```
+→ `images/fractional_lif_memory_constant.svg`
+
+**Dropout/recovery, full-span single-panel view (default when `--phase-csv` is given):**
+```bash
+python scripts/plot_membrane_potential.py \
+    metrics/fractional_lif_dropout_current.vcd \
+    --phase-csv metrics/fractional_lif_dropout_recovery_spike_cycles.csv \
+    --output images/fractional_lif_memory_dropout.svg
+```
+→ `images/fractional_lif_memory_dropout.svg`
+
+Phase shading for `startup` (gray), `dropout` (vermillion), `recovery` (green) is drawn from the sidecar `*_phases.json`. The cross-dropout ISI is excluded from the ISI subplot so within-phase variations stay legible.
+
+**Dropout/recovery, single-panel with end trimmed to first N=20 recovery spikes:**
+```bash
+python scripts/plot_membrane_potential.py \
+    metrics/fractional_lif_dropout_current.vcd \
+    --phase-csv metrics/fractional_lif_dropout_recovery_spike_cycles.csv \
+    --phase-zoom-spikes 20 \
+    --output images/fractional_lif_memory_dropout-zoom-20.svg
+```
+→ `images/fractional_lif_memory_dropout-zoom-20.svg`
+
+Trims the long convergent tail of recovery while keeping the full startup + dropout window — useful when the late recovery flattens out.
+
+**Dropout/recovery, 3-panel per-phase view (first N=20 spikes per active phase):**
+```bash
+python scripts/plot_membrane_potential.py \
+    metrics/fractional_lif_dropout_current.vcd \
+    --phase-csv metrics/fractional_lif_dropout_recovery_spike_cycles.csv \
+    --zoom-early-spikes-per-phase 20 \
+    --output images/fractional_lif_memory_dropout-zoom-early.svg
+```
+→ `images/fractional_lif_memory_dropout-zoom-early.svg`
+
+Side-by-side membrane panels (one per phase, `dropout` shows the empty current-off window). Panel widths roughly match each other, making the startup-vs-recovery spike-density comparison honest at a glance.
+
+**Same per-phase view, more spikes (N=30) for fuller adaptation arc:**
+```bash
+python scripts/plot_membrane_potential.py \
+    metrics/fractional_lif_dropout_current.vcd \
+    --phase-csv metrics/fractional_lif_dropout_recovery_spike_cycles.csv \
+    --zoom-early-spikes-per-phase 30 \
+    --output images/fractional_lif_memory_dropout-zoom-early-30.svg
+```
+→ `images/fractional_lif_memory_dropout-zoom-early-30.svg`
+
+#### `plot_spike_cycles.py`
+
+By default the figure has no suptitle — summary statistics (early/late mean, gain, per-phase
+early means) are printed to stdout for inclusion in the figure caption. Pass `--title "..."`
+to embed the summary in the figure itself.
+
+The fractional LIF fires in doublets at the chosen operating point: the cycle stream alternates
+between a within-doublet length-2 ISI and a between-doublet length-13ish ISI. The within-doublet
+cycles compress the y-axis and obscure the actual adaptation, so the recommended workflow uses
+`--min-cycle-length` to drop them before plotting.
+
+**Constant-current ISI adaptation (raw, no filtering):**
+```bash
+python scripts/plot_spike_cycles.py \
+    metrics/fractional_lif_constant_current_spike_cycles.csv \
+    --output images/fractional_lif_memory_spike_cycles.svg
+```
+→ `images/fractional_lif_memory_spike_cycles.svg`
+
+Top subplot: cycle length vs cycle index. Bottom: instantaneous spike frequency. Shows the
+full doublet pattern — useful as a "this is what the raw data looks like" reference, but
+hard to read trend-wise.
+
+**Raw, zoomed to first 20 cycles (no filtering):**
+```bash
+python scripts/plot_spike_cycles.py \
+    metrics/fractional_lif_constant_current_spike_cycles.csv \
+    --max-cycles 20 \
+    --output images/fractional_lif_memory_spike_cycles_zoom-20.svg
+```
+→ `images/fractional_lif_memory_spike_cycles_zoom-20.svg`
+
+Same as the raw view above, x-axis clipped to the first 20 cycles. The doublet alternation
+is still visible but the early adaptation in the long-ISI cycles is more apparent because
+the long stable tail no longer compresses the y-axis. Stats from this run: early=11.20,
+late=7.90, gain=1.42.
+
+**Constant-current, doublet-filtered (recommended):**
+```bash
+python scripts/plot_spike_cycles.py \
+    metrics/fractional_lif_constant_current_spike_cycles.csv \
+    --min-cycle-length 5 \
+    --output images/fractional_lif_memory_spike_cycles_zoom-mincyc-5.svg
+```
+→ `images/fractional_lif_memory_spike_cycles_zoom-mincyc-5.svg`
+
+Drops the within-doublet length-2 cycles (197 of 394), leaving only the between-doublet ISIs
+that carry the adaptation signal. Y-axis now spans the meaningful range (~13–18 steps) and
+the trend is visible at a glance. Stats: early=17.10, late=13.00, gain=1.32.
+
+**Constant-current, doublet-filtered + zoomed to first 30 cycles, smoothed overlay:**
+```bash
+python scripts/plot_spike_cycles.py \
+    metrics/fractional_lif_constant_current_spike_cycles.csv \
+    --min-cycle-length 5 \
+    --max-cycles 30 \
+    --smooth-window 5 \
+    --output images/fractional_lif_memory_spike_cycles_zoom.svg
+```
+→ `images/fractional_lif_memory_spike_cycles_zoom.svg`
+
+Black moving-average line on top of the raw long-ISI scatter, x-axis clipped to the early
+adaptation portion before convergence flattens the trend.
+
+**Doublet-filtered + zoomed to first 20 raw cycles:**
+```bash
+python scripts/plot_spike_cycles.py \
+    metrics/fractional_lif_constant_current_spike_cycles.csv \
+    --min-cycle-length 5 \
+    --max-cycles 20 \
+    --output images/fractional_lif_memory_spike_cycles_zoom-mincyc-5-zoom-20.svg
+```
+→ `images/fractional_lif_memory_spike_cycles_zoom-mincyc-5-zoom-20.svg`
+
+Tight view of the very earliest adaptation — `--max-cycles 20` filters by the original
+cycle index, so combined with `--min-cycle-length 5` only ~10 long-ISI cycles survive.
+Note: with only 10 cycles and the default `--early-count 10 --late-count 10`, the early
+and late windows fully overlap, so the printed gain is 1.00 — an artifact of the window,
+not the data. Use a wider zoom or shrink `--early-count`/`--late-count` for a meaningful
+ratio.
+
+**Doublet-filtered + zoomed to first 40 raw cycles:**
+```bash
+python scripts/plot_spike_cycles.py \
+    metrics/fractional_lif_constant_current_spike_cycles.csv \
+    --min-cycle-length 5 \
+    --max-cycles 40 \
+    --output images/fractional_lif_memory_spike_cycles_zoom-mincyc-5-zoom-40.svg
+```
+→ `images/fractional_lif_memory_spike_cycles_zoom-mincyc-5-zoom-40.svg`
+
+Wider window (~20 long-ISI cycles after filtering) — the early/late windows no longer
+overlap, so the gain (1.31) is meaningful and the visible trend matches the unzoomed
+filtered view's 1.32.
+
+**Dropout/recovery (multi-phase coloring auto-enabled by the CSV's `phase` column):**
+```bash
+python scripts/plot_spike_cycles.py \
+    metrics/fractional_lif_dropout_recovery_spike_cycles.csv \
+    --min-cycle-length 5 \
+    --output images/fractional_lif_recovery_spike_cycles.svg
+```
+→ `images/fractional_lif_recovery_spike_cycles.svg`
+
+Startup vs recovery points are colored separately; transitions are marked with dashed
+verticals. Per-phase early-means and the `recovery_gain` ratio (startup_early /
+recovery_early) are printed to stdout.
+
+**Constant-current, custom early/late summary windows:**
+```bash
+python scripts/plot_spike_cycles.py \
+    metrics/fractional_lif_constant_current_spike_cycles.csv \
+    --min-cycle-length 5 \
+    --early-count 6 --late-count 20 \
+    --output images/fractional_lif_memory_spike_cycles-early6-late20.svg
+```
+→ `images/fractional_lif_memory_spike_cycles-early6-late20.svg`
+
+Tightens the early window and widens the late window — sharpens the printed convergence
+ratio when adaptation is fast.

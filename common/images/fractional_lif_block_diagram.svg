@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 720" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <style>
+      .io      { fill:#dbeafe; stroke:#1d4ed8; stroke-width:1.2; }
+      .data    { fill:#dcfce7; stroke:#15803d; stroke-width:1.2; }
+      .mem     { fill:#fef9c3; stroke:#b45309; stroke-width:1.2; }
+      .ctrl    { fill:#ffedd5; stroke:#c2410c; stroke-width:1.2; }
+      .reg     { fill:#ede9fe; stroke:#6d28d9; stroke-width:1.2; }
+      .wire    { stroke:#333; stroke-width:1.4; fill:none; }
+      .wire-d  { stroke:#333; stroke-width:1.4; fill:none; stroke-dasharray:5 4; }
+      .lbl     { fill:#111; }
+      .lbl-mono{ fill:#111; font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size:11px; }
+      .title   { font-size:18px; font-weight:600; fill:#111; }
+      .stage   { font-size:10px; fill:#7c2d12; font-style:italic; }
+      .group-l { font-size:11px; fill:#555; font-style:italic; }
+    </style>
+  </defs>
+
+  <!-- Title -->
+  <text x="590" y="28" text-anchor="middle" class="title">fractional_lif.sv — Block Diagram</text>
+  <text x="590" y="46" text-anchor="middle" class="group-l">Grünwald–Letnikov fractional-order LIF neuron (QS2.13 fixed point)</text>
+
+  <!-- Module boundary -->
+  <rect x="30" y="65" width="1120" height="630" rx="10" ry="10" fill="none" stroke="#999" stroke-dasharray="4 4"/>
+  <text x="44" y="84" class="group-l">module fractional_lif</text>
+
+  <!-- ======================= INPUTS (left) ======================= -->
+  <g>
+    <rect class="io" x="50"  y="110" width="90" height="26" rx="4"/>
+    <text x="95" y="127" text-anchor="middle" class="lbl-mono">clk</text>
+
+    <rect class="io" x="50"  y="146" width="90" height="26" rx="4"/>
+    <text x="95" y="163" text-anchor="middle" class="lbl-mono">reset</text>
+
+    <rect class="io" x="50"  y="182" width="90" height="26" rx="4"/>
+    <text x="95" y="199" text-anchor="middle" class="lbl-mono">clear</text>
+
+    <rect class="io" x="50"  y="218" width="90" height="26" rx="4"/>
+    <text x="95" y="235" text-anchor="middle" class="lbl-mono">enable</text>
+
+    <rect class="io" x="50"  y="370" width="90" height="32" rx="4"/>
+    <text x="95" y="384" text-anchor="middle" class="lbl-mono">current</text>
+    <text x="95" y="397" text-anchor="middle" class="lbl-mono">[DW-1:0]</text>
+  </g>
+
+  <!-- ======================= FSM (top) ======================= -->
+  <g>
+    <rect class="ctrl" x="200" y="100" width="320" height="120" rx="8"/>
+    <text x="360" y="120" text-anchor="middle" class="lbl" font-weight="600">FSM Controller (one-hot)</text>
+    <text x="360" y="142" text-anchor="middle" class="lbl-mono">IDLE → MAC → PREP_NUM →</text>
+    <text x="360" y="158" text-anchor="middle" class="lbl-mono">MUL_RECIP → SHIFT_DIV → FINALIZE</text>
+    <text x="360" y="182" text-anchor="middle" class="stage">drives every datapath stage below</text>
+    <text x="360" y="202" text-anchor="middle" class="lbl-mono">busy = (state != IDLE)</text>
+  </g>
+
+  <!-- enable -> FSM -->
+  <path class="wire" d="M140,231 L200,231 L200,180" marker-end="url(#arrow)"/>
+  <!-- clk/reset/clear -> FSM (combined visually) -->
+  <path class="wire-d" d="M140,123 L180,123 L180,110" marker-end="url(#arrow)"/>
+  <path class="wire-d" d="M140,159 L180,159 L180,110" marker-end="url(#arrow)"/>
+  <path class="wire-d" d="M140,195 L180,195 L180,110" marker-end="url(#arrow)"/>
+
+  <!-- ======================= MEMORY column ======================= -->
+  <g>
+    <!-- History buffer -->
+    <rect class="mem" x="200" y="270" width="180" height="90" rx="6"/>
+    <text x="290" y="290" text-anchor="middle" font-weight="600">History Buffer</text>
+    <text x="290" y="308" text-anchor="middle" class="lbl-mono">V[n-1] … V[n-(H-1)]</text>
+    <text x="290" y="324" text-anchor="middle" class="lbl-mono">circular, ptr=history_ptr</text>
+    <text x="290" y="346" text-anchor="middle" class="stage">depth = HISTORY_LENGTH</text>
+
+    <!-- GL coefficient ROM -->
+    <rect class="mem" x="200" y="385" width="180" height="80" rx="6"/>
+    <text x="290" y="404" text-anchor="middle" font-weight="600">GL Coefficient ROM</text>
+    <text x="290" y="422" text-anchor="middle" class="lbl-mono">|g_1| … |g_{H-1}|</text>
+    <text x="290" y="444" text-anchor="middle" class="stage">$readmemh(GL_COEFF_FILE)</text>
+  </g>
+
+  <!-- ======================= MAC ======================= -->
+  <g>
+    <rect class="data" x="430" y="320" width="170" height="100" rx="6"/>
+    <text x="515" y="340" text-anchor="middle" font-weight="600">MAC</text>
+    <text x="515" y="360" text-anchor="middle" class="lbl-mono">acc += |g_k| · V[n-k]</text>
+    <text x="515" y="378" text-anchor="middle" class="lbl-mono">history_sum_acc</text>
+    <text x="515" y="402" text-anchor="middle" class="stage">ST_MAC (H-1 cycles)</text>
+  </g>
+  <!-- buffer -> MAC -->
+  <path class="wire" d="M380,315 L430,340" marker-end="url(#arrow)"/>
+  <!-- ROM -> MAC -->
+  <path class="wire" d="M380,420 L430,395" marker-end="url(#arrow)"/>
+
+  <!-- ======================= × C_SCALED ======================= -->
+  <g>
+    <rect class="data" x="650" y="320" width="120" height="60" rx="6"/>
+    <text x="710" y="343" text-anchor="middle" font-weight="600">× C_SCALED</text>
+    <text x="710" y="361" text-anchor="middle" class="lbl-mono">scale + shift</text>
+    <text x="710" y="395" text-anchor="middle" class="stage">part of ST_PREP_NUM</text>
+  </g>
+  <path class="wire" d="M600,370 L650,350" marker-end="url(#arrow)"/>
+
+  <!-- ======================= Numerator adder ======================= -->
+  <g>
+    <rect class="data" x="650" y="425" width="120" height="60" rx="6"/>
+    <text x="710" y="448" text-anchor="middle" font-weight="600">+  numerator</text>
+    <text x="710" y="466" text-anchor="middle" class="lbl-mono">I[n] + C·Σg·V</text>
+    <text x="710" y="500" text-anchor="middle" class="stage">ST_PREP_NUM</text>
+  </g>
+  <!-- C_SCALED -> adder -->
+  <path class="wire" d="M710,380 L710,425" marker-end="url(#arrow)"/>
+  <!-- current -> adder (long horizontal under FSM) -->
+  <path class="wire" d="M140,386 L260,386 L260,540 L640,540 L640,470 L650,460" marker-end="url(#arrow)"/>
+  <text x="430" y="535" class="lbl-mono">current_latched (sign-ext)</text>
+
+  <!-- ======================= × INV_DENOM ======================= -->
+  <g>
+    <rect class="data" x="820" y="425" width="130" height="60" rx="6"/>
+    <text x="885" y="448" text-anchor="middle" font-weight="600">× INV_DENOM</text>
+    <text x="885" y="466" text-anchor="middle" class="lbl-mono">reciprocal of denom</text>
+    <text x="885" y="500" text-anchor="middle" class="stage">ST_MUL_RECIP</text>
+  </g>
+  <path class="wire" d="M770,455 L820,455" marker-end="url(#arrow)"/>
+
+  <!-- ======================= >>> Shift ======================= -->
+  <g>
+    <rect class="data" x="1000" y="425" width="130" height="60" rx="6"/>
+    <text x="1065" y="448" text-anchor="middle" font-weight="600">&gt;&gt;&gt; FRAC_BITS</text>
+    <text x="1065" y="466" text-anchor="middle" class="lbl-mono">arith. shift / divide</text>
+    <text x="1065" y="500" text-anchor="middle" class="stage">ST_SHIFT_DIV</text>
+  </g>
+  <path class="wire" d="M950,455 L1000,455" marker-end="url(#arrow)"/>
+
+  <!-- ======================= Reset subtract / Saturate / Spike ======================= -->
+  <g>
+    <rect class="data" x="820" y="550" width="130" height="65" rx="6"/>
+    <text x="885" y="572" text-anchor="middle" font-weight="600">− THRESHOLD</text>
+    <text x="885" y="590" text-anchor="middle" class="lbl-mono">if spike_prev</text>
+    <text x="885" y="630" text-anchor="middle" class="stage">ST_FINALIZE</text>
+  </g>
+  <g>
+    <rect class="data" x="650" y="550" width="130" height="65" rx="6"/>
+    <text x="715" y="572" text-anchor="middle" font-weight="600">Saturate</text>
+    <text x="715" y="590" text-anchor="middle" class="lbl-mono">[MIN, MAX]</text>
+    <text x="715" y="605" text-anchor="middle" class="lbl-mono">→ membrane</text>
+  </g>
+  <g>
+    <rect class="data" x="470" y="550" width="140" height="65" rx="6"/>
+    <text x="540" y="572" text-anchor="middle" font-weight="600">≥ THRESHOLD ?</text>
+    <text x="540" y="590" text-anchor="middle" class="lbl-mono">spike compare</text>
+    <text x="540" y="605" text-anchor="middle" class="lbl-mono">finalize_spike</text>
+  </g>
+
+  <!-- shift -> reset sub -->
+  <path class="wire" d="M1065,485 L1065,560 L950,575" marker-end="url(#arrow)"/>
+  <!-- reset sub -> saturate -->
+  <path class="wire" d="M820,580 L780,580" marker-end="url(#arrow)"/>
+  <!-- saturate -> compare -->
+  <path class="wire" d="M650,580 L610,580" marker-end="url(#arrow)"/>
+
+  <!-- ======================= Membrane register / feedback ======================= -->
+  <g>
+    <rect class="reg" x="200" y="555" width="180" height="55" rx="6"/>
+    <text x="290" y="575" text-anchor="middle" font-weight="600">membrane_potential</text>
+    <text x="290" y="595" text-anchor="middle" class="lbl-mono">register (write @ FINALIZE)</text>
+  </g>
+  <!-- compare/saturate output -> membrane reg -->
+  <path class="wire" d="M470,585 L380,585" marker-end="url(#arrow)"/>
+
+  <!-- membrane reg -> history buffer (push current V before update) -->
+  <path class="wire" d="M290,555 L290,360" marker-end="url(#arrow)"/>
+  <text x="298" y="455" class="lbl-mono">push V[n] @ FINALIZE</text>
+
+  <!-- spike_prev feedback into reset subtract -->
+  <path class="wire-d" d="M540,615 L540,660 L885,660 L885,615" marker-end="url(#arrow)"/>
+  <text x="700" y="675" text-anchor="middle" class="lbl-mono">spike_prev (delayed reset)</text>
+
+  <!-- ======================= OUTPUTS (right) ======================= -->
+  <g>
+    <rect class="io" x="1060" y="146" width="90" height="32" rx="4"/>
+    <text x="1105" y="160" text-anchor="middle" class="lbl-mono">spike_out</text>
+    <text x="1105" y="173" text-anchor="middle" class="lbl-mono">1-bit</text>
+
+    <rect class="io" x="1060" y="186" width="90" height="32" rx="4"/>
+    <text x="1105" y="200" text-anchor="middle" class="lbl-mono">membrane_out</text>
+    <text x="1105" y="213" text-anchor="middle" class="lbl-mono">[MW-1:0]</text>
+
+    <rect class="io" x="1060" y="226" width="90" height="26" rx="4"/>
+    <text x="1105" y="243" text-anchor="middle" class="lbl-mono">busy</text>
+
+    <rect class="io" x="1060" y="258" width="90" height="26" rx="4"/>
+    <text x="1105" y="275" text-anchor="middle" class="lbl-mono">output_valid</text>
+  </g>
+
+  <!-- spike_out wire from compare -->
+  <path class="wire" d="M540,550 L540,250 L1060,162" marker-end="url(#arrow)"/>
+  <!-- membrane_out wire from saturate -->
+  <path class="wire" d="M715,550 L715,260 L1060,202" marker-end="url(#arrow)"/>
+  <!-- busy/output_valid from FSM -->
+  <path class="wire" d="M520,170 L1060,239" marker-end="url(#arrow)"/>
+  <path class="wire" d="M520,200 L1060,271" marker-end="url(#arrow)"/>
+
+  <!-- ======================= Legend ======================= -->
+  <g transform="translate(50,640)">
+    <rect class="io"   x="0"   y="0" width="14" height="14"/>
+    <text x="20" y="12" class="lbl-mono">I/O port</text>
+    <rect class="ctrl" x="100" y="0" width="14" height="14"/>
+    <text x="120" y="12" class="lbl-mono">control / FSM</text>
+    <rect class="data" x="240" y="0" width="14" height="14"/>
+    <text x="260" y="12" class="lbl-mono">datapath</text>
+    <rect class="mem"  x="360" y="0" width="14" height="14"/>
+    <text x="380" y="12" class="lbl-mono">memory / ROM</text>
+    <rect class="reg"  x="500" y="0" width="14" height="14"/>
+    <text x="520" y="12" class="lbl-mono">register</text>
+    <line x1="600" y1="7" x2="640" y2="7" class="wire-d"/>
+    <text x="648" y="12" class="lbl-mono">control / feedback</text>
+  </g>
+</svg>

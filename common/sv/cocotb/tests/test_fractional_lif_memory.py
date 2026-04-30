@@ -1,15 +1,59 @@
 import csv
+import json
 from pathlib import Path
-from statistics import mean
+from statistics import mean, pstdev
 
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles, RisingEdge
+from cocotb.utils import get_sim_time
 
 
 DATA_WIDTH = 16
 MEMBRANE_WIDTH = 24
 FRAC_BITS = 13
+
+RESULTS_DIR = Path("../results")
+# Operating-point JSONs live outside ../results so they survive `make clean`.
+OP_DIR = Path("../operating_points")
+
+CANDIDATE_CURRENTS = [
+    0.160,
+    0.170,
+    0.180,
+    0.190,
+    0.200,
+    0.210,
+    0.220,
+    0.230,
+    0.240,
+    0.250,
+    0.260,
+    0.280,
+]
+
+
+def save_operating_point(path: Path, **fields):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w") as f:
+        json.dump(fields, f, indent=2)
+
+
+def load_operating_point(path: Path) -> dict:
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Operating point file not found: {path}. Run the sweep testcase first."
+        )
+    with path.open() as f:
+        return json.load(f)
+
+
+def write_phase_metadata(path: Path, phases: list):
+    """Write phase boundary metadata so the plot script can shade the dropout window
+    against the actual current-off period rather than inferring it from spike gaps."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w") as f:
+        json.dump({"phases": phases}, f, indent=2)
 
 
 def _wrap_signed(value: int, bits: int) -> int:
@@ -35,6 +79,7 @@ class FractionalMemoryTester:
 
     def reset_traces(self):
         self.spike_steps = []
+        self.spike_times_ns = []
         self.current_trace = []
         self.membrane_trace = []
         self.step_trace = []
@@ -62,6 +107,7 @@ class FractionalMemoryTester:
 
         if spike:
             self.spike_steps.append(self.step_count)
+            self.spike_times_ns.append(get_sim_time(unit="ns"))
 
         self.current_trace.append(current_signed)
         self.membrane_trace.append(membrane)
@@ -74,10 +120,33 @@ class FractionalMemoryTester:
         for _ in range(steps):
             await self.record_step(current_signed)
 
-    async def run_profile(self, profile):
-        for current_signed, steps in profile:
+    async def run_profile(self, profile, labels=None):
+        """Run a (current, steps) profile sequentially.
+
+        If labels is provided (one label per profile entry), records the simulation
+        time at the start and end of each phase and returns a list of phase dicts
+        suitable for writing to a sidecar JSON. The recorded times are the actual
+        boundaries (when current changes), not spike times — so phase shading in
+        the plot lines up with the real dropout window.
+        """
+        phases = []
+        for i, (current_signed, steps) in enumerate(profile):
+            label = labels[i] if labels is not None else None
+            t_start = float(get_sim_time(unit="ns"))
+            step_start = self.step_count
             for _ in range(steps):
                 await self.record_step(current_signed)
+            if label is not None:
+                phases.append(
+                    {
+                        "label": label,
+                        "start_step": step_start,
+                        "end_step": self.step_count,
+                        "t_start_ns": t_start,
+                        "t_end_ns": float(get_sim_time(unit="ns")),
+                    }
+                )
+        return phases
 
     def inter_spike_intervals(self):
         if len(self.spike_steps) < 2:
@@ -93,7 +162,12 @@ class FractionalMemoryTester:
             return []
         return [spikes[i] - spikes[i - 1] for i in range(1, len(spikes))]
 
-    def export_spike_cycle_csv(self, filename: Path):
+    def export_spike_cycle_csv(self, filename: Path, phases=None):
+        """Export spike-cycle membrane traces to CSV.
+
+        phases: optional list of (start_step, end_step, label) tuples that tag each
+        cycle with the phase it belongs to. When None, every row gets label "constant".
+        """
         if not self.spike_steps:
             return
 
@@ -112,16 +186,34 @@ class FractionalMemoryTester:
 
         max_len = max((end - start + 1) for start, end in cycle_ranges)
 
+        def _phase_label(spike_step):
+            if phases is None:
+                return "constant"
+            for start_step, end_step, label in phases:
+                if start_step <= spike_step < end_step:
+                    return label
+            return "constant"
+
+        # Build a lookup from spike_step → sim time (ns) for the spike_time_ns column.
+        spike_step_to_ns = dict(zip(self.spike_steps, self.spike_times_ns))
+
         with filename.open("w", newline="") as csv_file:
             writer = csv.writer(csv_file)
             header = [f"membrane_potential_{i + 1}" for i in range(max_len)]
-            writer.writerow(["cycle_num", "spike_step", "cycle_length"] + header)
+            writer.writerow(
+                ["cycle_num", "spike_step", "spike_time_ns", "cycle_length", "phase"]
+                + header
+            )
 
             for cycle_idx, (start_idx, end_idx) in enumerate(cycle_ranges, start=1):
                 values = self.membrane_trace[start_idx : end_idx + 1]
                 cycle_len = len(values)
                 padded = values + [""] * (max_len - cycle_len)
-                writer.writerow([cycle_idx, end_idx, cycle_len] + padded)
+                phase = _phase_label(end_idx)
+                spike_ns = spike_step_to_ns.get(end_idx, "")
+                writer.writerow(
+                    [cycle_idx, end_idx, spike_ns, cycle_len, phase] + padded
+                )
 
 
 async def reset_dut(dut):
@@ -159,6 +251,15 @@ async def sweep_best_constant_current(
         if spike_count < min_spikes_required or len(intervals) < 10:
             continue
 
+        # Log ISI variability for diagnostics — doublet patterns are intrinsic to this
+        # neuron at most operating points and are kept as-is for plotting.
+        # Get coefficient of variation (CV) and range to confirm that the sweep is
+        # capturing a variety of ISI patterns and not just noise.
+        cv = pstdev(intervals) / mean(intervals) if mean(intervals) > 0 else 0.0
+        dut._log.info(
+            f"I={current_float:.3f}: ISI CV={cv:.2f}, range [{min(intervals)}, {max(intervals)}]"
+        )
+
         early = intervals[:6]
         late = intervals[-6:]
         if len(early) < 4 or len(late) < 4:
@@ -195,33 +296,19 @@ async def sweep_best_constant_current(
 
 
 @cocotb.test()
-async def test_constant_current_memory_effect(dut):
-    """Case 1: constant current should yield increasing spike rate over time."""
+async def test_constant_current_sweep(dut):
+    """Sweep currents to find the best operating point for constant-current adaptation."""
     clock = Clock(dut.clk, 10, unit="ns")
     cocotb.start_soon(clock.start())
 
     tester = FractionalMemoryTester(dut)
-
-    candidate_currents = [
-        0.160,
-        0.170,
-        0.180,
-        0.190,
-        0.200,
-        0.210,
-        0.220,
-        0.230,
-        0.240,
-        0.250,
-        0.260,
-        0.280,
-    ]
+    run_steps = 3000
 
     best = await sweep_best_constant_current(
         dut=dut,
         tester=tester,
-        candidate_currents=candidate_currents,
-        run_steps=3000,
+        candidate_currents=CANDIDATE_CURRENTS,
+        run_steps=run_steps,
         min_spikes_required=14,
     )
 
@@ -231,21 +318,25 @@ async def test_constant_current_memory_effect(dut):
     )
 
     dut._log.info(
-        "Case 1 best: "
+        "Constant sweep best: "
         f"I={best['current_float']:.3f} (fixed={best['current_fixed']}), "
-        f"gain={best['gain']:.3f}, acceleration={best['acceleration']:.2f}, "
-        f"early={best['early_mean']:.2f}, late={best['late_mean']:.2f}, "
-        f"spikes={best['spike_count']}"
+        f"gain={best['gain']:.3f}, spikes={best['spike_count']}"
     )
-    dut._log.info(f"Case 1 first 10 intervals: {best['intervals'][:10]}")
-    dut._log.info(f"Case 1 last 10 intervals:  {best['intervals'][-10:]}")
 
-    tester.spike_steps = best["spike_steps"]
-    tester.membrane_trace = best["membrane_trace"]
-    tester.current_trace = best["current_trace"]
-    tester.export_spike_cycle_csv(
-        Path("../results/fractional_lif_memory_spike_cycles.csv")
+    op_path = OP_DIR / "fractional_lif_memory_operating_point.json"
+    save_operating_point(
+        op_path,
+        variant="fractional_lif_memory",
+        scenario="constant",
+        current_float=best["current_float"],
+        current_fixed=best["current_fixed"],
+        frac_bits=FRAC_BITS,
+        sweep_run_steps=run_steps,
+        best_gain=best["gain"],
+        best_spike_count=best["spike_count"],
+        notes=f"auto-selected from {len(CANDIDATE_CURRENTS)}-point sweep",
     )
+    dut._log.info(f"Operating point saved to {op_path}")
 
     assert best["gain"] > 1.03, (
         "Expected increasing spike rate under constant current, "
@@ -254,62 +345,128 @@ async def test_constant_current_memory_effect(dut):
 
 
 @cocotb.test()
-async def test_dropout_recovery_memory_effect(dut):
-    """Case 2: spike rate after dropout/restart should exceed initial startup rate."""
+async def test_constant_current_capture(dut):
+    """Run only the best operating-point current; export a focused FST and spike-cycle CSV."""
+    clock = Clock(dut.clk, 10, unit="ns")
+    cocotb.start_soon(clock.start())
+
+    op_path = OP_DIR / "fractional_lif_memory_operating_point.json"
+    op = load_operating_point(op_path)
+    current_fixed = op["current_fixed"]
+    current_float = op["current_float"]
+    capture_steps = op.get("sweep_run_steps", 3000)
+
+    dut._log.info(
+        f"Capture: I={current_float:.3f} (fixed={current_fixed}), steps={capture_steps}"
+    )
+
+    tester = FractionalMemoryTester(dut)
+    await reset_dut(dut)
+    await tester.run_constant_current(current_fixed, capture_steps)
+
+    csv_path = RESULTS_DIR / "fractional_lif_memory_spike_cycles.csv"
+    tester.export_spike_cycle_csv(csv_path)
+    dut._log.info(f"Spike-cycle CSV written to {csv_path}")
+    dut._log.info(
+        "To plot (run fst2vcd inside Docker, then plot on host):\n"
+        "  fst2vcd ../results/sim_build/fractional_lif.fst -o ../results/fractional_lif.vcd\n"
+        "  python common/scripts/plot_membrane_potential.py "
+        "common/sv/cocotb/results/fractional_lif.vcd "
+        "--output common/images/fractional_lif_memory_constant.svg"
+    )
+
+
+@cocotb.test()
+async def test_dropout_recovery_sweep(dut):
+    """Sweep currents to find an operating point suitable for the dropout/recovery scenario."""
     clock = Clock(dut.clk, 10, unit="ns")
     cocotb.start_soon(clock.start())
 
     tester = FractionalMemoryTester(dut)
-
-    candidate_currents = [
-        0.160,
-        0.170,
-        0.180,
-        0.190,
-        0.200,
-        0.210,
-        0.220,
-        0.230,
-        0.240,
-        0.250,
-        0.260,
-        0.280,
-    ]
+    run_steps = 2200
 
     best = await sweep_best_constant_current(
         dut=dut,
         tester=tester,
-        candidate_currents=candidate_currents,
-        run_steps=2200,
+        candidate_currents=CANDIDATE_CURRENTS,
+        run_steps=run_steps,
         min_spikes_required=10,
     )
 
-    assert best is not None, "Could not find operating point for dropout/recovery test."
+    assert (
+        best is not None
+    ), "Could not find operating point for dropout/recovery sweep."
 
-    test_current_fixed = best["current_fixed"]
-    test_current_float = best["current_float"]
+    dut._log.info(
+        "Dropout sweep best: "
+        f"I={best['current_float']:.3f} (fixed={best['current_fixed']}), "
+        f"gain={best['gain']:.3f}, spikes={best['spike_count']}"
+    )
 
-    await reset_dut(dut)
-    tester.reset_traces()
+    op_path = OP_DIR / "fractional_lif_dropout_operating_point.json"
+    save_operating_point(
+        op_path,
+        variant="fractional_lif_memory",
+        scenario="dropout",
+        current_float=best["current_float"],
+        current_fixed=best["current_fixed"],
+        frac_bits=FRAC_BITS,
+        sweep_run_steps=run_steps,
+        best_gain=best["gain"],
+        best_spike_count=best["spike_count"],
+        notes=f"auto-selected from {len(CANDIDATE_CURRENTS)}-point sweep",
+    )
+    dut._log.info(f"Dropout operating point saved to {op_path}")
 
-    startup_steps = 1200
+
+@cocotb.test()
+async def test_dropout_recovery_capture(dut):
+    """Run the startup/dropout/recovery profile once; export a focused FST and phase-labeled CSV."""
+    clock = Clock(dut.clk, 10, unit="ns")
+    cocotb.start_soon(clock.start())
+
+    op_path = OP_DIR / "fractional_lif_dropout_operating_point.json"
+    op = load_operating_point(op_path)
+    current_fixed = op["current_fixed"]
+    current_float = op["current_float"]
+
+    # Shorter phases so the dropout appears near the middle of the plot (~40% through)
+    # and individual ISI changes are visible without compressing 1200 steps.
+    # 300 steps ≈ 32 spikes at I=0.280, enough to show adaptation; dropout = 120 keeps
+    # scientific validity (≈46% of history_length taps cycling through zero input).
+    startup_steps = 300
     dropout_steps = 120
-    recovery_steps = 1200
+    recovery_steps = 300
     recovery_start = startup_steps + dropout_steps
 
+    dut._log.info(
+        f"Dropout capture: I={current_float:.3f} (fixed={current_fixed}), "
+        f"profile=[{startup_steps}+{dropout_steps}+{recovery_steps}]"
+    )
+
+    tester = FractionalMemoryTester(dut)
+    await reset_dut(dut)
+
     profile = [
-        (test_current_fixed, startup_steps),
+        (current_fixed, startup_steps),
         (0, dropout_steps),
-        (test_current_fixed, recovery_steps),
+        (current_fixed, recovery_steps),
     ]
-    await tester.run_profile(profile)
+    phase_meta = await tester.run_profile(
+        profile, labels=["startup", "dropout", "recovery"]
+    )
+
+    # Write the actual phase boundary times so the plot script can shade the dropout
+    # window correctly (between current-off and current-on, not between spikes).
+    phases_path = RESULTS_DIR / "fractional_lif_dropout_recovery_phases.json"
+    write_phase_metadata(phases_path, phase_meta)
+    dut._log.info(f"Phase boundary metadata written to {phases_path}")
 
     startup_intervals = tester.inter_spike_intervals_in_window(0, startup_steps)
     recovery_intervals = tester.inter_spike_intervals_in_window(
         recovery_start, recovery_start + recovery_steps
     )
 
-    # Compare early startup against early recovery after current restarts.
     startup_early = startup_intervals[:6]
     recovery_early = recovery_intervals[:6]
 
@@ -325,21 +482,31 @@ async def test_dropout_recovery_memory_effect(dut):
     recovery_gain = startup_mean / recovery_mean if recovery_mean > 0 else 0.0
 
     dut._log.info(
-        "Case 2 summary: "
-        f"I={test_current_float:.3f} (fixed={test_current_fixed}), "
-        f"startup_mean={startup_mean:.2f}, recovery_mean={recovery_mean:.2f}, "
-        f"recovery_gain={recovery_gain:.3f}"
-    )
-    dut._log.info(
-        f"Case 2 phase boundaries (steps): startup=[0,{startup_steps}), "
-        f"dropout=[{startup_steps},{recovery_start}), recovery=[{recovery_start},{recovery_start + recovery_steps})"
+        "Dropout capture summary: "
+        f"I={current_float:.3f}, startup_mean={startup_mean:.2f}, "
+        f"recovery_mean={recovery_mean:.2f}, recovery_gain={recovery_gain:.3f}"
     )
 
-    tester.export_spike_cycle_csv(
-        Path("../results/fractional_lif_dropout_recovery_spike_cycles.csv")
+    phases = [
+        (0, startup_steps, "startup"),
+        (startup_steps, recovery_start, "dropout"),
+        (recovery_start, recovery_start + recovery_steps, "recovery"),
+    ]
+
+    csv_path = RESULTS_DIR / "fractional_lif_dropout_recovery_spike_cycles.csv"
+    tester.export_spike_cycle_csv(csv_path, phases=phases)
+    dut._log.info(f"Dropout spike-cycle CSV written to {csv_path}")
+    dut._log.info(
+        "To plot (run fst2vcd inside Docker, then plot on host):\n"
+        "  fst2vcd ../results/sim_build/fractional_lif.fst -o ../results/fractional_lif.vcd\n"
+        "  python common/scripts/plot_membrane_potential.py "
+        "common/sv/cocotb/results/fractional_lif.vcd "
+        "--phase-csv common/sv/cocotb/results/fractional_lif_dropout_recovery_spike_cycles.csv "
+        "--output common/images/fractional_lif_memory_dropout.svg"
     )
 
     assert recovery_gain > 1.03, (
         "Expected faster spiking after dropout recovery than initial startup, "
-        f"but recovery_gain={recovery_gain:.3f} (startup_mean={startup_mean:.2f}, recovery_mean={recovery_mean:.2f})."
+        f"but recovery_gain={recovery_gain:.3f} "
+        f"(startup_mean={startup_mean:.2f}, recovery_mean={recovery_mean:.2f})."
     )

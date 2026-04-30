@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="Helvetica, Arial, sans-serif" font-size="14">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <style>
+      .box     { fill:#dcfce7; stroke:#15803d; stroke-width:1.6; }
+      .wire    { stroke:#333; stroke-width:1.5; fill:none; }
+      .name    { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size:13px; fill:#111; }
+      .title   { font-size:18px; font-weight:600; fill:#111; }
+    </style>
+  </defs>
+
+  <!-- Module box -->
+  <rect class="box" x="240" y="70" width="240" height="280" rx="10"/>
+  <text x="360" y="215" text-anchor="middle" font-weight="600">Leaky Integrate-and-Fire Neuron</text>
+
+  <!-- ===== Inputs (left side) ===== -->
+  <!-- clk -->
+  <path class="wire" d="M80,110 L240,110" marker-end="url(#arrow)"/>
+  <text x="85" y="104" class="name">clk</text>
+
+  <!-- reset -->
+  <path class="wire" d="M80,150 L240,150" marker-end="url(#arrow)"/>
+  <text x="85" y="144" class="name">reset</text>
+
+  <!-- clear -->
+  <path class="wire" d="M80,190 L240,190" marker-end="url(#arrow)"/>
+  <text x="85" y="184" class="name">clear</text>
+
+  <!-- enable -->
+  <path class="wire" d="M80,230 L240,230" marker-end="url(#arrow)"/>
+  <text x="85" y="224" class="name">enable</text>
+
+  <!-- current -->
+  <path class="wire" d="M80,310 L240,310" marker-end="url(#arrow)"/>
+  <text x="85" y="304" class="name">current [15:0]</text>
+
+  <!-- ===== Outputs (right side) ===== -->
+  <!-- spike_out -->
+  <path class="wire" d="M480,110 L640,110" marker-end="url(#arrow)"/>
+  <text x="635" y="104" text-anchor="end" class="name">spike_out</text>
+
+  <!-- membrane_out -->
+  <path class="wire" d="M480,160 L640,160" marker-end="url(#arrow)"/>
+  <text x="635" y="154" text-anchor="end" class="name">membrane_out [23:0]</text>
+
+  <!-- busy -->
+  <path class="wire" d="M480,250 L640,250" marker-end="url(#arrow)"/>
+  <text x="635" y="244" text-anchor="end" class="name">busy</text>
+
+  <!-- output_valid -->
+  <path class="wire" d="M480,300 L640,300" marker-end="url(#arrow)"/>
+  <text x="635" y="294" text-anchor="end" class="name">output_valid</text>
+</svg>

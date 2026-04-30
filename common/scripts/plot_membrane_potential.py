@@ -1,10 +1,53 @@
+"""Plot membrane potential, current, spike raster, and ISI traces from a VCD file.
+
+Accepts VCD input only. To plot from a cocotb FST, first convert:
+    fst2vcd results/sim_build/fractional_lif.fst -o fractional_lif.vcd
+(fst2vcd is bundled with GTKWave.)
+
+Typical usage (constant-current capture):
+    python common/scripts/plot_membrane_potential.py fractional_lif.vcd \\
+        --output common/images/fractional_lif_memory_constant.svg
+
+Dropout/recovery (with phase shading from the spike-cycles CSV):
+    python common/scripts/plot_membrane_potential.py fractional_lif.vcd \\
+        --phase-csv common/sv/cocotb/results/fractional_lif_dropout_recovery_spike_cycles.csv \\
+        --output common/images/fractional_lif_memory_dropout.svg
+"""
+
 import argparse
+import csv
+import json
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import FuncFormatter
 from vcdvcd import VCDVCD
+
+
+OKABE_ITO = [
+    "#0072B2",  # blue
+    "#D55E00",  # vermillion
+    "#009E73",  # bluish green
+    "#CC79A7",  # reddish purple
+    "#56B4E9",  # sky blue
+    "#E69F00",  # orange
+    "#F0E442",  # yellow
+    "#000000",  # black
+]
+COLOR_RAW = "#999999"
+
+COLOR_MEMBRANE = OKABE_ITO[0]   # blue
+COLOR_CURRENT = OKABE_ITO[5]    # orange
+COLOR_SPIKE = OKABE_ITO[1]      # vermillion
+COLOR_ISI = OKABE_ITO[2]        # bluish green
+COLOR_MA = OKABE_ITO[7]         # black
+
+PHASE_COLORS = {
+    "startup": COLOR_RAW,
+    "dropout": OKABE_ITO[1],   # vermillion
+    "recovery": OKABE_ITO[2],  # bluish green
+}
 
 
 def get_latex_figsize(width_scale=1.0, height_scale=None):
@@ -28,6 +71,34 @@ def _to_int(value_bits: str, width: int, signed: bool):
     if signed and value >= (1 << (width - 1)):
         value -= 1 << width
     return value
+
+
+_UNIT_TO_NS = {
+    "fs": 1e-6, "ps": 1e-3, "ns": 1.0, "us": 1e3, "ms": 1e6, "s": 1e9,
+}
+
+
+def _vcd_time_scale_to_ns(vcd) -> float:
+    """Return the multiplier that converts raw vcdvcd time values to nanoseconds.
+
+    Icarus's default `$timescale` is 1ps, so without scaling all VCD times are 1000×
+    larger than the sidecar JSON's `get_sim_time(unit='ns')` values, and phase shading
+    falls completely outside the data window.
+    """
+    ts = getattr(vcd, "timescale", None)
+    if not ts:
+        return 1.0
+    if isinstance(ts, dict):
+        magnitude = ts.get("magnitude", 1)
+        unit = ts.get("unit", "ns")
+    else:
+        import re
+        m = re.match(r"\s*(\d+)\s*([a-zA-Z]+)", str(ts))
+        if not m:
+            return 1.0
+        magnitude = int(m.group(1))
+        unit = m.group(2)
+    return float(magnitude) * _UNIT_TO_NS.get(unit.lower(), 1.0)
 
 
 def _resolve_signal_name(vcd, requested: str, fallback_suffixes):
@@ -57,31 +128,37 @@ def _resolve_signal_name(vcd, requested: str, fallback_suffixes):
     return None
 
 
-def _extract_signal(vcd, signal_name: str, tmax: int, signed: bool, width: int):
+def _extract_signal(vcd, signal_name: str, tmax_ns: float, signed: bool, width: int,
+                    time_scale_ns: float = 1.0):
+    """Extract a signal's (time, value) trace. tmax_ns and returned times are both in ns."""
     if signal_name is None or signal_name not in vcd.references_to_ids:
         return None, None
 
     signal_id = vcd.references_to_ids[signal_name]
     tv = vcd.data[signal_id].tv
 
+    # vcd.tv stores times in the VCD's precision unit; the loop compares in that unit
+    # to avoid per-sample multiplication, then scales kept timestamps to ns at the end.
+    tmax_vcd = tmax_ns / time_scale_ns
+
     times = []
     values = []
     for t, v in tv:
-        if t > tmax:
+        if t > tmax_vcd:
             break
         if v in ("x", "z"):
             continue
         try:
             values.append(_to_int(v, width, signed))
-            times.append(t)
+            times.append(t * time_scale_ns)
         except ValueError:
             continue
 
     if not times:
         return [], []
 
-    if times[-1] < tmax:
-        times.append(tmax)
+    if times[-1] < tmax_ns:
+        times.append(tmax_ns)
         values.append(values[-1])
 
     return times, values
@@ -122,99 +199,199 @@ def _compute_isi(spike_edge_times):
     return isi_times, isi_values
 
 
-def _build_constant_segments(times, values, min_duration=0):
-    if not times or len(times) < 2:
+def _phase_meta_sidecar_path(phase_csv_path: Path):
+    """Return the conventional sidecar path for a spike-cycles CSV.
+
+    e.g. foo_dropout_recovery_spike_cycles.csv  →  foo_dropout_recovery_phases.json
+    """
+    name = phase_csv_path.name.replace("_spike_cycles.csv", "_phases.json")
+    return phase_csv_path.parent / name
+
+
+def _load_phase_metadata(json_path: Path):
+    """Load a phase-boundary sidecar written by the capture tests.
+
+    Returns list of (t_start_ns, t_end_ns, label) tuples, or None if file is missing.
+    These boundaries reflect when current actually changed, so phase shading lines up
+    with the real dropout window rather than the gap between adjacent spikes.
+    """
+    if not json_path.exists():
+        return None
+    with json_path.open() as f:
+        data = json.load(f)
+    return [(p["t_start_ns"], p["t_end_ns"], p["label"]) for p in data.get("phases", [])]
+
+
+def _compute_isi_excluding_cross_phase(spike_edge_times, phase_labels):
+    """Compute ISI series, dropping intervals that span a phase boundary.
+
+    The cross-dropout ISI (last startup spike → first recovery spike) is huge and
+    compresses the y-axis so much that the actual ISI changes within each phase
+    become invisible. Skipping it preserves the within-phase scale.
+    """
+    if len(spike_edge_times) < 2:
+        return [], []
+    isi_times = []
+    isi_values = []
+    n_paired = min(len(spike_edge_times), len(phase_labels))
+    for i in range(1, len(spike_edge_times)):
+        if i < n_paired and i - 1 < n_paired and phase_labels[i] != phase_labels[i - 1]:
+            continue
+        isi_times.append(spike_edge_times[i])
+        isi_values.append(spike_edge_times[i] - spike_edge_times[i - 1])
+    return isi_times, isi_values
+
+
+def _load_phase_labels(phase_csv_path: Path):
+    """Return an ordered list of phase labels from the CSV, one entry per spike cycle.
+
+    Works with any CSV that has a 'phase' column, regardless of whether 'spike_time_ns'
+    is present. Row K corresponds to the Kth spike detected in the VCD.
+    """
+    labels = []
+    with phase_csv_path.open("r", newline="") as f:
+        reader = csv.DictReader(f)
+        if "phase" not in (reader.fieldnames or []):
+            print("phase-csv: 'phase' column not found — skipping phase shading")
+            return []
+        for row in reader:
+            labels.append(row.get("phase", "constant").strip())
+    return labels
+
+
+def _compute_phase_spans(spike_edge_times, phase_labels, vcd_end_ns: float):
+    """Build (t_start_ns, t_end_ns, label) spans from VCD spike times + per-spike labels.
+
+    spike_edge_times[i] is the actual nanosecond timestamp of the (i+1)th spike from
+    the VCD. phase_labels[i] is the label for that spike's cycle from the CSV.
+    Gaps between phases (e.g. a dropout period with no spikes) are filled automatically
+    and labeled 'dropout'.
+    """
+    n = min(len(spike_edge_times), len(phase_labels))
+    if n == 0:
         return []
 
-    segments = []
-    for i in range(len(times) - 1):
-        start = times[i]
-        end = times[i + 1]
-        if end <= start:
-            continue
+    # Group consecutive spikes by label into coarse spans.
+    # The first phase always starts at t=0 (simulation start).
+    spans = []
+    cur_label = phase_labels[0]
+    cur_start = 0.0
+    cur_end = spike_edge_times[0]
 
-        duration = end - start
-        if duration < min_duration:
-            continue
+    for i in range(1, n):
+        t = spike_edge_times[i]
+        label = phase_labels[i]
+        if label == cur_label:
+            cur_end = t
+        else:
+            spans.append((cur_start, cur_end, cur_label))
+            cur_start = t
+            cur_end = t
+            cur_label = label
 
-        segments.append(
-            {
-                "start": start,
-                "end": end,
-                "duration": duration,
-                "value": values[i],
-            }
-        )
+    spans.append((cur_start, cur_end, cur_label))
 
-    return segments
+    # Fill gaps between spans (e.g. the current-off dropout window with no spikes).
+    full_spans = []
+    prev_end = 0.0
+    for start, end, label in spans:
+        if start > prev_end + 1:
+            full_spans.append((prev_end, start, "dropout"))
+        full_spans.append((start, end, label))
+        prev_end = end
 
+    # Extend the final span to the end of the VCD.
+    if full_spans:
+        s, _, lbl = full_spans[-1]
+        full_spans[-1] = (s, vcd_end_ns, lbl)
 
-def _segment_spike_times(spike_edge_times, start, end):
-    return [t for t in spike_edge_times if start <= t < end]
-
-
-def _segment_gain(spike_times):
-    if len(spike_times) < 6:
-        return None
-
-    intervals = np.diff(spike_times)
-    if len(intervals) < 4:
-        return None
-
-    window = min(6, len(intervals) // 2)
-    if window < 2:
-        return None
-
-    early = intervals[:window]
-    late = intervals[-window:]
-    late_mean = float(np.mean(late))
-    if late_mean <= 0:
-        return None
-
-    return float(np.mean(early) / late_mean)
+    return full_spans
 
 
-def _choose_best_current_segment(
-    segments,
-    spike_edge_times,
-    target_current_raw=None,
+def _plot_per_phase_panels(
+    mem_times, mem_values,
+    spike_edge_times, phase_labels, phase_spans,
+    zoom_n, padding, max_points,
+    output_file, show_plot,
 ):
-    if not segments:
-        return None
+    """1-row × N-phase figure: one membrane-trace panel per phase, each zoomed to first N spikes.
 
-    nonzero_segments = [s for s in segments if s["value"] != 0]
-    if not nonzero_segments:
-        return None
+    For phases with no spikes (e.g. dropout) the full phase duration is shown.
+    This layout is the clearest way to compare startup vs. recovery spiking density.
+    """
+    axis_label_fontsize = 8
+    tick_label_fontsize = 6
 
-    enriched = []
-    for seg in nonzero_segments:
-        seg_spikes = _segment_spike_times(spike_edge_times, seg["start"], seg["end"])
-        gain = _segment_gain(seg_spikes)
-        enriched.append(
-            {
-                **seg,
-                "spike_count": len(seg_spikes),
-                "gain": gain,
-            }
-        )
+    # Group VCD spike times by phase label (preserving order).
+    n_paired = min(len(spike_edge_times), len(phase_labels))
+    phase_spike_times: dict[str, list] = {}
+    for i in range(n_paired):
+        lbl = phase_labels[i]
+        phase_spike_times.setdefault(lbl, []).append(spike_edge_times[i])
 
-    if target_current_raw is not None:
-        enriched.sort(
-            key=lambda s: (
-                abs(s["value"] - target_current_raw),
-                -s["spike_count"],
-                -s["duration"],
+    n_panels = len(phase_spans)
+    figsize = get_latex_figsize(width_scale=1.6, height_scale=0.55)
+    fig, axes = plt.subplots(
+        1, n_panels,
+        figsize=(figsize["width"], figsize["height"]),
+        sharey=True,
+    )
+    if n_panels == 1:
+        axes = [axes]
+
+    mem_arr = np.array(mem_times, dtype=float)
+    val_arr = np.array(mem_values, dtype=float)
+
+    for ax, (phase_start, phase_end, label) in zip(axes, phase_spans):
+        spikes = phase_spike_times.get(label, [])
+        color = PHASE_COLORS.get(label, COLOR_RAW)
+
+        if spikes and zoom_n > 0:
+            n_shown = min(zoom_n, len(spikes))
+            xmin = max(phase_start, spikes[0] - padding)
+            xmax = min(phase_end, spikes[n_shown - 1] + padding)
+        else:
+            xmin = phase_start
+            xmax = phase_end
+
+        # Slice membrane trace to this panel's window and downsample.
+        mask = (mem_arr >= xmin) & (mem_arr <= xmax)
+        t_w = mem_arr[mask].tolist()
+        v_w = val_arr[mask].tolist()
+        if t_w:
+            t_w, v_w = _downsample(t_w, v_w, max_points // n_panels)
+            ax.step(t_w, v_w, where="post", color=COLOR_MEMBRANE, linewidth=0.8)
+
+        # Spike raster (using axes-fraction y so it stays at the top regardless of scale).
+        spk_in_window = [t for t in spikes if xmin <= t <= xmax]
+        if spk_in_window:
+            ax.scatter(
+                spk_in_window,
+                np.ones(len(spk_in_window)) * 0.97,
+                transform=ax.get_xaxis_transform(),
+                marker="|", s=60, color=COLOR_SPIKE, linewidth=0.8,
             )
+
+        ax.axvspan(xmin, xmax, alpha=0.12, color=color, linewidth=0)
+        ax.set_xlim(xmin, xmax)
+        ax.set_title(label, fontsize=axis_label_fontsize, color=color)
+        ax.set_xlabel("Time (ns)", fontsize=axis_label_fontsize)
+        ax.xaxis.set_major_formatter(
+            FuncFormatter(lambda x, _: f"{x:.2e}".replace("e+0", "e").replace("e+", "e"))
         )
-        return enriched[0]
+        ax.tick_params(axis="both", which="major", labelsize=tick_label_fontsize)
+        ax.grid(True, which="both", linestyle=":", alpha=0.6)
 
-    gain_candidates = [s for s in enriched if s["gain"] is not None]
-    if gain_candidates:
-        gain_candidates.sort(key=lambda s: (s["gain"], s["spike_count"], s["duration"]))
-        return gain_candidates[-1]
+    axes[0].set_ylabel("Membrane", fontsize=axis_label_fontsize)
+    plt.tight_layout()
 
-    enriched.sort(key=lambda s: (s["spike_count"], s["duration"]))
-    return enriched[-1]
+    output_path = Path(output_file)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, format=output_path.suffix.lstrip(".") or "svg", bbox_inches="tight")
+    if show_plot:
+        plt.show()
+    else:
+        plt.close(fig)
 
 
 def plot_signal(
@@ -225,26 +402,43 @@ def plot_signal(
     membrane_width=24,
     current_width=16,
     spike_width=1,
-    tmax=4_000_000,
+    tmax=None,  # None → use full VCD duration
     show_current=True,
     show_spike=True,
     show_isi=True,
     max_points=200_000,
     x_min=None,
     x_max=None,
-    auto_window_spikes=False,
-    auto_window_best_current=False,
-    auto_window_padding=50_000,
-    min_current_segment_duration=0,
-    current_frac_bits=13,
-    target_current=None,
-    output_file="images/hardware_simulation_hist256.svg",
+    zoom_early_spikes=20,
+    zoom_full=False,
+    auto_window_padding=5_000,
+    phase_csv=None,
+    zoom_early_spikes_per_phase=0,
+    phase_zoom_spikes=0,
+    output_file="images/fractional_lif_memory_constant.svg",
     show_plot=False,
 ):
+    if str(vcd_file).endswith(".fst"):
+        print(
+            "Error: input is an FST file. Convert it first with:\n"
+            f"  fst2vcd {vcd_file} -o {Path(vcd_file).with_suffix('.vcd')}"
+        )
+        return
+
     axis_label_fontsize = 8
     tick_label_fontsize = 6
 
     vcd = VCDVCD(vcd_file, store_tvs=True)
+
+    # Convert VCD's native time unit (often picoseconds for Icarus default 1ps timescale)
+    # to nanoseconds so phase metadata from the sidecar JSON (which uses get_sim_time(unit="ns"))
+    # lines up with VCD-derived timestamps.
+    time_scale_ns = _vcd_time_scale_to_ns(vcd)
+    print(f"VCD timescale: {getattr(vcd, 'timescale', '?')}, multiplier→ns = {time_scale_ns}")
+
+    if tmax is None:
+        tmax = float(vcd.endtime) * time_scale_ns
+        print(f"tmax auto-detected from VCD: {tmax} ns")
 
     mem_name = _resolve_signal_name(
         vcd,
@@ -274,9 +468,10 @@ def plot_signal(
     mem_times, mem_values = _extract_signal(
         vcd=vcd,
         signal_name=mem_name,
-        tmax=tmax,
+        tmax_ns=tmax,
         signed=True,
         width=membrane_width,
+        time_scale_ns=time_scale_ns,
     )
 
     if mem_times is None:
@@ -293,58 +488,109 @@ def plot_signal(
     cur_times, cur_values = _extract_signal(
         vcd=vcd,
         signal_name=cur_name,
-        tmax=tmax,
+        tmax_ns=tmax,
         signed=True,
         width=current_width,
+        time_scale_ns=time_scale_ns,
     )
+
+    # Load phase labels before spike detection so we know whether to force zoom_full.
+    phase_labels = []
+    if phase_csv is not None:
+        phase_labels = _load_phase_labels(Path(phase_csv))
+        # Multi-phase CSV (e.g. dropout/recovery): show the full simulation by default
+        # so all three regions are visible. The user can override with --zoom-early-spikes.
+        distinct = set(phase_labels)
+        if len(distinct) > 1 and not zoom_full:
+            zoom_full = True
+            print(f"Multi-phase CSV detected ({distinct}); switching to full-span zoom.")
 
     spike_edge_times = []
     if spk_name is not None:
         spk_times, spk_values = _extract_signal(
             vcd=vcd,
             signal_name=spk_name,
-            tmax=tmax,
+            tmax_ns=tmax,
             signed=False,
             width=spike_width,
+            time_scale_ns=time_scale_ns,
         )
 
         if spk_times is not None and spk_times:
             spike_edge_times = _detect_spike_rising_edges(spk_times, spk_values)
             print(f"Detected spike edges: {len(spike_edge_times)}")
 
-    target_current_raw = None
-    if target_current is not None:
-        target_current_raw = int(round(target_current * (1 << current_frac_bits)))
-        print(
-            f"Requested target current: {target_current:.6f} -> raw {target_current_raw} "
-            f"(Q*.{current_frac_bits})"
-        )
+    # Phase spans: prefer the sidecar JSON (written by capture tests) since it has the
+    # actual current-on/current-off boundaries. Fall back to inference from VCD spike
+    # times + CSV labels for older runs that predate the sidecar.
+    phase_spans = []
+    if phase_csv is not None:
+        sidecar_path = _phase_meta_sidecar_path(Path(phase_csv))
+        sidecar = _load_phase_metadata(sidecar_path)
+        if sidecar:
+            phase_spans = sidecar
+            print(f"Phase spans (from sidecar {sidecar_path.name}): "
+                  f"{[(round(s), round(e), l) for s, e, l in phase_spans]}")
 
-    if auto_window_best_current and cur_times not in [(None, []), None] and cur_values not in [(None, []), None]:
-        segments = _build_constant_segments(
-            cur_times,
-            cur_values,
-            min_duration=min_current_segment_duration,
-        )
-        best_segment = _choose_best_current_segment(
-            segments,
-            spike_edge_times,
-            target_current_raw=target_current_raw,
-        )
-        if best_segment is not None:
-            seg_x_min = max(0, best_segment["start"] - auto_window_padding)
-            seg_x_max = min(tmax, best_segment["end"] + auto_window_padding)
-            if seg_x_max > seg_x_min:
-                x_min = seg_x_min if x_min is None else x_min
-                x_max = seg_x_max if x_max is None else x_max
+    if not phase_spans and phase_labels and spike_edge_times:
+        phase_spans = _compute_phase_spans(spike_edge_times, phase_labels, tmax)
+        print(f"Phase spans (inferred from spikes): "
+              f"{[(round(s), round(e), l) for s, e, l in phase_spans]}")
 
-            current_float = best_segment["value"] / float(1 << current_frac_bits)
-            print(
-                "Best current segment: "
-                f"value_raw={best_segment['value']}, value_float={current_float:.6f}, "
-                f"start={best_segment['start']}, end={best_segment['end']}, "
-                f"spikes={best_segment['spike_count']}, gain={best_segment['gain']}"
-            )
+    # 3-panel per-phase view: one membrane panel per phase, each zoomed to first N spikes.
+    if zoom_early_spikes_per_phase > 0 and phase_spans:
+        _plot_per_phase_panels(
+            mem_times=mem_times,
+            mem_values=mem_values,
+            spike_edge_times=spike_edge_times,
+            phase_labels=phase_labels,
+            phase_spans=phase_spans,
+            zoom_n=zoom_early_spikes_per_phase,
+            padding=auto_window_padding,
+            max_points=max_points,
+            output_file=output_file,
+            show_plot=show_plot,
+        )
+        return
+
+    # Determine x window.
+    if x_min is None and x_max is None:
+        if zoom_full and len(spike_edge_times) >= 2:
+            x_min = max(0, spike_edge_times[0] - auto_window_padding)
+            x_max = min(tmax, spike_edge_times[-1] + auto_window_padding)
+            print(f"Full spike window: x_min={x_min}, x_max={x_max}")
+        elif zoom_early_spikes > 0 and len(spike_edge_times) >= 1:
+            n = min(zoom_early_spikes, len(spike_edge_times))
+            x_min = max(0, spike_edge_times[0] - auto_window_padding)
+            x_max = min(tmax, spike_edge_times[n - 1] + auto_window_padding)
+            print(f"Early-spike window (N={zoom_early_spikes}): x_min={x_min}, x_max={x_max}")
+
+    # --phase-zoom-spikes N: trim x_max to the Nth spike of the last active (non-dropout) phase.
+    # Useful for cutting the long stable tail of recovery while keeping the full x_min context.
+    if phase_zoom_spikes > 0 and phase_labels and spike_edge_times:
+        n_paired = min(len(spike_edge_times), len(phase_labels))
+        last_active_spikes = [
+            spike_edge_times[i] for i in range(n_paired)
+            if phase_labels[i] != "dropout"
+        ]
+        # Spikes of the last active phase only.
+        last_phase_label = next(
+            (lbl for _, _, lbl in reversed(phase_spans) if lbl != "dropout"), None
+        )
+        if last_phase_label:
+            last_phase_spikes = [
+                spike_edge_times[i] for i in range(n_paired)
+                if phase_labels[i] == last_phase_label
+            ]
+            n_trim = min(phase_zoom_spikes, len(last_phase_spikes))
+            if n_trim > 0:
+                x_max = min(tmax, last_phase_spikes[n_trim - 1] + auto_window_padding)
+                print(f"Phase-zoom trim: x_max capped at spike {n_trim} of {last_phase_label} ({x_max} ns)")
+
+    if x_min is None:
+        x_min = 0
+    if x_max is None:
+        x_max = tmax
 
     mem_times, mem_values = _downsample(mem_times, mem_values, max_points)
 
@@ -369,10 +615,27 @@ def plot_signal(
             return "0"
         return f"{x:.1e}".replace("e+0", "e").replace("e+", "e")
 
+    def _draw_phase_spans(ax):
+        for t_start, t_end, label in phase_spans:
+            color = PHASE_COLORS.get(label, COLOR_RAW)
+            ax.axvspan(t_start, t_end, alpha=0.12, color=color, linewidth=0)
+
     ax_index = 0
 
     ax_mem = axes[ax_index]
-    ax_mem.step(mem_times, mem_values, where="post", color="dodgerblue")
+    ax_mem.step(mem_times, mem_values, where="post", color=COLOR_MEMBRANE)
+    _draw_phase_spans(ax_mem)
+    if phase_spans:
+        # Annotate phase labels at the top of the membrane subplot.
+        for t_start, t_end, label in phase_spans:
+            mid = (t_start + t_end) / 2
+            ax_mem.text(
+                mid, 0.97, label,
+                transform=ax_mem.get_xaxis_transform(),
+                ha="center", va="top",
+                fontsize=tick_label_fontsize,
+                color=PHASE_COLORS.get(label, COLOR_RAW),
+            )
     ax_mem.set_ylabel("Membrane", fontsize=axis_label_fontsize)
     ax_mem.tick_params(axis="both", which="major", labelsize=tick_label_fontsize)
     ax_mem.xaxis.set_major_formatter(FuncFormatter(scientific_formatter))
@@ -383,19 +646,14 @@ def plot_signal(
         ax_cur = axes[ax_index]
         if cur_times is None or not cur_times:
             ax_cur.text(
-                0.5,
-                0.5,
-                "Current signal unavailable",
+                0.5, 0.5, "Current signal unavailable",
                 transform=ax_cur.transAxes,
-                ha="center",
-                va="center",
-                fontsize=10,
-                color="gray",
+                ha="center", va="center", fontsize=10, color="gray",
             )
         else:
             cur_times, cur_values = _downsample(cur_times, cur_values, max_points)
-            ax_cur.step(cur_times, cur_values, where="post", color="darkorange")
-
+            ax_cur.step(cur_times, cur_values, where="post", color=COLOR_CURRENT)
+        _draw_phase_spans(ax_cur)
         ax_cur.set_ylabel("Current", fontsize=axis_label_fontsize)
         ax_cur.tick_params(axis="both", which="major", labelsize=tick_label_fontsize)
         ax_cur.xaxis.set_major_formatter(FuncFormatter(scientific_formatter))
@@ -406,19 +664,14 @@ def plot_signal(
         ax_spk = axes[ax_index]
         if spike_edge_times:
             y = np.ones(len(spike_edge_times))
-            ax_spk.scatter(spike_edge_times, y, marker="|", s=80, color="crimson")
+            ax_spk.scatter(spike_edge_times, y, marker="|", s=80, color=COLOR_SPIKE)
         else:
             ax_spk.text(
-                0.5,
-                0.5,
-                "No spike rising edges detected",
+                0.5, 0.5, "No spike rising edges detected",
                 transform=ax_spk.transAxes,
-                ha="center",
-                va="center",
-                fontsize=10,
-                color="gray",
+                ha="center", va="center", fontsize=10, color="gray",
             )
-
+        _draw_phase_spans(ax_spk)
         ax_spk.set_ylabel("Spikes", fontsize=axis_label_fontsize)
         ax_spk.set_ylim(0.0, 1.5)
         ax_spk.tick_params(axis="both", which="major", labelsize=tick_label_fontsize)
@@ -428,39 +681,29 @@ def plot_signal(
 
     if show_isi and spk_name is not None:
         ax_isi = axes[ax_index]
-        isi_times, isi_values = _compute_isi(spike_edge_times)
+        # Skip cross-phase ISIs (e.g. the huge gap across the dropout) when phase
+        # data is available — those single intervals dominate the y-axis otherwise.
+        if phase_labels:
+            isi_times, isi_values = _compute_isi_excluding_cross_phase(
+                spike_edge_times, phase_labels
+            )
+        else:
+            isi_times, isi_values = _compute_isi(spike_edge_times)
         if isi_times:
             isi_times, isi_values = _downsample(isi_times, isi_values, max_points)
-            ax_isi.plot(isi_times, isi_values, color="seagreen", linewidth=1.2)
+            ax_isi.plot(isi_times, isi_values, color=COLOR_ISI, linewidth=1.2)
+            ax_isi.scatter(isi_times, isi_values, color=COLOR_ISI, s=4, alpha=0.7)
         else:
             ax_isi.text(
-                0.5,
-                0.5,
-                "Not enough spikes for ISI",
+                0.5, 0.5, "Not enough spikes for ISI",
                 transform=ax_isi.transAxes,
-                ha="center",
-                va="center",
-                fontsize=10,
-                color="gray",
+                ha="center", va="center", fontsize=10, color="gray",
             )
-
+        _draw_phase_spans(ax_isi)
         ax_isi.set_ylabel("ISI (ns)", fontsize=axis_label_fontsize)
         ax_isi.tick_params(axis="both", which="major", labelsize=tick_label_fontsize)
         ax_isi.xaxis.set_major_formatter(FuncFormatter(scientific_formatter))
         ax_isi.grid(True, which="both", linestyle=":", alpha=0.6)
-
-    if auto_window_spikes and len(spike_edge_times) >= 2 and not auto_window_best_current:
-        computed_x_min = max(0, spike_edge_times[0] - auto_window_padding)
-        computed_x_max = min(tmax, spike_edge_times[-1] + auto_window_padding)
-        if computed_x_max > computed_x_min:
-            x_min = computed_x_min if x_min is None else x_min
-            x_max = computed_x_max if x_max is None else x_max
-            print(f"Auto spike window: x_min={x_min}, x_max={x_max}")
-
-    if x_min is None:
-        x_min = 0
-    if x_max is None:
-        x_max = tmax
 
     axes[-1].set_xlabel("Time (ns)", fontsize=axis_label_fontsize)
     axes[-1].set_xlim(x_min, x_max)
@@ -480,9 +723,13 @@ def plot_signal(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Plot membrane/current/spike/ISI traces from a VCD file."
+        description=(
+            "Plot membrane/current/spike/ISI traces from a VCD file. "
+            "Accepts VCD only — convert FST first with: "
+            "fst2vcd <file>.fst -o <file>.vcd"
+        )
     )
-    parser.add_argument("vcd_file", help="Path to VCD file")
+    parser.add_argument("vcd_file", help="Path to VCD file (.fst input prints a conversion hint)")
     parser.add_argument(
         "--membrane-signal",
         default="fractional_lif.membrane_out[23:0]",
@@ -498,105 +745,50 @@ if __name__ == "__main__":
         default="fractional_lif.spike_out",
         help="Spike signal name",
     )
+    parser.add_argument("--membrane-width", type=int, default=24)
+    parser.add_argument("--current-width", type=int, default=16)
+    parser.add_argument("--spike-width", type=int, default=1)
     parser.add_argument(
-        "--membrane-width",
-        type=int,
-        default=24,
-        help="Membrane signal width",
+        "--tmax", type=int, default=None,
+        help="Maximum simulation time to plot (ns). Defaults to the full VCD duration.",
+    )
+    parser.add_argument("--no-current", action="store_true", help="Disable current subplot")
+    parser.add_argument("--no-spike", action="store_true", help="Disable spike subplot")
+    parser.add_argument("--no-isi", action="store_true", help="Disable ISI subplot")
+    parser.add_argument("--max-points", type=int, default=200_000)
+    parser.add_argument("--x-min", type=int, default=None, help="Manual x-axis minimum (ns)")
+    parser.add_argument("--x-max", type=int, default=None, help="Manual x-axis maximum (ns)")
+    parser.add_argument(
+        "--zoom-early-spikes", type=int, default=20, metavar="N",
+        help="Window x-axis from the first to the Nth detected spike (default: 20). "
+             "Set to 0 to disable.",
     )
     parser.add_argument(
-        "--current-width",
-        type=int,
-        default=16,
-        help="Current signal width",
+        "--zoom-full", action="store_true",
+        help="Window x-axis from first to last spike (overrides --zoom-early-spikes)",
     )
     parser.add_argument(
-        "--spike-width",
-        type=int,
-        default=1,
-        help="Spike signal width",
+        "--auto-window-padding", type=int, default=5_000,
+        help="Padding (ns) added around the auto-computed spike window (default: 5000)",
     )
     parser.add_argument(
-        "--tmax",
-        type=int,
-        default=4_000_000,
-        help="Maximum simulation time to plot",
+        "--phase-csv", default=None, metavar="PATH",
+        help="Path to spike-cycles CSV with a 'phase' column; adds shaded phase regions",
     )
     parser.add_argument(
-        "--no-current",
-        action="store_true",
-        help="Disable current subplot",
+        "--phase-zoom-spikes", type=int, default=0, metavar="N",
+        help="Trim x_max to the Nth spike of the last active phase (e.g. recovery). "
+             "Leaves x_min at the default full-span start. Use with --phase-csv.",
     )
     parser.add_argument(
-        "--no-spike",
-        action="store_true",
-        help="Disable spike subplot",
+        "--zoom-early-spikes-per-phase", type=int, default=0, metavar="N",
+        help="3-panel layout: one membrane panel per phase, each showing the first N spikes. "
+             "Requires --phase-csv. Overrides --zoom-early-spikes / --zoom-full.",
     )
-    parser.add_argument(
-        "--no-isi",
-        action="store_true",
-        help="Disable ISI subplot",
-    )
-    parser.add_argument(
-        "--max-points",
-        type=int,
-        default=200_000,
-        help="Maximum points per plotted trace",
-    )
-    parser.add_argument(
-        "--x-min",
-        type=int,
-        default=None,
-        help="Manual minimum x-axis time (ns)",
-    )
-    parser.add_argument(
-        "--x-max",
-        type=int,
-        default=None,
-        help="Manual maximum x-axis time (ns)",
-    )
-    parser.add_argument(
-        "--auto-window-spikes",
-        action="store_true",
-        help="Auto-focus x-axis around first and last detected spike",
-    )
-    parser.add_argument(
-        "--auto-window-best-current",
-        action="store_true",
-        help="Auto-focus x-axis to a single constant-current segment with strongest adaptation",
-    )
-    parser.add_argument(
-        "--auto-window-padding",
-        type=int,
-        default=50_000,
-        help="Padding (ns) added around auto spike window",
-    )
-    parser.add_argument(
-        "--min-current-segment-duration",
-        type=int,
-        default=0,
-        help="Minimum duration (ns) for constant-current segments considered in best-current mode",
-    )
-    parser.add_argument(
-        "--current-frac-bits",
-        type=int,
-        default=13,
-        help="Fractional bits used to convert raw current to float in logs",
-    )
-    parser.add_argument(
-        "--target-current",
-        type=float,
-        default=None,
-        help="Optional target current in float units to focus the nearest segment",
-    )
-    parser.add_argument(
-        "--show",
-        action="store_true",
-        help="Display interactive window after saving figure",
-    )
+    parser.add_argument("--show", action="store_true", help="Display interactive window after saving")
     parser.add_argument(
         "--output",
-        default="images/hardware_simulation_hist256.svg",
+        default="images/fractional_lif_memory_constant.svg",
         help="Output image path",
     )
     args = parser.parse_args()
@@ -616,12 +808,12 @@ if __name__ == "__main__":
         max_points=args.max_points,
         x_min=args.x_min,
         x_max=args.x_max,
-        auto_window_spikes=args.auto_window_spikes,
-        auto_window_best_current=args.auto_window_best_current,
+        zoom_early_spikes=args.zoom_early_spikes,
+        zoom_full=args.zoom_full,
         auto_window_padding=args.auto_window_padding,
-        min_current_segment_duration=args.min_current_segment_duration,
-        current_frac_bits=args.current_frac_bits,
-        target_current=args.target_current,
+        phase_csv=args.phase_csv,
+        zoom_early_spikes_per_phase=args.zoom_early_spikes_per_phase,
+        phase_zoom_spikes=args.phase_zoom_spikes,
         output_file=args.output,
         show_plot=args.show,
     )
