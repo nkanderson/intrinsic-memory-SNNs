@@ -27,3 +27,7 @@ __pycache__/
 **/scripts/*.json
 
 !3_benchmarking_on_FPGA/results
+
+
+# Claude
+.claude/
