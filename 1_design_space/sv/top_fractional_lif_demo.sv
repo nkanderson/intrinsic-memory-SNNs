@@ -72,7 +72,7 @@ module top_fractional_lif_demo #(
         end
     end
 
-    fractional_lif #(
+    fractional_lif_v1 #(
         .THRESHOLD(THRESHOLD),
         .DATA_WIDTH(DATA_WIDTH),
         .MEMBRANE_WIDTH(MEMBRANE_WIDTH),
