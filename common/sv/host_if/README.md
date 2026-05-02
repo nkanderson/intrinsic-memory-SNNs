@@ -29,8 +29,10 @@ Bytes:
 
 - `0x01` `WRITE`: write `LEN` bytes beginning at `ADDR`
 - `0x02` `READ`: read `LEN` bytes beginning at `ADDR`
-- `0x03` `EXEC`: trigger one accelerator run
+- `0x03` `EXEC`: trigger one accelerator run (preferred start path — see below)
 - `0x7F` `PING`: returns 1-byte payload `'P'`
+
+There are two ways to start an inference: writing `1` to bit 0 of `REG_CONTROL`, or sending an `EXEC` frame. Hosts should use `EXEC`. It is one frame instead of two, leaves a clean trace in protocol logs, and reuses the same `ST_BUSY` rejection path the wrapper already implements.
 
 ## Status codes
 
@@ -47,10 +49,12 @@ Bytes:
 - `0x04` `REG_STATUS` (R): bit0 = done, bit1 = busy
 - `0x08` `REG_ACTION` (R): selected action (`ACTION_WIDTH` bits)
 - `0x10` `REG_OBS0` (RW, int16 little-endian)
-- `0x14` `REG_OBS1` (RW, int16 little-endian)
-- `0x18` `REG_OBS2` (RW, int16 little-endian)
-- `0x1C` `REG_OBS3` (RW, int16 little-endian)
+- `0x12` `REG_OBS1` (RW, int16 little-endian)
+- `0x14` `REG_OBS2` (RW, int16 little-endian)
+- `0x16` `REG_OBS3` (RW, int16 little-endian)
 - `0xFC` `REG_VERSION` (R): `0x0001`
+
+The four observation registers are contiguous int16 little-endian values, so a single 8-byte `WRITE` starting at `REG_OBS0` (`0x10`) loads all four observations in one frame.
 
 ## Modules
 
@@ -59,6 +63,15 @@ Bytes:
 - `uart_tx.sv`: UART byte transmitter
 - `uart_accel_ctrl.sv`: parser + register block + response framing
 - `top_uart_accel_wrapper.sv`: thin wrapper to bind UART host IF with one accelerator top
+
+## Host inference sequence
+
+1. `WRITE` 8 bytes to `REG_OBS0` (`0x10`) covering all four observations as contiguous int16 little-endian QS2.13 values.
+2. `EXEC`. If the response status is `ST_BUSY`, an inference is already in flight; back off and retry.
+3. Poll `READ` of `REG_STATUS` until bit 0 (`done`) is set. Bit 1 (`busy`) goes high between `EXEC` and `done`.
+4. `READ` `REG_ACTION`.
+
+`REG_ACTION` is always readable, but its value is only meaningful once `done` has been observed for the latest run. A read while `busy=1` returns whatever the previous run latched — no error is raised. Always check `STATUS` before consuming `ACTION`.
 
 ## Integration notes
 

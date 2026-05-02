@@ -23,10 +23,12 @@ package accel_uart_pkg;
   localparam logic [7:0] REG_STATUS  = 8'h04; // bit0=done, bit1=busy
   localparam logic [7:0] REG_ACTION  = 8'h08; // bits[1:0]=selected_action
 
+  // 4-element observation block, contiguous int16 LE so a single 8-byte
+  // WRITE at REG_OBS0 covers all four observations in one frame.
   localparam logic [7:0] REG_OBS0    = 8'h10; // int16 LE
-  localparam logic [7:0] REG_OBS1    = 8'h14; // int16 LE
-  localparam logic [7:0] REG_OBS2    = 8'h18; // int16 LE
-  localparam logic [7:0] REG_OBS3    = 8'h1C; // int16 LE
+  localparam logic [7:0] REG_OBS1    = 8'h12; // int16 LE
+  localparam logic [7:0] REG_OBS2    = 8'h14; // int16 LE
+  localparam logic [7:0] REG_OBS3    = 8'h16; // int16 LE
 
   localparam logic [7:0] REG_VERSION = 8'hFC; // read-only, 0x0001
 
