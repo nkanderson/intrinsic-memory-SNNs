@@ -33,6 +33,11 @@ module lif #(
 );
 
     // Internal state
+    // These registers are duplicative of the membrane_out and spike_out registered outputs,
+    // but allow for greater flexilibity and document the internal state feeding the next
+    // state logic. They might be optimized away by synthesis, but also might not. If we
+    // reach a point of needing to optimize for area, we can consider merging these with the
+    // outputs, after verifying that the logic is functionally equivalent.
     logic signed [MEMBRANE_WIDTH-1:0] membrane_potential;  // Membrane potential
     logic spike_prev;                                      // Previous spike for reset delay
 
@@ -65,6 +70,7 @@ module lif #(
         // membrane_potential is MEMBRANE_WIDTH-bit signed (QS2.13 with extra headroom)
         // Result of multiplication is 32-bit, shift right by 7 to scale back
         decay_temp = membrane_potential * $signed({1'b0, BETA[7:0]});
+        // Truncation safe from overflow as BETA < 1.0, so decay_temp is less than membrane_potential
         decay_potential = MEMBRANE_WIDTH'(decay_temp >>> 7);  // Arithmetic right shift, truncate to MEMBRANE_WIDTH bits
 
         // Step 2: Calculate reset subtraction (threshold if prev spike, else 0)

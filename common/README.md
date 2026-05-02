@@ -220,3 +220,81 @@ python scripts/plot_spike_cycles.py \
 
 Tightens the early window and widens the late window — sharpens the printed convergence
 ratio when adaptation is fast.
+
+## LIF Unit Tests
+
+4430.01ns INFO     cocotb.regression                  ****************************************************************************************************
+** TEST                                        STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+****************************************************************************************************
+** test_lif.test_lif_reset                      PASS          40.00           0.03       1159.97  **
+** test_lif.test_lif_clear                      PASS         190.00           0.00      76989.45  **
+** test_lif.test_lif_no_spike_below_threshold   PASS         670.00           0.01      57549.17  **
+** test_lif.test_lif_spike_above_threshold      PASS          90.00           0.00      65547.38  **
+** test_lif.test_lif_membrane_accumulation      PASS         670.00           0.01      80148.98  **
+** test_lif.test_lif_consecutive_spiking        PASS         130.00           0.00      29941.22  **
+** test_lif.test_lif_reset_by_subtraction       PASS         130.00           0.00      32026.99  **
+** test_lif.test_lif_multiple_inferences        PASS         710.00           0.02      39464.03  **
+** test_lif.test_lif_negative_input             PASS         670.00           0.01      44917.66  **
+** test_lif.test_lif_beta_decay                 PASS         670.00           0.01      65017.44  **
+** test_lif.test_lif_enable_hold                PASS         190.00           0.00      43310.75  **
+** test_lif.test_lif_varying_current            PASS         270.00           0.01      29898.41  **
+****************************************************************************************************
+** TESTS=12 PASS=12 FAIL=0 SKIP=0                           4430.01           0.16      28100.29  **
+****************************************************************************************************
+
+
+8230.01ns INFO     cocotb.regression                  *************************************************************************************************************************************
+** TEST                                                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+*************************************************************************************************************************************
+** test_fractional_lif.test_fractional_lif_reset                                 PASS          60.00           0.04       1336.93  **
+** test_fractional_lif.test_fractional_lif_clear                                 PASS         610.00           0.01      50945.33  **
+** test_fractional_lif.test_fractional_lif_no_spike_small_input                  PASS        2670.00           0.06      42202.10  **
+** test_fractional_lif.test_fractional_lif_spike_large_input                     PASS         200.00           0.00     117553.36  **
+** test_fractional_lif.test_fractional_vs_standard_lif_pulse_response            PASS        3060.00           0.04      85861.45  **
+** test_fractional_lif.test_fractional_lif_matches_fixed_point_golden_baseline   PASS        1630.00           0.03      65047.77  **
+** test_fractional_lif.test_fractional_lif_matches_fixed_point_golden_hist64     PASS           0.00           0.00          0.00  **
+*************************************************************************************************************************************
+** TESTS=7 PASS=7 FAIL=0 SKIP=0                                                              8230.01           0.21      38455.28  **
+*************************************************************************************************************************************
+
+
+
+13440.00ns INFO     cocotb.regression                  *****************************************************************************************************************************
+** TEST                                                                 STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+*****************************************************************************************************************************
+** test_bitshift_lif.test_bitshift_lif_reset                             PASS          60.00           0.03       1899.45  **
+** test_bitshift_lif.test_bitshift_lif_clear                             PASS        2850.00           0.16      17728.56  **
+** test_bitshift_lif.test_bitshift_lif_enable_hold_behavior              PASS         800.00           0.04      17783.50  **
+** test_bitshift_lif.test_bitshift_lif_matches_fixed_point_golden        PASS        9730.00           0.48      20083.71  **
+** test_bitshift_lif.test_bitshift_lif_mode0_simple_profile              PASS           0.00           0.00          0.00  **
+** test_bitshift_lif.test_bitshift_lif_mode3_custom_slow_decay_profile   PASS           0.00           0.00          0.00  **
+*****************************************************************************************************************************
+** TESTS=6 PASS=6 FAIL=0 SKIP=0                                                     13440.00           0.75      17804.85  **
+*****************************************************************************************************************************
+
+## LIF Data Formats
+
+### lif.sv
+
+`THRESHOLD` = 8192, 1.0 in QS2.13
+`BETA` = 115, ~0.9 in Q1.7
+
+input `current` in QS2.13 when using default DATA_WIDTH = 16
+- Unit tests use values in decimal such as 0.5, ~0.1, 1.5, ~0.3, ~1.2, ~0.55, ~0.3, etc.
+
+output `membrane_out` is MEMBRANE_WIDTH bits (default 24), QS10.13 — same fractional scale as the input, with extra integer headroom (10 integer bits vs. 2 in QS2.13).
+
+internal `membrane_potential` has 13 fractional bits, based on the input current and threshold constant format.
+- Functionally identical to `membrane_out` (both flopped from `next_membrane` on the same edge); the duplicate names mark "internal recurrence state" vs. "public output," not separate values. Same relationship between `spike_prev` and `spike_out`. Synthesis may merge each pair via register equivalence, but it is not guaranteed.
+
+`decay_temp` is QS11.20 (currently hardcoded to 32 bits wide, signed)
+- This is due to the formats of `membrane_potential` (QS10.13) and BETA (Q1.7) which is sign-extended to QS1.7. The result is QS11.20, as the multiplication produces 2 sign bits, so 1 is redundant. The natural product width is 33 bits; the 32-bit declaration drops exactly that redundant sign bit, so no information is lost.
+
+`decay_potential` is QS10.13
+- It's `decay_temp` arithmetically right-shifted by 7, then cast to MEMBRANE_WIDTH (24 bits).
+- Represents beta * mem in a format with 13 fractional bits.
+- The shift relocates the binary point (32-bit QS11.20 → 32-bit QS18.13, same value, 7 fractional bits become sign-extension fill). The 32→24-bit cast then drops 8 MSBs, taking QS18.13 → QS10.13. The cast is lossless of *value* (those 8 MSBs are always sign-extension) only because BETA < 1 contracts the magnitude — pushing BETA toward 1.0 would invalidate this.
+
+`next_membrane`, `current_extended`, and `decay_potential` are all MEMBRANE_WIDTH bits wide
+- Max value for input current is about 4 (in format QS2.13).
+- The 24-bit three-operand adder is **not** worst-case-overflow-safe — three 24-bit signed operands would need 26 bits to never overflow. It works because of bounded inputs: at sustained max-current with continuous spiking, steady-state |membrane| is ~30, max |current| ≈ 4, |reset| = 1, sum magnitude ≤ ~35 — easily inside QS10.13's ±1024 range. Anyone widening DATA_WIDTH or pushing BETA toward 1.0 should re-check this bound.

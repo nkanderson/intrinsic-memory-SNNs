@@ -1,0 +1,56 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Fri May  1 23:59:52 2026
+[*]
+[dumpfile] "/Users/nik/Documents/Teuscher-Lab/intrinsic-memory-SNNs/common/waveforms/lif.fst"
+[dumpfile_mtime] "Fri May  1 14:41:00 2026"
+[dumpfile_size] 3209
+[savefile] "/Users/nik/Documents/Teuscher-Lab/intrinsic-memory-SNNs/common/waveforms/lif.gtkw"
+[timestart] 0
+[size] 1760 796
+[pos] 36 -1
+*-16.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 253
+[signals_width] 226
+[sst_expanded] 1
+[sst_vpaned_height] 227
+@420
+lif.BETA
+lif.DATA_WIDTH
+lif.MEMBRANE_WIDTH
+lif.THRESHOLD
+@28
+lif.clear
+@40000420
+[fpshift_count] 13
+lif.current_extended[23:0]
+[fpshift_count] 13
+lif.membrane_potential[23:0]
+[fpshift_count] 20
+lif.decay_temp[31:0]
+@28
+lif.spike_prev
+@29
+lif.busy
+@28
+lif.reset
+lif.clk
+lif.enable
+lif.output_valid
+@40000420
+[fpshift_count] 13
+lif.current[15:0]
+[fpshift_count] 13
+lif.decay_potential[23:0]
+[fpshift_count] 13
+lif.next_membrane[23:0]
+[fpshift_count] 13
+lif.membrane_out[23:0]
+@28
+lif.next_spike
+lif.spike_out
+@40000420
+[fpshift_count] 13
+lif.reset_subtract[23:0]
+[pattern_trace] 1
+[pattern_trace] 0
