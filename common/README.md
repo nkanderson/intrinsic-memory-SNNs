@@ -298,3 +298,67 @@ internal `membrane_potential` has 13 fractional bits, based on the input current
 `next_membrane`, `current_extended`, and `decay_potential` are all MEMBRANE_WIDTH bits wide
 - Max value for input current is about 4 (in format QS2.13).
 - The 24-bit three-operand adder is **not** worst-case-overflow-safe — three 24-bit signed operands would need 26 bits to never overflow. It works because of bounded inputs: at sustained max-current with continuous spiking, steady-state |membrane| is ~30, max |current| ≈ 4, |reset| = 1, sum magnitude ≤ ~35 — easily inside QS10.13's ±1024 range. Anyone widening DATA_WIDTH or pushing BETA toward 1.0 should re-check this bound.
+
+### fractional_lif.sv
+
+`THRESHOLD` = 8192 (default), 1.0 in QS2.13
+
+GL Coefficients:
+- 15 fractional bits, Q1.15 by default, HOWEVER, the core fractional-order models (16-4-32 and 32-4-16) use Q0.16 as the coefficients do not need any integer bits since they are all less than one. This likely does not make a huge difference, but it is worth noting.
+
+`C_SCALED` = 256 (default), 1.0 in Q8.8
+- C = 1 / dt^alpha = 1.000000
+- Since dt is 1 for all of our models, C is going to be 1
+
+`INV_DENOM` = 58982 (default),  ~0.9 in Q0.16
+- INV_DENOM = 1 / (C + lambda)
+
+input `current` in QS2.13 when using default DATA_WIDTH = 16
+- Unit tests use values in decimal such as ~0.6, ~0.03, ~0.7, ~0.35, ~0.8, ~0.2, ~1.2, 0.5, -0.1
+
+All intermediate widths derive from `MEMBRANE_WIDTH`, `COEFF_WIDTH`, `COEFF_FRAC_BITS`, `C_SCALED_FRAC_BITS`, `INV_DENOM_FRAC_BITS`, `ACCUM_GUARD_BITS`, and `NUMERATOR_GUARD_BITS`. Changing the membrane or frac-bit constants ripples through every signal; the two GUARD_BITS are local knobs.
+
+#### MAC signals
+`mac_hist_val`
+- 24-bit signed, QS10.13 (same as `membrane_potential`)
+
+`mac_coeff_mag`
+- 16-bit unsigned, QU1.15 (by default)
+
+`mac_product`
+- 41 bits wide, QS12.28
+- Result of `mac_hist_val` * `mac_coeff_mag` (converted to signed), so add fractional bits (13 + 15) and integer bits (10 + 1) + 1 for signed conversion
+
+`history_sum_acc`
+- 44 bits width, QS15.28
+- `ACCUM_GUARD_BITS = 3` adds the headroom over PRODUCT_WIDTH. Theoretical worst case for summing 63 signed products would need `$clog2(64) = 6` guard bits, but for GL coefficients (mixed-sign partial sums, decreasing magnitude) 3 is empirically sufficient and was chosen as a timing/area sweet spot. Re-evaluate if porting to a different α or non-GL kernel.
+
+#### Prep numerator
+`prep_scaled_history_mult`
+- 61 bits, QS24.36
+- Result of C_SCALED (signed) * `history_sum_acc`, which is QS8.8 * QS15.28.
+
+`prep_scaled_history`
+- Drops 23 fractional bits to become QS47.13
+- The shift discards 15 LSBs of fractional precision (28 → 13 frac bits). Sub-LSB relative to the final QS_.13 scale, so benign for output, but the MAC's extra precision is intentionally collapsed here. Pure-fractional drop — cannot cause overflow.
+
+`prep_numerator`
+- QS48.13
+
+#### Reciprocal multiply
+`mul_scaled_result`
+- QS49.29
+- Result of `numerator_reg` (registered result of `prep_numerator`, which is QS48.13) * `INV_DENOM` (signed) (Q0.16 + sign bit)
+
+#### Shift to divide-by-scale
+`div_membrane_pre_reset`
+- QS65.13
+- Result of `mul_scaled_result_reg` (registered result of `mul_scaled_result`, which is QS49.29) with a right arithmetic shift by the number of fractional bits in `INV_DENOM`
+- Same character as the `>>> 23` above: drops 16 LSBs of fractional precision (29 → 13). Pure-fractional drop, sub-LSB at QS_.13 scale.
+
+#### Finalize
+`finalize_membrane`
+- 24 bits, QS10.13. Three steps in [fractional_lif.sv:179-191](common/sv/neurons/fractional_lif.sv#L179-L191):
+  1. **Reset subtraction in the wide domain.** `reset_subtract` is sign-extended from 24 bits to SCALED_RESULT_WIDTH (79 bits) so the subtraction happens at QS65.13 — the membrane format matches (both 13 frac bits), only the integer headroom is wider.
+  2. **Saturation against MEMBRANE_MAX / MEMBRANE_MIN** (≈ ±1024 in real terms). This is the only place in the entire datapath that catches genuine out-of-range values; every prior stage uses wider containers and cannot saturate. Saturation is a safety net, not a normal operating mode — with C ≈ 1, INV_DENOM ≈ 0.9, and bounded inputs the membrane should never reach ±1024 in real operation. Saturation firing in a waveform is a diagnostic that something upstream is wrong (corrupted coefficients, untrained dynamics blowing up, parameter mismatch).
+  3. **Truncation to MEMBRANE_WIDTH** in the in-range branch: keeps the bottom 24 bits. Lossless of value because the upper 55 bits are all sign-extension once the saturation guard has passed.

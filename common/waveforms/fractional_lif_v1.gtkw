@@ -1,0 +1,171 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Sat May  2 20:55:07 2026
+[*]
+[dumpfile] "/Users/nik/Documents/Teuscher-Lab/intrinsic-memory-SNNs/common/waveforms/fractional_lif.fst"
+[dumpfile_mtime] "Fri May  1 14:44:59 2026"
+[dumpfile_size] 12074
+[savefile] "/Users/nik/Documents/Teuscher-Lab/intrinsic-memory-SNNs/common/waveforms/fractional_lif_v1.gtkw"
+[timestart] 2402800
+[size] 1840 952
+[pos] 41 29
+*-16.000000 2540700 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 253
+[signals_width] 351
+[sst_expanded] 1
+[sst_vpaned_height] 281
+@420
+fractional_lif.ACCUM_GUARD_BITS
+fractional_lif.ACCUM_GUARD_BITS_EFF
+fractional_lif.ADDR_WIDTH
+fractional_lif.COEFF_FRAC_BITS
+fractional_lif.COEFF_WIDTH
+fractional_lif.C_SCALED_FRAC_BITS
+fractional_lif.C_SCALED_WIDTH
+fractional_lif.DATA_WIDTH
+fractional_lif.GL_COEFF_FILE
+fractional_lif.HISTORY_LENGTH
+fractional_lif.HISTORY_SUM_WIDTH
+@40c00024
+[fpshift_count] 8
+fractional_lif.C_SCALED
+@28
+(0)fractional_lif.C_SCALED
+(1)fractional_lif.C_SCALED
+(2)fractional_lif.C_SCALED
+(3)fractional_lif.C_SCALED
+(4)fractional_lif.C_SCALED
+(5)fractional_lif.C_SCALED
+(6)fractional_lif.C_SCALED
+(7)fractional_lif.C_SCALED
+(8)fractional_lif.C_SCALED
+(9)fractional_lif.C_SCALED
+(10)fractional_lif.C_SCALED
+(11)fractional_lif.C_SCALED
+(12)fractional_lif.C_SCALED
+(13)fractional_lif.C_SCALED
+(14)fractional_lif.C_SCALED
+(15)fractional_lif.C_SCALED
+@41401204
+-group_end
+@40c00024
+[fpshift_count] 16
+fractional_lif.INV_DENOM
+@28
+(0)fractional_lif.INV_DENOM
+(1)fractional_lif.INV_DENOM
+(2)fractional_lif.INV_DENOM
+(3)fractional_lif.INV_DENOM
+(4)fractional_lif.INV_DENOM
+(5)fractional_lif.INV_DENOM
+(6)fractional_lif.INV_DENOM
+(7)fractional_lif.INV_DENOM
+(8)fractional_lif.INV_DENOM
+(9)fractional_lif.INV_DENOM
+(10)fractional_lif.INV_DENOM
+(11)fractional_lif.INV_DENOM
+(12)fractional_lif.INV_DENOM
+(13)fractional_lif.INV_DENOM
+(14)fractional_lif.INV_DENOM
+(15)fractional_lif.INV_DENOM
+@41401204
+-group_end
+@420
+fractional_lif.INV_DENOM_FRAC_BITS
+fractional_lif.INV_DENOM_WIDTH
+fractional_lif.MEMBRANE_MAX
+fractional_lif.MEMBRANE_MIN
+fractional_lif.MEMBRANE_WIDTH
+fractional_lif.NUMERATOR_GUARD_BITS
+fractional_lif.NUMERATOR_GUARD_BITS_EFF
+fractional_lif.NUMERATOR_INPUT_WIDTH
+fractional_lif.NUMERATOR_WIDTH
+fractional_lif.PRODUCT_WIDTH
+fractional_lif.SCALED_HISTORY_WIDTH
+fractional_lif.SCALED_RESULT_WIDTH
+fractional_lif.THRESHOLD
+@28
+fractional_lif.clear
+fractional_lif.reset
+fractional_lif.clk
+@40000420
+[fpshift_count] 13
+fractional_lif.current[15:0]
+@28
+fractional_lif.enable
+fractional_lif.busy
+fractional_lif.output_valid
+fractional_lif.spike_out
+@40000420
+[fpshift_count] 13
+fractional_lif.membrane_out[23:0]
+@24
+fractional_lif.mac_hist_idx[2:0]
+@40000024
+[fpshift_count] 16
+fractional_lif.mac_coeff_mag[15:0]
+@40000420
+[fpshift_count] 13
+fractional_lif.mac_hist_val[23:0]
+[fpshift_count] 13
+fractional_lif.current_latched[23:0]
+@24
+fractional_lif.history_ptr[2:0]
+@28
+fractional_lif.finalize_spike
+@40000420
+[fpshift_count] 13
+fractional_lif.membrane_potential[23:0]
+@29
+fractional_lif.spike_prev
+@40000420
+[fpshift_count] 13
+fractional_lif.finalize_membrane[23:0]
+[fpshift_count] 28
+fractional_lif.history_sum_acc[43:0]
+[fpshift_count] 28
+fractional_lif.mac_acc_next[43:0]
+@22
+fractional_lif.mac_product_ext[43:0]
+@24
+fractional_lif.mac_index[2:0]
+fractional_lif.mac_k_plus_1[2:0]
+@40000420
+[fpshift_count] 28
+fractional_lif.mac_product[40:0]
+@22
+fractional_lif.div_membrane_pre_reset[78:0]
+fractional_lif.membrane_after_reset[78:0]
+@420
+fractional_lif.membrane_max_ext[78:0]
+fractional_lif.membrane_min_ext[78:0]
+@40000420
+[fpshift_count] 13
+fractional_lif.membrane_pre_reset_reg[78:0]
+@420
+fractional_lif.mul_scaled_result[78:0]
+@22
+fractional_lif.mul_scaled_result_reg[78:0]
+fractional_lif.numerator_reg[61:0]
+@40000420
+[fpshift_count] 13
+fractional_lif.prep_numerator[61:0]
+[fpshift_count] 13
+fractional_lif.prep_scaled_history[60:0]
+[fpshift_count] 36
+fractional_lif.prep_scaled_history_mult[60:0]
+@22
+fractional_lif.reset_subtract[23:0]
+@c00028
+fractional_lif.state[5:0]
+@28
+(0)fractional_lif.state[5:0]
+(1)fractional_lif.state[5:0]
+(2)fractional_lif.state[5:0]
+(3)fractional_lif.state[5:0]
+(4)fractional_lif.state[5:0]
+(5)fractional_lif.state[5:0]
+@1401208
+-group_end
+[pattern_trace] 1
+[pattern_trace] 0
