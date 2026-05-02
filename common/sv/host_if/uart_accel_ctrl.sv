@@ -56,6 +56,16 @@ module uart_accel_ctrl #(
     logic reg_ok;
     logic [7:0] reg_byte;
 
+    // Deferred response queueing. The opcode handlers in RX_GET_CSUM update
+    // rsp_payload via NBA, which would not be visible to queue_response if
+    // it were called the same cycle (its RHS reads see start-of-cycle values).
+    // Instead, the handler stages resp_pending/resp_pending_status/_len, and
+    // a follow-up always_ff branch calls queue_response one cycle later, by
+    // which time rsp_payload has committed.
+    logic resp_pending;
+    logic [7:0] resp_pending_status;
+    logic [7:0] resp_pending_len;
+
     task automatic write_reg_byte(
         input  logic [7:0] reg_addr,
         input  logic [7:0] reg_data,
@@ -161,6 +171,10 @@ module uart_accel_ctrl #(
             tx_idx <= 8'h00;
             rsp_len <= 8'h00;
 
+            resp_pending <= 1'b0;
+            resp_pending_status <= 8'h00;
+            resp_pending_len <= 8'h00;
+
             start_pulse <= 1'b0;
             for (int i = 0; i < NUM_INPUTS; i++) begin
                 observations[i] <= '0;
@@ -182,6 +196,14 @@ module uart_accel_ctrl #(
                 end else begin
                     tx_active <= 1'b0;
                 end
+            end
+
+            // Deferred response queueing (one cycle after the dispatch in
+            // RX_GET_CSUM). By now any rsp_payload writes from that cycle
+            // have committed and are visible to queue_response's RHS reads.
+            if (resp_pending && !tx_active) begin
+                resp_pending <= 1'b0;
+                queue_response(resp_pending_status, resp_pending_len);
             end
 
             // RX command parser
@@ -212,10 +234,14 @@ module uart_accel_ctrl #(
                         cmd_len <= rx_data;
                         checksum_acc <= checksum_acc ^ rx_data;
                         cmd_idx <= 8'h00;
-                        if (rx_data == 8'h00) begin
+                        // For READ, LEN encodes how many bytes to return; no
+                        // payload follows on the wire. The bound check still
+                        // applies so READ rejects LEN > MAX_PAYLOAD before
+                        // overflowing tx_frame.
+                        frame_len_error <= (rx_data > MAX_PAYLOAD);
+                        if (rx_data == 8'h00 || cmd_opcode == OPCODE_READ) begin
                             rx_state <= RX_GET_CSUM;
                         end else begin
-                            frame_len_error <= (rx_data > MAX_PAYLOAD);
                             rx_state <= RX_GET_PAYLOAD;
                         end
                     end
@@ -233,17 +259,21 @@ module uart_accel_ctrl #(
                     end
 
                     RX_GET_CSUM: begin
-                        // Validate checksum and execute command
+                        // Validate checksum and stage the response. The
+                        // actual queue_response call happens one cycle later
+                        // (see the deferred-response branch above) so any
+                        // rsp_payload writes in this cycle are committed
+                        // before queue_response reads them.
                         if (rx_data != checksum_acc) begin
                             rsp_len <= 8'h00;
-                            if (!tx_active) begin
-                                queue_response(ST_BAD_CSUM, 8'h00);
-                            end
+                            resp_pending <= 1'b1;
+                            resp_pending_status <= ST_BAD_CSUM;
+                            resp_pending_len <= 8'h00;
                         end else if (frame_len_error) begin
                             rsp_len <= 8'h00;
-                            if (!tx_active) begin
-                                queue_response(ST_BAD_LEN, 8'h00);
-                            end
+                            resp_pending <= 1'b1;
+                            resp_pending_status <= ST_BAD_LEN;
+                            resp_pending_len <= 8'h00;
                         end else begin
                             reg_ok = 1'b1;
                             rsp_len <= 8'h00;
@@ -252,21 +282,21 @@ module uart_accel_ctrl #(
                                 OPCODE_PING: begin
                                     rsp_payload[0] <= 8'h50; // 'P'
                                     rsp_len <= 8'h01;
-                                    if (!tx_active) begin
-                                        queue_response(ST_OK, 8'h01);
-                                    end
+                                    resp_pending <= 1'b1;
+                                    resp_pending_status <= ST_OK;
+                                    resp_pending_len <= 8'h01;
                                 end
 
                                 OPCODE_EXEC: begin
                                     if (accel_busy) begin
-                                        if (!tx_active) begin
-                                            queue_response(ST_BUSY, 8'h00);
-                                        end
+                                        resp_pending <= 1'b1;
+                                        resp_pending_status <= ST_BUSY;
+                                        resp_pending_len <= 8'h00;
                                     end else begin
                                         start_pulse <= 1'b1;
-                                        if (!tx_active) begin
-                                            queue_response(ST_OK, 8'h00);
-                                        end
+                                        resp_pending <= 1'b1;
+                                        resp_pending_status <= ST_OK;
+                                        resp_pending_len <= 8'h00;
                                     end
                                 end
 
@@ -276,9 +306,9 @@ module uart_accel_ctrl #(
                                             write_reg_byte(cmd_addr + i[7:0], cmd_payload[i], reg_ok);
                                         end
                                     end
-                                    if (!tx_active) begin
-                                        queue_response(reg_ok ? ST_OK : ST_BAD_ADDR, 8'h00);
-                                    end
+                                    resp_pending <= 1'b1;
+                                    resp_pending_status <= reg_ok ? ST_OK : ST_BAD_ADDR;
+                                    resp_pending_len <= 8'h00;
                                 end
 
                                 OPCODE_READ: begin
@@ -291,19 +321,15 @@ module uart_accel_ctrl #(
                                             end
                                         end
                                     end
-                                    if (!tx_active) begin
-                                        if (reg_ok) begin
-                                            queue_response(ST_OK, cmd_len);
-                                        end else begin
-                                            queue_response(ST_BAD_ADDR, 8'h00);
-                                        end
-                                    end
+                                    resp_pending <= 1'b1;
+                                    resp_pending_status <= reg_ok ? ST_OK : ST_BAD_ADDR;
+                                    resp_pending_len <= reg_ok ? cmd_len : 8'h00;
                                 end
 
                                 default: begin
-                                    if (!tx_active) begin
-                                        queue_response(ST_BAD_CMD, 8'h00);
-                                    end
+                                    resp_pending <= 1'b1;
+                                    resp_pending_status <= ST_BAD_CMD;
+                                    resp_pending_len <= 8'h00;
                                 end
                             endcase
                         end

@@ -111,6 +111,11 @@ else ifeq ($(TEST),uart_loopback)
                       $(HOST_IF_DIR)/tb_uart_loopback.sv
     TOPLEVEL = tb_uart_loopback
     MODULE = test_uart_loopback
+else ifeq ($(TEST),uart_accel_ctrl)
+    VERILOG_SOURCES = $(HOST_IF_DIR)/accel_uart_pkg.sv \
+                      $(HOST_IF_DIR)/uart_accel_ctrl.sv
+    TOPLEVEL = uart_accel_ctrl
+    MODULE = test_uart_accel_ctrl
 # Two fractional models, two LIF models, and the bitshift custom slow decay
 # are the core models used for testing and validation.
 else ifeq ($(TEST),cp_integration_frac-16-4-32)
@@ -207,7 +212,7 @@ else ifeq ($(TEST),cp_integration_frac)
     TOPLEVEL = neural_network_fractional
     MODULE = test_cartpole_integration
 else
-    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'uart_loopback', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
+    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'uart_loopback', 'uart_accel_ctrl', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
 endif
 
 # Simulator - use Icarus for all tests (event-driven, correct timing)
@@ -822,6 +827,9 @@ test_neural_network:
 test_uart_loopback:
 	$(MAKE) TEST=uart_loopback
 
+test_uart_accel_ctrl:
+	$(MAKE) TEST=uart_accel_ctrl
+
 # Two fractional models, two LIF models, and the bitshift custom slow decay
 # are the core models used for testing and validation.
 test_cp_integration_frac-16-4-32:
@@ -860,4 +868,4 @@ clean::
 	rm -rf __pycache__
 	rm -rf .pytest_cache
 
-.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_fractional_lif_memory_constant_sweep test_fractional_lif_memory_constant_capture test_fractional_lif_memory_dropout_sweep test_fractional_lif_memory_dropout_capture test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_memory_constant_sweep test_bitshift_lif_memory_constant_capture test_bitshift_lif_memory_dropout_sweep test_bitshift_lif_memory_dropout_capture test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_uart_loopback test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac
+.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_fractional_lif_memory_constant_sweep test_fractional_lif_memory_constant_capture test_fractional_lif_memory_dropout_sweep test_fractional_lif_memory_dropout_capture test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_memory_constant_sweep test_bitshift_lif_memory_constant_capture test_bitshift_lif_memory_dropout_sweep test_bitshift_lif_memory_dropout_capture test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_uart_loopback test_uart_accel_ctrl test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac

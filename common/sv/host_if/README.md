@@ -27,8 +27,8 @@ Bytes:
 
 ## Opcodes
 
-- `0x01` `WRITE`: write `LEN` bytes beginning at `ADDR`
-- `0x02` `READ`: read `LEN` bytes beginning at `ADDR`
+- `0x01` `WRITE`: write `LEN` bytes beginning at `ADDR`. Host frame carries `LEN` payload bytes.
+- `0x02` `READ`: read `LEN` bytes beginning at `ADDR`. The host frame carries **no payload** — on-wire layout is `SOF | OPCODE | ADDR | LEN | CSUM` (5 bytes). The FSM skips the payload phase for READ. `LEN` is still bounded to `MAX_PAYLOAD`; oversized values respond with `ST_BAD_LEN`.
 - `0x03` `EXEC`: trigger one accelerator run (preferred start path — see below)
 - `0x7F` `PING`: returns 1-byte payload `'P'`
 
