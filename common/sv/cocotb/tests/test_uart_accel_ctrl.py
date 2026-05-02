@@ -177,6 +177,25 @@ async def setup_test(dut):
     return captured
 
 
+async def tx_busy_emulator(dut, busy_cycles: int = 12):
+    """Models uart_tx's busy-handshake timing.
+
+    Real uart_tx asserts `busy` one cycle after sampling `start=1`, holds
+    it through the byte transmission, then releases it. The default test
+    harness leaves `tx_busy=0` forever, which is enough to verify protocol
+    correctness but hides any race between the controller's TX engine and
+    the busy line. This emulator brings the realistic timing back so
+    multi-byte responses exercise the busy/start handshake on every byte.
+    """
+    while True:
+        await RisingEdge(dut.tx_start)
+        # tx_start just went 0->1. Schedule busy<=1 so it's visible to
+        # the controller starting next cycle (matches uart_tx NBA timing).
+        dut.tx_busy.value = 1
+        await ClockCycles(dut.clk, busy_cycles)
+        dut.tx_busy.value = 0
+
+
 # --- Tests ------------------------------------------------------------------
 
 
@@ -417,3 +436,48 @@ async def test_bad_len_read(dut):
     await send_bytes(dut, build_read_frame(REG_OBS0, MAX_PAYLOAD + 1))
     resp = parse_response_frame(await collect_response(dut, captured))
     assert resp.status == ST_BAD_LEN, f"got status 0x{resp.status:02X}"
+
+
+@cocotb.test()
+async def test_multibyte_response_with_busy_handshake(dut):
+    """Regression for the TX-engine double-pump bug.
+
+    Drives tx_busy with realistic timing (asserted one cycle after tx_start,
+    held for several cycles, then released) and reads back 8 bytes in one
+    frame. The TX engine has to honor the busy/start handshake on every
+    byte; without the !tx_start guard in the pump condition, every other
+    byte gets silently dropped because tx_busy reads as 0 the cycle after
+    a pump (the NBA in uart_tx hasn't committed yet).
+
+    Frame on the wire is 12 bytes (SOF + STATUS + LEN + 8 payload + CSUM).
+    """
+    captured = await setup_test(dut)
+    cocotb.start_soon(tx_busy_emulator(dut, busy_cycles=12))
+
+    # Write all four obs in one 8-byte WRITE frame.
+    obs_values = [0x1234, 0x5678, -0x1000, 0x7FFF]
+    obs_payload = b""
+    for v in obs_values:
+        obs_payload += int(v & 0xFFFF).to_bytes(2, "little", signed=False)
+    await send_bytes(dut, build_host_frame(OPCODE_WRITE, REG_OBS0, obs_payload))
+    resp = parse_response_frame(await collect_response(dut, captured))
+    assert resp.status == ST_OK, f"WRITE status: 0x{resp.status:02X}"
+
+    # READ all 8 obs bytes in a single frame and verify both length and
+    # ordering. With the bug present, length would still be 8 (because LEN
+    # comes out as one of the surviving bytes) but the content would be
+    # garbled or short by half.
+    await send_bytes(dut, build_read_frame(REG_OBS0, 8))
+    resp = parse_response_frame(await collect_response(dut, captured))
+    assert resp.csum_ok, "response CSUM bad — likely missing bytes"
+    assert resp.status == ST_OK, f"READ status: 0x{resp.status:02X}"
+    assert len(resp.payload) == 8, (
+        f"expected 8 payload bytes, got {len(resp.payload)}"
+    )
+
+    for i, expected in enumerate(obs_values):
+        actual = int.from_bytes(resp.payload[i * 2 : i * 2 + 2], "little", signed=True)
+        assert actual == expected, (
+            f"obs[{i}]: read {actual}, wrote {expected} "
+            f"(payload bytes: {resp.payload.hex()})"
+        )

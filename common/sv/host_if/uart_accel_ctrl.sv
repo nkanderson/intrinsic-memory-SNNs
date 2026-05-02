@@ -187,8 +187,15 @@ module uart_accel_ctrl #(
             tx_start <= 1'b0;
             start_pulse <= 1'b0;
 
-            // TX engine: send queued response bytes one at a time
-            if (tx_active && !tx_busy) begin
+            // TX engine: send queued response bytes one at a time.
+            // !tx_start guards against double-pumping: uart_tx asserts its
+            // busy output one cycle AFTER it samples start=1, so without
+            // this term the controller would re-evaluate (tx_active &&
+            // !tx_busy) the cycle after a pump and pump a second byte that
+            // uart_tx silently drops (it's already in TX_START, ignoring
+            // start). The result was every other byte being lost on the
+            // wire.
+            if (tx_active && !tx_busy && !tx_start) begin
                 if (tx_idx < tx_count) begin
                     tx_data <= tx_frame[tx_idx];
                     tx_start <= 1'b1;
