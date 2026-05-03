@@ -15,7 +15,7 @@ losing the distinction between actions.
 Uses batched processing: BATCH_SIZE neurons processed per cycle.
 Total multipliers: BATCH_SIZE × NUM_ACTIONS
 
-Timing: NUM_TIMESTEPS × (NUM_NEURONS / BATCH_SIZE) + 2 cycles
+Timing: NUM_TIMESTEPS × (NUM_NEURONS / BATCH_SIZE + 2) + 2 cycles
 """
 
 import cocotb
@@ -265,9 +265,11 @@ async def test_q_accumulator_timing(dut):
         if dut.done.value == 1:
             break
 
-    # Expected: NUM_TIMESTEPS * (NUM_NEURONS / BATCH_SIZE) + 2 cycles
-    # = 4 * 2 + 2 = 10 cycles
-    expected_cycles = NUM_TIMESTEPS * (NUM_NEURONS // BATCH_SIZE) + 2
+    # Expected: NUM_TIMESTEPS * (NUM_NEURONS / BATCH_SIZE + 2) + 2 cycles
+    # +2 accounts for the pipeline warm-up (first product register) and the
+    # DONE transition cycle after the final batch is accumulated.
+    # = 4 * (2 + 2) + 2 = 18 cycles
+    expected_cycles = NUM_TIMESTEPS * ((NUM_NEURONS // BATCH_SIZE) + 2) + 2
 
     # TODO: Make this match precisely rather than adding tolerance
     dut._log.info(f"Completed in {cycle_count} cycles (expected ~{expected_cycles})")

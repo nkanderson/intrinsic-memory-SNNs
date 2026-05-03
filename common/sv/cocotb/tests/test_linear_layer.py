@@ -90,6 +90,10 @@ async def test_linear_layer_identity_weights(dut):
 
     With identity weights and zero bias:
     output[i] = input[i] (for i < NUM_INPUTS, assuming NUM_INPUTS == NUM_OUTPUTS)
+
+    Handshake-based: collect each output by waiting for `output_valid`,
+    so the test is robust against changes in the layer's per-neuron
+    cycle count (e.g. serial-MAC vs single-cycle-reduction).
     """
 
     # Start clock
@@ -108,37 +112,49 @@ async def test_linear_layer_identity_weights(dut):
     await RisingEdge(dut.clk)
     dut.start.value = 0
 
-    # Wait 2 cycles for registered outputs:
-    # Cycle 1: inputs latched, state->COMPUTING, neuron_idx=0
-    # Cycle 2: output_valid=1, output_current=result[0], output_idx=0
-    await ClockCycles(dut.clk, 2)
+    # Collect outputs as they stream out, sampling on each rising edge
+    # and capturing whenever output_valid pulses high.
+    outputs_by_idx: dict[int, float] = {}
+    last_idx = NUM_OUTPUTS - 1
+    timeout = 1 + NUM_OUTPUTS * (NUM_INPUTS + 1) + 10  # generous handshake budget
 
-    # Collect outputs - now outputs should be valid
-    outputs = []
-    for i in range(NUM_OUTPUTS):
-        assert dut.output_valid.value == 1, f"output_valid should be 1 for output {i}"
-        assert (
-            int(dut.output_idx.value) == i
-        ), f"output_idx should be {i}, got {int(dut.output_idx.value)}"
+    for _ in range(timeout):
+        await RisingEdge(dut.clk)
+        if int(dut.output_valid.value) == 1:
+            idx = int(dut.output_idx.value)
+            val = fixed_to_float(int(dut.output_current.value))
+            outputs_by_idx[idx] = val
+            dut._log.info(
+                f"output_valid: idx={idx} value={val:.6f} (expected {test_inputs[idx]:.6f})"
+            )
+            if idx == last_idx:
+                assert dut.done.value == 1, "done should be 1 on last output"
+                break
+    else:
+        assert False, f"timed out before seeing output for idx={last_idx}"
 
-        output_val = int(dut.output_current.value)
-        output_float = fixed_to_float(output_val)
-        outputs.append(output_float)
-        dut._log.info(f"Output {i}: {output_float:.6f} (expected {test_inputs[i]:.6f})")
-
-        if i == NUM_OUTPUTS - 1:
-            assert dut.done.value == 1, "done should be 1 on last output"
-        else:
-            await RisingEdge(dut.clk)  # Advance to next output
-
-    # Verify outputs match inputs (identity weights)
+    # Verify every output index was emitted exactly once and matches the
+    # corresponding input (identity weights).
+    assert sorted(outputs_by_idx.keys()) == list(range(NUM_OUTPUTS)), (
+        f"missing/extra outputs: got {sorted(outputs_by_idx.keys())}"
+    )
     for i in range(NUM_OUTPUTS):
         expected = test_inputs[i] if i < len(test_inputs) else 0.0
-        assert (
-            abs(outputs[i] - expected) < 0.01
-        ), f"Output {i}: expected {expected:.6f}, got {outputs[i]:.6f}"
+        actual = outputs_by_idx[i]
+        assert abs(actual - expected) < 0.01, (
+            f"Output {i}: expected {expected:.6f}, got {actual:.6f}"
+        )
 
     dut._log.info("Identity weights test passed")
+
+
+async def wait_for_done(dut, timeout_cycles: int):
+    """Tick the clock until `done` is observed, asserting on timeout."""
+    for _ in range(timeout_cycles):
+        await RisingEdge(dut.clk)
+        if int(dut.done.value) == 1:
+            return
+    assert False, f"done not asserted after {timeout_cycles} cycles"
 
 
 @cocotb.test()
@@ -151,6 +167,8 @@ async def test_linear_layer_multiple_runs(dut):
 
     await reset_dut(dut)
 
+    timeout = 1 + NUM_OUTPUTS * (NUM_INPUTS + 1) + 10
+
     # First run
     test_inputs_1 = [0.5, 0.5, 0.5, 0.5]
     for i in range(NUM_INPUTS):
@@ -160,11 +178,7 @@ async def test_linear_layer_multiple_runs(dut):
     await RisingEdge(dut.clk)
     dut.start.value = 0
 
-    # Wait for completion: 1 cycle latency + NUM_OUTPUTS cycles for registered outputs
-    await ClockCycles(dut.clk, 1 + NUM_OUTPUTS)
-
-    # done should be asserted on the last output cycle
-    assert dut.done.value == 1, "done should be 1 after first run"
+    await wait_for_done(dut, timeout)
     dut._log.info("First run completed")
 
     # Wait one cycle, then start second run
@@ -179,10 +193,7 @@ async def test_linear_layer_multiple_runs(dut):
     await RisingEdge(dut.clk)
     dut.start.value = 0
 
-    # Wait for completion: 1 cycle latency + NUM_OUTPUTS cycles for registered outputs
-    await ClockCycles(dut.clk, 1 + NUM_OUTPUTS)
-
-    assert dut.done.value == 1, "done should be 1 after second run"
+    await wait_for_done(dut, timeout)
     dut._log.info("Multiple runs test passed")
 
 
@@ -205,9 +216,12 @@ async def test_linear_layer_timing(dut):
     await RisingEdge(dut.clk)
     dut.start.value = 0
 
-    # Count valid outputs until done
+    # Count valid outputs until done. Per the layer's contract, done and the
+    # final output_valid pulse coincide on the same cycle, and total latency
+    # is bounded by 1 + NUM_OUTPUTS * (NUM_INPUTS + 1).
     valid_count = 0
     cycle_count = 0
+    timeout = 1 + NUM_OUTPUTS * (NUM_INPUTS + 1) + 10
     while dut.done.value != 1:
         await RisingEdge(dut.clk)
         cycle_count += 1
@@ -216,7 +230,7 @@ async def test_linear_layer_timing(dut):
             dut._log.info(
                 f"Cycle {cycle_count}: output_idx={int(dut.output_idx.value)}, valid={valid_count}"
             )
-        if cycle_count > NUM_OUTPUTS + 5:
+        if cycle_count > timeout:
             assert False, f"Timeout: done not asserted after {cycle_count} cycles"
 
     # Should have exactly NUM_OUTPUTS valid outputs
