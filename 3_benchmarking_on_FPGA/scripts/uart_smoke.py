@@ -17,7 +17,7 @@ def send_frame(ser, hex_bytes: str, read_len: int) -> bytes:
 def main() -> int:
     parser = argparse.ArgumentParser(description="UART smoke test for lif-64-16")
     parser.add_argument("--port", default="/dev/ttyUSB1")
-    parser.add_argument("--baud", type=int, default=115200)
+    parser.add_argument("--baud", type=int, default=921_600)
     parser.add_argument("--timeout", type=float, default=1.0)
     parser.add_argument("--poll-ms", type=int, default=50)
     args = parser.parse_args()

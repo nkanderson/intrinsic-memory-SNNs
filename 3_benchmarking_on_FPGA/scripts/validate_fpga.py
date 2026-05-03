@@ -29,7 +29,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Validate FPGA against golden vectors")
     parser.add_argument("--golden", required=True, help="Path to golden vectors JSON")
     parser.add_argument("--port", default="/dev/ttyUSB1")
-    parser.add_argument("--baud", type=int, default=115_200)
+    parser.add_argument("--baud", type=int, default=921_600)
     parser.add_argument("--timeout", type=float, default=1.0,
                         help="Per-operation serial timeout (s)")
     parser.add_argument("--limit", type=int, default=0,

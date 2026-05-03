@@ -9,9 +9,19 @@ Usage:
         fpga.start_inference()
         fpga.wait_done()
         action = fpga.read_action()
+
+Latency note: the FT2232 USB-UART bridge on the Nexys A7 has a default
+16 ms USB latency timer. With 4 transactions per inference step this adds
+~64 ms/step at 115200 baud (or ~0.5–1 ms/step at 921600 baud). FpgaInterface.__init__ attempts to lower the
+timer to 1 ms automatically via sysfs; this requires write permission to
+/sys/bus/usb-serial/devices/<dev>/latency_timer (owned by root by default).
+To avoid needing sudo on every session, add a udev rule:
+    SUBSYSTEM=="usb-serial", DRIVER=="ftdi_sio", ATTR{latency_timer}="1"
+in /etc/udev/rules.d/99-ftdi-latency.rules, then reload udev.
 """
 from __future__ import annotations
 
+import os
 import struct
 import time
 from typing import List
@@ -94,10 +104,21 @@ def parse_response(frame: bytes) -> tuple[int, bytes]:
 # --- Driver ----------------------------------------------------------------
 
 
+def _set_ftdi_latency(port: str, ms: int = 1) -> None:
+    """Lower the FT2232 USB latency timer via sysfs (Linux only, best-effort)."""
+    sysfs = f"/sys/bus/usb-serial/devices/{os.path.basename(port)}/latency_timer"
+    try:
+        with open(sysfs, "w") as f:
+            f.write(str(ms))
+    except OSError:
+        pass  # not FTDI, no permission, or non-Linux — silently skip
+
+
 class FpgaInterface:
     """Thin UART transport to the SNN accelerator. No float math."""
 
-    def __init__(self, port: str, baud: int = 115_200, timeout: float = 1.0):
+    def __init__(self, port: str, baud: int = 921_600, timeout: float = 1.0):
+        _set_ftdi_latency(port)  # reduce FT2232 16 ms USB latency to 1 ms
         self._ser = serial.Serial(port, baud, timeout=timeout)
 
     def close(self) -> None:
@@ -109,7 +130,7 @@ class FpgaInterface:
     def __exit__(self, *_) -> None:
         self.close()
 
-    def _transact(self, frame: bytes, response_payload_len: int) -> tuple[int, bytes]:
+    def _transact(self, frame: bytes) -> tuple[int, bytes]:
         """Send frame, read response. Returns (status, payload)."""
         self._ser.write(frame)
         self._ser.flush()
@@ -131,7 +152,7 @@ class FpgaInterface:
 
     def ping(self) -> None:
         """Send PING, verify 'P' payload. Raises ProtocolError on failure."""
-        status, payload = self._transact(build_frame(OPCODE_PING, 0x00), 1)
+        status, payload = self._transact(build_frame(OPCODE_PING, 0x00))
         self._check(status, "PING")
         if payload != b"P":
             raise ProtocolError(f"PING: unexpected payload {payload!r}")
@@ -141,20 +162,20 @@ class FpgaInterface:
         if len(obs) != 4:
             raise ValueError(f"expected 4 observations, got {len(obs)}")
         payload = struct.pack("<4h", *obs)
-        status, _ = self._transact(build_frame(OPCODE_WRITE, REG_OBS0, payload), 0)
+        status, _ = self._transact(build_frame(OPCODE_WRITE, REG_OBS0, payload))
         self._check(status, "WRITE OBS")
 
     def start_inference(self) -> None:
         """Send EXEC to trigger inference. Returns after the FPGA ACKs the command
         (not after inference completes — call wait_done() for that)."""
-        status, _ = self._transact(build_frame(OPCODE_EXEC, 0x00), 0)
+        status, _ = self._transact(build_frame(OPCODE_EXEC, 0x00))
         self._check(status, "EXEC")
 
     def wait_done(self, timeout_s: float = 1.0, poll_interval_s: float = 0.0) -> None:
         """Poll REG_STATUS until done bit (bit 0) is set. Raises TimeoutError."""
         deadline = time.monotonic() + timeout_s
         while time.monotonic() < deadline:
-            status, payload = self._transact(build_read_frame(REG_STATUS, 1), 1)
+            status, payload = self._transact(build_read_frame(REG_STATUS, 1))
             self._check(status, "READ STATUS")
             if payload[0] & 0x01:
                 return
@@ -164,6 +185,6 @@ class FpgaInterface:
 
     def read_action(self) -> int:
         """Read and return the selected action (0 or 1)."""
-        status, payload = self._transact(build_read_frame(REG_ACTION, 1), 1)
+        status, payload = self._transact(build_read_frame(REG_ACTION, 1))
         self._check(status, "READ ACTION")
         return payload[0] & 0x01

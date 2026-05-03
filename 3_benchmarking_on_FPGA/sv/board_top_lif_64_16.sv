@@ -53,7 +53,7 @@ module board_top_lif_64_16 (
     top_uart_accel_wrapper #(
         .MODEL_TYPE       (0),                  // standard LIF
         .CLOCK_HZ         (100_000_000),
-        .BAUD             (115_200),
+        .BAUD             (921_600),
         .NUM_INPUTS       (4),
         .HL1_SIZE         (64),
         .HL2_SIZE         (16),
