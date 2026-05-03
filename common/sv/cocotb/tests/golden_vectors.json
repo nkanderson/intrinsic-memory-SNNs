@@ -1,0 +1,6505 @@
+{
+  "model": "lif-64-16",
+  "vectors": [
+    {
+      "obs_qs213": [
+        112,
+        -189,
+        -376,
+        -396
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2551335,
+        2546256
+      ]
+    },
+    {
+      "obs_qs213": [
+        108,
+        -1781,
+        -384,
+        1880
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2575890,
+        2566103
+      ]
+    },
+    {
+      "obs_qs213": [
+        73,
+        -3374,
+        -346,
+        4154
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2555679,
+        2550357
+      ]
+    },
+    {
+      "obs_qs213": [
+        5,
+        -4967,
+        -263,
+        6440
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2541333,
+        2540389
+      ]
+    },
+    {
+      "obs_qs213": [
+        -94,
+        -6562,
+        -134,
+        8753
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2561803,
+        2562132
+      ]
+    },
+    {
+      "obs_qs213": [
+        -225,
+        -4962,
+        41,
+        6314
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2558212,
+        2557907
+      ]
+    },
+    {
+      "obs_qs213": [
+        -325,
+        -6561,
+        167,
+        8724
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2548521,
+        2550186
+      ]
+    },
+    {
+      "obs_qs213": [
+        -456,
+        -4965,
+        341,
+        6379
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2557546,
+        2557382
+      ]
+    },
+    {
+      "obs_qs213": [
+        -555,
+        -6568,
+        469,
+        8882
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2569344,
+        2573092
+      ]
+    },
+    {
+      "obs_qs213": [
+        -686,
+        -4976,
+        647,
+        6636
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2576952,
+        2578204
+      ]
+    },
+    {
+      "obs_qs213": [
+        -786,
+        -3387,
+        779,
+        4450
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2575273,
+        2578368
+      ]
+    },
+    {
+      "obs_qs213": [
+        -854,
+        -1800,
+        868,
+        2310
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2571151,
+        2573346
+      ]
+    },
+    {
+      "obs_qs213": [
+        -890,
+        -216,
+        914,
+        201
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2575743,
+        2579161
+      ]
+    },
+    {
+      "obs_qs213": [
+        -894,
+        1368,
+        918,
+        -1892
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2589493,
+        2591850
+      ]
+    },
+    {
+      "obs_qs213": [
+        -867,
+        2952,
+        881,
+        -3984
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2591931,
+        2595046
+      ]
+    },
+    {
+      "obs_qs213": [
+        -808,
+        4537,
+        801,
+        -6089
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2591848,
+        2594699
+      ]
+    },
+    {
+      "obs_qs213": [
+        -717,
+        6124,
+        679,
+        -8222
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2572590,
+        2574718
+      ]
+    },
+    {
+      "obs_qs213": [
+        -594,
+        7712,
+        515,
+        -10397
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2566649,
+        2546633
+      ]
+    },
+    {
+      "obs_qs213": [
+        -440,
+        6108,
+        307,
+        -7844
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2571982,
+        2565320
+      ]
+    },
+    {
+      "obs_qs213": [
+        -318,
+        4505,
+        150,
+        -5352
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2585211,
+        2586027
+      ]
+    },
+    {
+      "obs_qs213": [
+        -228,
+        6102,
+        43,
+        -7702
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2568743,
+        2558578
+      ]
+    },
+    {
+      "obs_qs213": [
+        -106,
+        4503,
+        -111,
+        -5291
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2568771,
+        2566933
+      ]
+    },
+    {
+      "obs_qs213": [
+        -16,
+        2906,
+        -217,
+        -2928
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2584504,
+        2581616
+      ]
+    },
+    {
+      "obs_qs213": [
+        42,
+        1310,
+        -276,
+        -600
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2555461,
+        2557272
+      ]
+    },
+    {
+      "obs_qs213": [
+        69,
+        2913,
+        -288,
+        -3083
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2573314,
+        2570209
+      ]
+    },
+    {
+      "obs_qs213": [
+        127,
+        1318,
+        -349,
+        -778
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2556653,
+        2554391
+      ]
+    },
+    {
+      "obs_qs213": [
+        153,
+        -275,
+        -365,
+        1507
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2566409,
+        2565284
+      ]
+    },
+    {
+      "obs_qs213": [
+        148,
+        -1868,
+        -335,
+        3787
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2562932,
+        2565477
+      ]
+    },
+    {
+      "obs_qs213": [
+        110,
+        -265,
+        -259,
+        1286
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2565530,
+        2565195
+      ]
+    },
+    {
+      "obs_qs213": [
+        105,
+        -1859,
+        -233,
+        3601
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2557944,
+        2558834
+      ]
+    },
+    {
+      "obs_qs213": [
+        68,
+        -258,
+        -161,
+        1131
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2563183,
+        2563060
+      ]
+    },
+    {
+      "obs_qs213": [
+        63,
+        -1854,
+        -139,
+        3477
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2551897,
+        2554536
+      ]
+    },
+    {
+      "obs_qs213": [
+        26,
+        -254,
+        -69,
+        1036
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2555280,
+        2556611
+      ]
+    },
+    {
+      "obs_qs213": [
+        21,
+        1346,
+        -48,
+        -1383
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2565456,
+        2563241
+      ]
+    },
+    {
+      "obs_qs213": [
+        47,
+        -252,
+        -76,
+        999
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2558054,
+        2558360
+      ]
+    },
+    {
+      "obs_qs213": [
+        42,
+        1348,
+        -56,
+        -1422
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2565456,
+        2563241
+      ]
+    },
+    {
+      "obs_qs213": [
+        69,
+        -250,
+        -84,
+        958
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2561087,
+        2561032
+      ]
+    },
+    {
+      "obs_qs213": [
+        64,
+        -1847,
+        -65,
+        3329
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553285,
+        2556834
+      ]
+    },
+    {
+      "obs_qs213": [
+        27,
+        -248,
+        1,
+        911
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2556289,
+        2557332
+      ]
+    },
+    {
+      "obs_qs213": [
+        22,
+        1351,
+        20,
+        -1487
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2565456,
+        2563241
+      ]
+    },
+    {
+      "obs_qs213": [
+        49,
+        -248,
+        -10,
+        917
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2556289,
+        2557332
+      ]
+    },
+    {
+      "obs_qs213": [
+        45,
+        1350,
+        8,
+        -1484
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2565456,
+        2563241
+      ]
+    },
+    {
+      "obs_qs213": [
+        72,
+        -248,
+        -22,
+        916
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2559062,
+        2559079
+      ]
+    },
+    {
+      "obs_qs213": [
+        67,
+        1351,
+        -3,
+        -1488
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2565456,
+        2563241
+      ]
+    },
+    {
+      "obs_qs213": [
+        94,
+        -248,
+        -33,
+        909
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2559062,
+        2559079
+      ]
+    },
+    {
+      "obs_qs213": [
+        89,
+        1351,
+        -15,
+        -1499
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2565456,
+        2563241
+      ]
+    },
+    {
+      "obs_qs213": [
+        116,
+        -247,
+        -45,
+        894
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2558788,
+        2558685
+      ]
+    },
+    {
+      "obs_qs213": [
+        111,
+        -1845,
+        -27,
+        3277
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2549475,
+        2553277
+      ]
+    },
+    {
+      "obs_qs213": [
+        74,
+        -246,
+        39,
+        871
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2556259,
+        2559143
+      ]
+    },
+    {
+      "obs_qs213": [
+        69,
+        1352,
+        56,
+        -1514
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2568227,
+        2566485
+      ]
+    },
+    {
+      "obs_qs213": [
+        96,
+        -247,
+        26,
+        901
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2554519,
+        2558674
+      ]
+    },
+    {
+      "obs_qs213": [
+        91,
+        1351,
+        44,
+        -1489
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2568227,
+        2566485
+      ]
+    },
+    {
+      "obs_qs213": [
+        118,
+        -248,
+        14,
+        923
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2549257,
+        2553766
+      ]
+    },
+    {
+      "obs_qs213": [
+        113,
+        1350,
+        33,
+        -1470
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2570537,
+        2569616
+      ]
+    },
+    {
+      "obs_qs213": [
+        140,
+        -249,
+        3,
+        938
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2542374,
+        2546897
+      ]
+    },
+    {
+      "obs_qs213": [
+        135,
+        1349,
+        22,
+        -1459
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2567497,
+        2566941
+      ]
+    },
+    {
+      "obs_qs213": [
+        162,
+        -249,
+        -7,
+        945
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2542374,
+        2546897
+      ]
+    },
+    {
+      "obs_qs213": [
+        157,
+        1349,
+        12,
+        -1455
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2567497,
+        2566941
+      ]
+    },
+    {
+      "obs_qs213": [
+        184,
+        -249,
+        -18,
+        947
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2542374,
+        2546897
+      ]
+    },
+    {
+      "obs_qs213": [
+        179,
+        1349,
+        1,
+        -1456
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2569989,
+        2568512
+      ]
+    },
+    {
+      "obs_qs213": [
+        206,
+        -249,
+        -28,
+        942
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2542374,
+        2546897
+      ]
+    },
+    {
+      "obs_qs213": [
+        201,
+        1350,
+        -9,
+        -1465
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2569989,
+        2568512
+      ]
+    },
+    {
+      "obs_qs213": [
+        228,
+        -249,
+        -38,
+        930
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2543387,
+        2547619
+      ]
+    },
+    {
+      "obs_qs213": [
+        223,
+        1350,
+        -20,
+        -1480
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2570718,
+        2568054
+      ]
+    },
+    {
+      "obs_qs213": [
+        250,
+        -248,
+        -49,
+        912
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2548985,
+        2553373
+      ]
+    },
+    {
+      "obs_qs213": [
+        245,
+        1351,
+        -31,
+        -1501
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2572906,
+        2570321
+      ]
+    },
+    {
+      "obs_qs213": [
+        272,
+        -247,
+        -61,
+        887
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2548985,
+        2553373
+      ]
+    },
+    {
+      "obs_qs213": [
+        267,
+        1353,
+        -43,
+        -1530
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2575378,
+        2572564
+      ]
+    },
+    {
+      "obs_qs213": [
+        294,
+        -245,
+        -74,
+        854
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2551954,
+        2555075
+      ]
+    },
+    {
+      "obs_qs213": [
+        289,
+        1354,
+        -57,
+        -1567
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2575378,
+        2572564
+      ]
+    },
+    {
+      "obs_qs213": [
+        316,
+        -243,
+        -88,
+        813
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2566733,
+        2566794
+      ]
+    },
+    {
+      "obs_qs213": [
+        312,
+        1356,
+        -72,
+        -1613
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2573082,
+        2569718
+      ]
+    },
+    {
+      "obs_qs213": [
+        339,
+        -241,
+        -104,
+        762
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2563883,
+        2563267
+      ]
+    },
+    {
+      "obs_qs213": [
+        334,
+        -1838,
+        -89,
+        3127
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2546966,
+        2548809
+      ]
+    },
+    {
+      "obs_qs213": [
+        297,
+        -238,
+        -26,
+        701
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2564364,
+        2565035
+      ]
+    },
+    {
+      "obs_qs213": [
+        292,
+        1360,
+        -12,
+        -1705
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2571231,
+        2567641
+      ]
+    },
+    {
+      "obs_qs213": [
+        320,
+        -238,
+        -46,
+        689
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2564364,
+        2565035
+      ]
+    },
+    {
+      "obs_qs213": [
+        315,
+        1361,
+        -33,
+        -1723
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2566244,
+        2563947
+      ]
+    },
+    {
+      "obs_qs213": [
+        342,
+        -237,
+        -67,
+        664
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2558800,
+        2559015
+      ]
+    },
+    {
+      "obs_qs213": [
+        337,
+        1363,
+        -54,
+        -1754
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2566244,
+        2563947
+      ]
+    },
+    {
+      "obs_qs213": [
+        365,
+        -235,
+        -89,
+        626
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2555005,
+        2555372
+      ]
+    },
+    {
+      "obs_qs213": [
+        360,
+        1365,
+        -76,
+        -1799
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2576989,
+        2573558
+      ]
+    },
+    {
+      "obs_qs213": [
+        387,
+        -233,
+        -112,
+        574
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2555435,
+        2554759
+      ]
+    },
+    {
+      "obs_qs213": [
+        382,
+        -1829,
+        -101,
+        2936
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547936,
+        2547757
+      ]
+    },
+    {
+      "obs_qs213": [
+        346,
+        -3426,
+        -42,
+        5302
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2557392,
+        2562630
+      ]
+    },
+    {
+      "obs_qs213": [
+        277,
+        -1827,
+        64,
+        2891
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2545942,
+        2548243
+      ]
+    },
+    {
+      "obs_qs213": [
+        241,
+        -230,
+        122,
+        513
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2557609,
+        2559953
+      ]
+    },
+    {
+      "obs_qs213": [
+        236,
+        1367,
+        132,
+        -1846
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2569086,
+        2568946
+      ]
+    },
+    {
+      "obs_qs213": [
+        264,
+        -233,
+        95,
+        593
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2545346,
+        2550549
+      ]
+    },
+    {
+      "obs_qs213": [
+        259,
+        1364,
+        107,
+        -1774
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2568873,
+        2568601
+      ]
+    },
+    {
+      "obs_qs213": [
+        286,
+        -236,
+        71,
+        657
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2545424,
+        2550036
+      ]
+    },
+    {
+      "obs_qs213": [
+        281,
+        1361,
+        85,
+        -1718
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2573089,
+        2572896
+      ]
+    },
+    {
+      "obs_qs213": [
+        309,
+        -239,
+        50,
+        706
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2546138,
+        2551014
+      ]
+    },
+    {
+      "obs_qs213": [
+        304,
+        1359,
+        64,
+        -1676
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2574896,
+        2574329
+      ]
+    },
+    {
+      "obs_qs213": [
+        331,
+        -240,
+        31,
+        742
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2541632,
+        2546629
+      ]
+    },
+    {
+      "obs_qs213": [
+        326,
+        1358,
+        46,
+        -1646
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2576752,
+        2576412
+      ]
+    },
+    {
+      "obs_qs213": [
+        353,
+        -241,
+        13,
+        767
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2545375,
+        2550064
+      ]
+    },
+    {
+      "obs_qs213": [
+        349,
+        1357,
+        28,
+        -1627
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2580283,
+        2580783
+      ]
+    },
+    {
+      "obs_qs213": [
+        376,
+        2955,
+        -4,
+        -4016
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2582498,
+        2577967
+      ]
+    },
+    {
+      "obs_qs213": [
+        435,
+        1357,
+        -85,
+        -1620
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2566136,
+        2564538
+      ]
+    },
+    {
+      "obs_qs213": [
+        462,
+        -241,
+        -117,
+        751
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2561439,
+        2565166
+      ]
+    },
+    {
+      "obs_qs213": [
+        457,
+        1359,
+        -102,
+        -1683
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2572860,
+        2570470
+      ]
+    },
+    {
+      "obs_qs213": [
+        484,
+        -237,
+        -136,
+        682
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2570640,
+        2571470
+      ]
+    },
+    {
+      "obs_qs213": [
+        480,
+        1363,
+        -122,
+        -1758
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2567893,
+        2564963
+      ]
+    },
+    {
+      "obs_qs213": [
+        507,
+        -234,
+        -157,
+        601
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2559369,
+        2558552
+      ]
+    },
+    {
+      "obs_qs213": [
+        502,
+        -1830,
+        -145,
+        2948
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544765,
+        2547863
+      ]
+    },
+    {
+      "obs_qs213": [
+        466,
+        -229,
+        -86,
+        505
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2561846,
+        2561320
+      ]
+    },
+    {
+      "obs_qs213": [
+        461,
+        -1827,
+        -76,
+        2876
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2542680,
+        2545649
+      ]
+    },
+    {
+      "obs_qs213": [
+        424,
+        -227,
+        -19,
+        454
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2553410,
+        2553232
+      ]
+    },
+    {
+      "obs_qs213": [
+        420,
+        -1825,
+        -10,
+        2846
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2545394,
+        2548495
+      ]
+    },
+    {
+      "obs_qs213": [
+        383,
+        -227,
+        47,
+        445
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2554077,
+        2555581
+      ]
+    },
+    {
+      "obs_qs213": [
+        379,
+        1371,
+        56,
+        -1938
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2581568,
+        2577973
+      ]
+    },
+    {
+      "obs_qs213": [
+        406,
+        -228,
+        17,
+        478
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2559416,
+        2560301
+      ]
+    },
+    {
+      "obs_qs213": [
+        402,
+        1370,
+        27,
+        -1914
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580679,
+        2576825
+      ]
+    },
+    {
+      "obs_qs213": [
+        429,
+        -229,
+        -11,
+        492
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2554084,
+        2554427
+      ]
+    },
+    {
+      "obs_qs213": [
+        425,
+        1370,
+        -1,
+        -1909
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580679,
+        2576825
+      ]
+    },
+    {
+      "obs_qs213": [
+        452,
+        -229,
+        -40,
+        488
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2555690,
+        2554883
+      ]
+    },
+    {
+      "obs_qs213": [
+        447,
+        -1827,
+        -30,
+        2873
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544652,
+        2548359
+      ]
+    },
+    {
+      "obs_qs213": [
+        411,
+        -228,
+        28,
+        466
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2559416,
+        2560301
+      ]
+    },
+    {
+      "obs_qs213": [
+        406,
+        1370,
+        37,
+        -1923
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580679,
+        2576825
+      ]
+    },
+    {
+      "obs_qs213": [
+        434,
+        -229,
+        -2,
+        486
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2558407,
+        2559740
+      ]
+    },
+    {
+      "obs_qs213": [
+        429,
+        1370,
+        8,
+        -1912
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580679,
+        2576825
+      ]
+    },
+    {
+      "obs_qs213": [
+        456,
+        -229,
+        -30,
+        488
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2558536,
+        2558406
+      ]
+    },
+    {
+      "obs_qs213": [
+        452,
+        -1827,
+        -20,
+        2876
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2540461,
+        2543587
+      ]
+    },
+    {
+      "obs_qs213": [
+        415,
+        -228,
+        37,
+        472
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2561918,
+        2564991
+      ]
+    },
+    {
+      "obs_qs213": [
+        411,
+        1370,
+        47,
+        -1914
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2582230,
+        2579532
+      ]
+    },
+    {
+      "obs_qs213": [
+        438,
+        -229,
+        8,
+        499
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2561657,
+        2564564
+      ]
+    },
+    {
+      "obs_qs213": [
+        434,
+        1369,
+        18,
+        -1896
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2582230,
+        2579532
+      ]
+    },
+    {
+      "obs_qs213": [
+        461,
+        -230,
+        -20,
+        507
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2566842,
+        2567828
+      ]
+    },
+    {
+      "obs_qs213": [
+        456,
+        1369,
+        -9,
+        -1897
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        484,
+        -229,
+        -47,
+        498
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2562214,
+        2562074
+      ]
+    },
+    {
+      "obs_qs213": [
+        479,
+        -1827,
+        -37,
+        2881
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2540915,
+        2542814
+      ]
+    },
+    {
+      "obs_qs213": [
+        443,
+        -228,
+        20,
+        471
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2561918,
+        2564991
+      ]
+    },
+    {
+      "obs_qs213": [
+        438,
+        1370,
+        30,
+        -1920
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2582230,
+        2579532
+      ]
+    },
+    {
+      "obs_qs213": [
+        466,
+        -229,
+        -9,
+        487
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2561657,
+        2564564
+      ]
+    },
+    {
+      "obs_qs213": [
+        461,
+        1370,
+        1,
+        -1913
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        488,
+        -229,
+        -37,
+        485
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2558536,
+        2558406
+      ]
+    },
+    {
+      "obs_qs213": [
+        484,
+        -1826,
+        -28,
+        2870
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544939,
+        2545796
+      ]
+    },
+    {
+      "obs_qs213": [
+        447,
+        -228,
+        30,
+        464
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2561918,
+        2564991
+      ]
+    },
+    {
+      "obs_qs213": [
+        443,
+        1370,
+        39,
+        -1924
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2579190,
+        2576858
+      ]
+    },
+    {
+      "obs_qs213": [
+        470,
+        -229,
+        1,
+        486
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2561657,
+        2564564
+      ]
+    },
+    {
+      "obs_qs213": [
+        466,
+        1370,
+        10,
+        -1912
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        493,
+        -229,
+        -28,
+        489
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2562859,
+        2563719
+      ]
+    },
+    {
+      "obs_qs213": [
+        488,
+        1370,
+        -18,
+        -1917
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        516,
+        -228,
+        -56,
+        475
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2558536,
+        2558406
+      ]
+    },
+    {
+      "obs_qs213": [
+        511,
+        -1826,
+        -47,
+        2854
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2540915,
+        2542814
+      ]
+    },
+    {
+      "obs_qs213": [
+        475,
+        -227,
+        10,
+        442
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2558381,
+        2561163
+      ]
+    },
+    {
+      "obs_qs213": [
+        470,
+        1372,
+        19,
+        -1952
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        498,
+        -227,
+        -20,
+        451
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553779,
+        2553987
+      ]
+    },
+    {
+      "obs_qs213": [
+        493,
+        1372,
+        -11,
+        -1953
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        520,
+        -227,
+        -50,
+        441
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2558536,
+        2558406
+      ]
+    },
+    {
+      "obs_qs213": [
+        516,
+        -1824,
+        -41,
+        2823
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        479,
+        -225,
+        15,
+        413
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2555111,
+        2557218
+      ]
+    },
+    {
+      "obs_qs213": [
+        475,
+        1373,
+        23,
+        -1980
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        502,
+        -226,
+        -16,
+        425
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2550809,
+        2551025
+      ]
+    },
+    {
+      "obs_qs213": [
+        498,
+        1373,
+        -8,
+        -1978
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        525,
+        -225,
+        -47,
+        417
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        521,
+        -1823,
+        -39,
+        2800
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        484,
+        -224,
+        17,
+        390
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2551070,
+        2551455
+      ]
+    },
+    {
+      "obs_qs213": [
+        480,
+        1374,
+        25,
+        -2002
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        507,
+        -225,
+        -15,
+        403
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2550809,
+        2551025
+      ]
+    },
+    {
+      "obs_qs213": [
+        503,
+        1374,
+        -7,
+        -1999
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        530,
+        -225,
+        -47,
+        396
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        526,
+        -1822,
+        -39,
+        2779
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        489,
+        -223,
+        16,
+        369
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2551070,
+        2551455
+      ]
+    },
+    {
+      "obs_qs213": [
+        485,
+        1375,
+        24,
+        -2023
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        512,
+        -224,
+        -17,
+        382
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2550809,
+        2551025
+      ]
+    },
+    {
+      "obs_qs213": [
+        508,
+        1375,
+        -9,
+        -2021
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        535,
+        -224,
+        -49,
+        374
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        531,
+        -1821,
+        -42,
+        2756
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        495,
+        -222,
+        13,
+        345
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2551070,
+        2551455
+      ]
+    },
+    {
+      "obs_qs213": [
+        490,
+        1376,
+        20,
+        -2049
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2578644,
+        2574481
+      ]
+    },
+    {
+      "obs_qs213": [
+        518,
+        -223,
+        -21,
+        355
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        513,
+        -1821,
+        -14,
+        2746
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2542616,
+        2546016
+      ]
+    },
+    {
+      "obs_qs213": [
+        477,
+        -222,
+        41,
+        344
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        472,
+        1376,
+        48,
+        -2040
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2579928,
+        2576685
+      ]
+    },
+    {
+      "obs_qs213": [
+        500,
+        -223,
+        7,
+        372
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2551070,
+        2551455
+      ]
+    },
+    {
+      "obs_qs213": [
+        495,
+        1375,
+        15,
+        -2023
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        523,
+        -224,
+        -26,
+        379
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        518,
+        -1822,
+        -18,
+        2769
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        482,
+        -223,
+        37,
+        365
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2555111,
+        2557218
+      ]
+    },
+    {
+      "obs_qs213": [
+        477,
+        1375,
+        44,
+        -2021
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2582230,
+        2579532
+      ]
+    },
+    {
+      "obs_qs213": [
+        505,
+        -224,
+        4,
+        391
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2550809,
+        2551025
+      ]
+    },
+    {
+      "obs_qs213": [
+        500,
+        1374,
+        12,
+        -2005
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        528,
+        -225,
+        -28,
+        396
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2550809,
+        2551025
+      ]
+    },
+    {
+      "obs_qs213": [
+        523,
+        1374,
+        -20,
+        -2011
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        551,
+        -224,
+        -61,
+        381
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        546,
+        -1821,
+        -53,
+        2759
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        510,
+        -222,
+        2,
+        345
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2551070,
+        2551455
+      ]
+    },
+    {
+      "obs_qs213": [
+        506,
+        1376,
+        9,
+        -2052
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        533,
+        -222,
+        -32,
+        348
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        529,
+        -1820,
+        -25,
+        2736
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        492,
+        -222,
+        30,
+        330
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        488,
+        1376,
+        36,
+        -2058
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2579928,
+        2576685
+      ]
+    },
+    {
+      "obs_qs213": [
+        515,
+        -223,
+        -5,
+        351
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2550809,
+        2551025
+      ]
+    },
+    {
+      "obs_qs213": [
+        511,
+        1376,
+        2,
+        -2048
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        538,
+        -222,
+        -39,
+        350
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        534,
+        -1820,
+        -32,
+        2736
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        498,
+        -221,
+        23,
+        328
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        493,
+        1377,
+        30,
+        -2062
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2579928,
+        2576685
+      ]
+    },
+    {
+      "obs_qs213": [
+        521,
+        -222,
+        -12,
+        345
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        516,
+        -1820,
+        -5,
+        2739
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        480,
+        -222,
+        50,
+        340
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2556505,
+        2558268
+      ]
+    },
+    {
+      "obs_qs213": [
+        475,
+        1376,
+        57,
+        -2042
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2582589,
+        2580119
+      ]
+    },
+    {
+      "obs_qs213": [
+        503,
+        -223,
+        16,
+        373
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2551070,
+        2551455
+      ]
+    },
+    {
+      "obs_qs213": [
+        498,
+        1375,
+        23,
+        -2019
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        526,
+        -224,
+        -17,
+        386
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2550809,
+        2551025
+      ]
+    },
+    {
+      "obs_qs213": [
+        521,
+        1375,
+        -9,
+        -2017
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        549,
+        -224,
+        -50,
+        377
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        544,
+        -1821,
+        -42,
+        2759
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        508,
+        -222,
+        13,
+        348
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2554861,
+        2554893
+      ]
+    },
+    {
+      "obs_qs213": [
+        504,
+        1376,
+        20,
+        -2045
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        531,
+        -223,
+        -21,
+        359
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        527,
+        -1821,
+        -14,
+        2750
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        490,
+        -222,
+        41,
+        348
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560037,
+        2562641
+      ]
+    },
+    {
+      "obs_qs213": [
+        486,
+        1375,
+        48,
+        -2037
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2582230,
+        2579532
+      ]
+    },
+    {
+      "obs_qs213": [
+        513,
+        -224,
+        8,
+        376
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2550809,
+        2551025
+      ]
+    },
+    {
+      "obs_qs213": [
+        509,
+        1375,
+        15,
+        -2019
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        536,
+        -224,
+        -25,
+        383
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2550809,
+        2551025
+      ]
+    },
+    {
+      "obs_qs213": [
+        532,
+        1375,
+        -18,
+        -2022
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        559,
+        -223,
+        -58,
+        370
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        555,
+        -1821,
+        -51,
+        2749
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        518,
+        -222,
+        4,
+        335
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2554861,
+        2554893
+      ]
+    },
+    {
+      "obs_qs213": [
+        514,
+        1377,
+        11,
+        -2061
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        542,
+        -222,
+        -30,
+        340
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        537,
+        -1820,
+        -23,
+        2728
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        501,
+        -221,
+        31,
+        323
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        496,
+        1377,
+        38,
+        -2064
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2579928,
+        2576685
+      ]
+    },
+    {
+      "obs_qs213": [
+        524,
+        -222,
+        -4,
+        345
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2554599,
+        2554464
+      ]
+    },
+    {
+      "obs_qs213": [
+        519,
+        -1821,
+        3,
+        2742
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        483,
+        -222,
+        58,
+        345
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560037,
+        2562641
+      ]
+    },
+    {
+      "obs_qs213": [
+        479,
+        1375,
+        65,
+        -2034
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2579550,
+        2577444
+      ]
+    },
+    {
+      "obs_qs213": [
+        506,
+        -224,
+        24,
+        384
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2558642,
+        2561590
+      ]
+    },
+    {
+      "obs_qs213": [
+        502,
+        1374,
+        32,
+        -2006
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        529,
+        -225,
+        -8,
+        401
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2550809,
+        2551025
+      ]
+    },
+    {
+      "obs_qs213": [
+        525,
+        1374,
+        0,
+        -1999
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        552,
+        -225,
+        -40,
+        399
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2550809,
+        2551025
+      ]
+    },
+    {
+      "obs_qs213": [
+        548,
+        1374,
+        -32,
+        -2011
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        575,
+        -224,
+        -72,
+        376
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        571,
+        -1821,
+        -65,
+        2751
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        534,
+        -222,
+        -10,
+        333
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2551755,
+        2550940
+      ]
+    },
+    {
+      "obs_qs213": [
+        530,
+        -1820,
+        -3,
+        2727
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        493,
+        -221,
+        51,
+        329
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560037,
+        2562641
+      ]
+    },
+    {
+      "obs_qs213": [
+        489,
+        1376,
+        58,
+        -2053
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2582589,
+        2580119
+      ]
+    },
+    {
+      "obs_qs213": [
+        516,
+        -223,
+        17,
+        363
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2554861,
+        2554893
+      ]
+    },
+    {
+      "obs_qs213": [
+        512,
+        1375,
+        24,
+        -2029
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        539,
+        -224,
+        -16,
+        376
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2550809,
+        2551025
+      ]
+    },
+    {
+      "obs_qs213": [
+        535,
+        1375,
+        -9,
+        -2027
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        562,
+        -223,
+        -49,
+        368
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2547962,
+        2547501
+      ]
+    },
+    {
+      "obs_qs213": [
+        558,
+        -1821,
+        -42,
+        2750
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        522,
+        -222,
+        13,
+        339
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2554861,
+        2554893
+      ]
+    },
+    {
+      "obs_qs213": [
+        517,
+        1376,
+        20,
+        -2054
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        545,
+        -222,
+        -21,
+        349
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2554599,
+        2554464
+      ]
+    },
+    {
+      "obs_qs213": [
+        540,
+        -1821,
+        -14,
+        2740
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        504,
+        -222,
+        40,
+        338
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2555999,
+        2556875
+      ]
+    },
+    {
+      "obs_qs213": [
+        499,
+        1376,
+        47,
+        -2047
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        527,
+        -223,
+        6,
+        366
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2554599,
+        2554464
+      ]
+    },
+    {
+      "obs_qs213": [
+        522,
+        -1822,
+        14,
+        2765
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544939,
+        2545796
+      ]
+    },
+    {
+      "obs_qs213": [
+        486,
+        -223,
+        69,
+        372
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560291,
+        2564366
+      ]
+    },
+    {
+      "obs_qs213": [
+        482,
+        1374,
+        76,
+        -2004
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2584536,
+        2581138
+      ]
+    },
+    {
+      "obs_qs213": [
+        509,
+        -226,
+        36,
+        418
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2549366,
+        2555230
+      ]
+    },
+    {
+      "obs_qs213": [
+        504,
+        1372,
+        45,
+        -1969
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2582140,
+        2578208
+      ]
+    },
+    {
+      "obs_qs213": [
+        532,
+        -227,
+        5,
+        443
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2554961,
+        2560264
+      ]
+    },
+    {
+      "obs_qs213": [
+        527,
+        1372,
+        14,
+        -1953
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2575875,
+        2574278
+      ]
+    },
+    {
+      "obs_qs213": [
+        555,
+        -227,
+        -25,
+        449
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2564831,
+        2568306
+      ]
+    },
+    {
+      "obs_qs213": [
+        550,
+        1372,
+        -16,
+        -1956
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2578916,
+        2576952
+      ]
+    },
+    {
+      "obs_qs213": [
+        578,
+        -226,
+        -55,
+        436
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2557257,
+        2558169
+      ]
+    },
+    {
+      "obs_qs213": [
+        573,
+        1373,
+        -46,
+        -1979
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2576415,
+        2572640
+      ]
+    },
+    {
+      "obs_qs213": [
+        601,
+        -225,
+        -86,
+        404
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2554412,
+        2554646
+      ]
+    },
+    {
+      "obs_qs213": [
+        596,
+        1375,
+        -78,
+        -2020
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2576415,
+        2572640
+      ]
+    },
+    {
+      "obs_qs213": [
+        624,
+        -223,
+        -118,
+        352
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2557356,
+        2557040
+      ]
+    },
+    {
+      "obs_qs213": [
+        619,
+        -1819,
+        -111,
+        2713
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2555676,
+        2557282
+      ]
+    },
+    {
+      "obs_qs213": [
+        583,
+        -219,
+        -57,
+        280
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2558979,
+        2557363
+      ]
+    },
+    {
+      "obs_qs213": [
+        578,
+        -1817,
+        -51,
+        2660
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560051,
+        2562698
+      ]
+    },
+    {
+      "obs_qs213": [
+        542,
+        -218,
+        2,
+        246
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2550431,
+        2549557
+      ]
+    },
+    {
+      "obs_qs213": [
+        538,
+        -1816,
+        7,
+        2644
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544360,
+        2547652
+      ]
+    },
+    {
+      "obs_qs213": [
+        501,
+        -218,
+        60,
+        248
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2553282,
+        2553084
+      ]
+    },
+    {
+      "obs_qs213": [
+        497,
+        -1817,
+        65,
+        2665
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2539198,
+        2543235
+      ]
+    },
+    {
+      "obs_qs213": [
+        461,
+        -220,
+        118,
+        288
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2557895,
+        2561979
+      ]
+    },
+    {
+      "obs_qs213": [
+        456,
+        1377,
+        124,
+        -2073
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2584750,
+        2581482
+      ]
+    },
+    {
+      "obs_qs213": [
+        484,
+        -223,
+        82,
+        364
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552040,
+        2556518
+      ]
+    },
+    {
+      "obs_qs213": [
+        479,
+        1374,
+        89,
+        -2008
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2584536,
+        2581138
+      ]
+    },
+    {
+      "obs_qs213": [
+        507,
+        -226,
+        49,
+        418
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2548203,
+        2554203
+      ]
+    },
+    {
+      "obs_qs213": [
+        502,
+        1372,
+        58,
+        -1964
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580861,
+        2577972
+      ]
+    },
+    {
+      "obs_qs213": [
+        530,
+        -227,
+        18,
+        451
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2547096,
+        2552407
+      ]
+    },
+    {
+      "obs_qs213": [
+        525,
+        1371,
+        27,
+        -1940
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580861,
+        2577972
+      ]
+    },
+    {
+      "obs_qs213": [
+        553,
+        -228,
+        -11,
+        466
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2556833,
+        2562184
+      ]
+    },
+    {
+      "obs_qs213": [
+        548,
+        1371,
+        -2,
+        -1935
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2575875,
+        2574278
+      ]
+    },
+    {
+      "obs_qs213": [
+        576,
+        -228,
+        -41,
+        462
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2569206,
+        2573722
+      ]
+    },
+    {
+      "obs_qs213": [
+        571,
+        1372,
+        -32,
+        -1949
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577441,
+        2575253
+      ]
+    },
+    {
+      "obs_qs213": [
+        598,
+        -226,
+        -71,
+        439
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2557257,
+        2558169
+      ]
+    },
+    {
+      "obs_qs213": [
+        594,
+        1373,
+        -62,
+        -1981
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2575137,
+        2572403
+      ]
+    },
+    {
+      "obs_qs213": [
+        621,
+        -225,
+        -101,
+        397
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2564033,
+        2563458
+      ]
+    },
+    {
+      "obs_qs213": [
+        617,
+        -1822,
+        -94,
+        2762
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2543427,
+        2547992
+      ]
+    },
+    {
+      "obs_qs213": [
+        580,
+        -222,
+        -38,
+        335
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2551755,
+        2550940
+      ]
+    },
+    {
+      "obs_qs213": [
+        576,
+        -1820,
+        -32,
+        2721
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        540,
+        -221,
+        23,
+        313
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        535,
+        1377,
+        29,
+        -2077
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        563,
+        -222,
+        -12,
+        330
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2554599,
+        2554464
+      ]
+    },
+    {
+      "obs_qs213": [
+        558,
+        -1820,
+        -6,
+        2723
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2540915,
+        2542814
+      ]
+    },
+    {
+      "obs_qs213": [
+        522,
+        -221,
+        49,
+        324
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560037,
+        2562641
+      ]
+    },
+    {
+      "obs_qs213": [
+        518,
+        1376,
+        55,
+        -2058
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577153,
+        2574514
+      ]
+    },
+    {
+      "obs_qs213": [
+        545,
+        -223,
+        14,
+        357
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2562433,
+        2565028
+      ]
+    },
+    {
+      "obs_qs213": [
+        541,
+        1375,
+        21,
+        -2037
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        568,
+        -223,
+        -20,
+        368
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553321,
+        2554227
+      ]
+    },
+    {
+      "obs_qs213": [
+        564,
+        1375,
+        -12,
+        -2036
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        591,
+        -223,
+        -53,
+        357
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2551755,
+        2550940
+      ]
+    },
+    {
+      "obs_qs213": [
+        587,
+        -1820,
+        -46,
+        2738
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2543427,
+        2547992
+      ]
+    },
+    {
+      "obs_qs213": [
+        550,
+        -221,
+        9,
+        326
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        546,
+        1377,
+        15,
+        -2069
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        573,
+        -222,
+        -26,
+        334
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2554599,
+        2554464
+      ]
+    },
+    {
+      "obs_qs213": [
+        569,
+        -1820,
+        -19,
+        2723
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        533,
+        -221,
+        35,
+        320
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2555999,
+        2556875
+      ]
+    },
+    {
+      "obs_qs213": [
+        528,
+        1377,
+        42,
+        -2067
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        556,
+        -222,
+        0,
+        344
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2554599,
+        2554464
+      ]
+    },
+    {
+      "obs_qs213": [
+        551,
+        -1821,
+        7,
+        2742
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2540686,
+        2543570
+      ]
+    },
+    {
+      "obs_qs213": [
+        515,
+        -222,
+        62,
+        346
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2557895,
+        2561979
+      ]
+    },
+    {
+      "obs_qs213": [
+        510,
+        1375,
+        69,
+        -2032
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577514,
+        2575103
+      ]
+    },
+    {
+      "obs_qs213": [
+        538,
+        -224,
+        28,
+        387
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2559013,
+        2564130
+      ]
+    },
+    {
+      "obs_qs213": [
+        533,
+        1374,
+        36,
+        -2001
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577153,
+        2574514
+      ]
+    },
+    {
+      "obs_qs213": [
+        561,
+        -225,
+        -4,
+        408
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2565270,
+        2569781
+      ]
+    },
+    {
+      "obs_qs213": [
+        556,
+        1373,
+        4,
+        -1991
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2575875,
+        2574278
+      ]
+    },
+    {
+      "obs_qs213": [
+        584,
+        -225,
+        -36,
+        408
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553064,
+        2555164
+      ]
+    },
+    {
+      "obs_qs213": [
+        579,
+        1374,
+        -28,
+        -2001
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2575137,
+        2572403
+      ]
+    },
+    {
+      "obs_qs213": [
+        607,
+        -224,
+        -68,
+        388
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2554287,
+        2555207
+      ]
+    },
+    {
+      "obs_qs213": [
+        602,
+        1375,
+        -60,
+        -2031
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2576415,
+        2572640
+      ]
+    },
+    {
+      "obs_qs213": [
+        630,
+        -222,
+        -101,
+        347
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2562342,
+        2560734
+      ]
+    },
+    {
+      "obs_qs213": [
+        625,
+        -1819,
+        -94,
+        2713
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553321,
+        2556955
+      ]
+    },
+    {
+      "obs_qs213": [
+        589,
+        -220,
+        -39,
+        286
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2558979,
+        2557363
+      ]
+    },
+    {
+      "obs_qs213": [
+        585,
+        -1817,
+        -34,
+        2671
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2548946,
+        2552187
+      ]
+    },
+    {
+      "obs_qs213": [
+        548,
+        -219,
+        20,
+        263
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2553282,
+        2553084
+      ]
+    },
+    {
+      "obs_qs213": [
+        544,
+        -1817,
+        25,
+        2667
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2542202,
+        2545907
+      ]
+    },
+    {
+      "obs_qs213": [
+        508,
+        -219,
+        78,
+        277
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560037,
+        2562641
+      ]
+    },
+    {
+      "obs_qs213": [
+        503,
+        1378,
+        84,
+        -2096
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2579550,
+        2577444
+      ]
+    },
+    {
+      "obs_qs213": [
+        531,
+        -221,
+        42,
+        328
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560037,
+        2562641
+      ]
+    },
+    {
+      "obs_qs213": [
+        526,
+        1376,
+        49,
+        -2056
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577153,
+        2574514
+      ]
+    },
+    {
+      "obs_qs213": [
+        554,
+        -223,
+        8,
+        357
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2558133,
+        2558838
+      ]
+    },
+    {
+      "obs_qs213": [
+        549,
+        1376,
+        15,
+        -2038
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        577,
+        -223,
+        -26,
+        364
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553321,
+        2554227
+      ]
+    },
+    {
+      "obs_qs213": [
+        572,
+        1376,
+        -19,
+        -2042
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        600,
+        -222,
+        -60,
+        350
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2551755,
+        2550940
+      ]
+    },
+    {
+      "obs_qs213": [
+        595,
+        -1820,
+        -53,
+        2729
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2543427,
+        2547992
+      ]
+    },
+    {
+      "obs_qs213": [
+        559,
+        -221,
+        2,
+        314
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2552207,
+        2552079
+      ]
+    },
+    {
+      "obs_qs213": [
+        555,
+        -1819,
+        8,
+        2713
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2540915,
+        2542814
+      ]
+    },
+    {
+      "obs_qs213": [
+        518,
+        -221,
+        62,
+        318
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2564412,
+        2568057
+      ]
+    },
+    {
+      "obs_qs213": [
+        514,
+        1377,
+        69,
+        -2060
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577514,
+        2575103
+      ]
+    },
+    {
+      "obs_qs213": [
+        541,
+        -223,
+        28,
+        359
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2565530,
+        2570208
+      ]
+    },
+    {
+      "obs_qs213": [
+        537,
+        1375,
+        35,
+        -2030
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577153,
+        2574514
+      ]
+    },
+    {
+      "obs_qs213": [
+        564,
+        -224,
+        -6,
+        379
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560895,
+        2564365
+      ]
+    },
+    {
+      "obs_qs213": [
+        560,
+        1375,
+        2,
+        -2021
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        587,
+        -224,
+        -39,
+        377
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553321,
+        2554227
+      ]
+    },
+    {
+      "obs_qs213": [
+        583,
+        1375,
+        -31,
+        -2032
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2576415,
+        2572640
+      ]
+    },
+    {
+      "obs_qs213": [
+        611,
+        -223,
+        -72,
+        355
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2560099,
+        2559517
+      ]
+    },
+    {
+      "obs_qs213": [
+        606,
+        -1820,
+        -65,
+        2730
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2543427,
+        2547992
+      ]
+    },
+    {
+      "obs_qs213": [
+        570,
+        -221,
+        -10,
+        312
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2552207,
+        2552079
+      ]
+    },
+    {
+      "obs_qs213": [
+        565,
+        -1819,
+        -4,
+        2707
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        529,
+        -221,
+        50,
+        308
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560037,
+        2562641
+      ]
+    },
+    {
+      "obs_qs213": [
+        524,
+        1377,
+        57,
+        -2074
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577514,
+        2575103
+      ]
+    },
+    {
+      "obs_qs213": [
+        552,
+        -222,
+        15,
+        342
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2558392,
+        2559266
+      ]
+    },
+    {
+      "obs_qs213": [
+        548,
+        1376,
+        22,
+        -2051
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        575,
+        -223,
+        -19,
+        353
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553321,
+        2554227
+      ]
+    },
+    {
+      "obs_qs213": [
+        571,
+        1376,
+        -12,
+        -2050
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        598,
+        -222,
+        -53,
+        344
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2551755,
+        2550940
+      ]
+    },
+    {
+      "obs_qs213": [
+        594,
+        -1820,
+        -46,
+        2724
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2543427,
+        2547992
+      ]
+    },
+    {
+      "obs_qs213": [
+        557,
+        -221,
+        8,
+        312
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        553,
+        1378,
+        15,
+        -2083
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        580,
+        -221,
+        -27,
+        319
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2554599,
+        2554464
+      ]
+    },
+    {
+      "obs_qs213": [
+        576,
+        -1819,
+        -21,
+        2709
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        540,
+        -220,
+        33,
+        304
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2555999,
+        2556875
+      ]
+    },
+    {
+      "obs_qs213": [
+        535,
+        1378,
+        40,
+        -2083
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        563,
+        -221,
+        -2,
+        327
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2552207,
+        2552079
+      ]
+    },
+    {
+      "obs_qs213": [
+        558,
+        -1820,
+        4,
+        2724
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2539637,
+        2542577
+      ]
+    },
+    {
+      "obs_qs213": [
+        522,
+        -221,
+        59,
+        328
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2564412,
+        2568057
+      ]
+    },
+    {
+      "obs_qs213": [
+        518,
+        1376,
+        65,
+        -2051
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577514,
+        2575103
+      ]
+    },
+    {
+      "obs_qs213": [
+        545,
+        -223,
+        24,
+        367
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2565530,
+        2570208
+      ]
+    },
+    {
+      "obs_qs213": [
+        541,
+        1375,
+        32,
+        -2023
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577153,
+        2574514
+      ]
+    },
+    {
+      "obs_qs213": [
+        568,
+        -224,
+        -9,
+        385
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560895,
+        2564365
+      ]
+    },
+    {
+      "obs_qs213": [
+        564,
+        1375,
+        -1,
+        -2015
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        591,
+        -224,
+        -41,
+        382
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553321,
+        2554227
+      ]
+    },
+    {
+      "obs_qs213": [
+        587,
+        1375,
+        -34,
+        -2029
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2576415,
+        2572640
+      ]
+    },
+    {
+      "obs_qs213": [
+        614,
+        -223,
+        -74,
+        359
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2560099,
+        2559517
+      ]
+    },
+    {
+      "obs_qs213": [
+        610,
+        -1820,
+        -67,
+        2733
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2543427,
+        2547992
+      ]
+    },
+    {
+      "obs_qs213": [
+        573,
+        -221,
+        -12,
+        314
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2552207,
+        2552079
+      ]
+    },
+    {
+      "obs_qs213": [
+        569,
+        -1819,
+        -6,
+        2708
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2543427,
+        2547992
+      ]
+    },
+    {
+      "obs_qs213": [
+        532,
+        -221,
+        48,
+        308
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560037,
+        2562641
+      ]
+    },
+    {
+      "obs_qs213": [
+        528,
+        1377,
+        54,
+        -2074
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577153,
+        2574514
+      ]
+    },
+    {
+      "obs_qs213": [
+        556,
+        -222,
+        13,
+        340
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2558392,
+        2559266
+      ]
+    },
+    {
+      "obs_qs213": [
+        551,
+        1376,
+        20,
+        -2053
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        579,
+        -222,
+        -21,
+        351
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553321,
+        2554227
+      ]
+    },
+    {
+      "obs_qs213": [
+        574,
+        1376,
+        -14,
+        -2054
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        602,
+        -222,
+        -56,
+        339
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2551755,
+        2550940
+      ]
+    },
+    {
+      "obs_qs213": [
+        597,
+        -1820,
+        -49,
+        2719
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2543427,
+        2547992
+      ]
+    },
+    {
+      "obs_qs213": [
+        561,
+        -220,
+        6,
+        306
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        557,
+        1378,
+        12,
+        -2090
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        584,
+        -221,
+        -30,
+        312
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2549356,
+        2548551
+      ]
+    },
+    {
+      "obs_qs213": [
+        580,
+        -1819,
+        -24,
+        2700
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        543,
+        -220,
+        30,
+        295
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        539,
+        1378,
+        36,
+        -2093
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        566,
+        -221,
+        -6,
+        316
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2552207,
+        2552079
+      ]
+    },
+    {
+      "obs_qs213": [
+        562,
+        -1819,
+        1,
+        2712
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2539637,
+        2542577
+      ]
+    },
+    {
+      "obs_qs213": [
+        526,
+        -221,
+        55,
+        314
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560037,
+        2562641
+      ]
+    },
+    {
+      "obs_qs213": [
+        521,
+        1377,
+        61,
+        -2066
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577514,
+        2575103
+      ]
+    },
+    {
+      "obs_qs213": [
+        549,
+        -222,
+        20,
+        351
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2561155,
+        2564791
+      ]
+    },
+    {
+      "obs_qs213": [
+        544,
+        1376,
+        27,
+        -2041
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        572,
+        -223,
+        -14,
+        365
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553321,
+        2554227
+      ]
+    },
+    {
+      "obs_qs213": [
+        567,
+        1376,
+        -7,
+        -2037
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        595,
+        -223,
+        -48,
+        359
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553321,
+        2554227
+      ]
+    },
+    {
+      "obs_qs213": [
+        590,
+        1376,
+        -40,
+        -2054
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2576415,
+        2572640
+      ]
+    },
+    {
+      "obs_qs213": [
+        618,
+        -222,
+        -81,
+        331
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2561377,
+        2559753
+      ]
+    },
+    {
+      "obs_qs213": [
+        613,
+        -1819,
+        -75,
+        2703
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2554599,
+        2557191
+      ]
+    },
+    {
+      "obs_qs213": [
+        577,
+        -219,
+        -21,
+        282
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2549356,
+        2548551
+      ]
+    },
+    {
+      "obs_qs213": [
+        573,
+        -1817,
+        -15,
+        2673
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        536,
+        -219,
+        38,
+        270
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        532,
+        1379,
+        44,
+        -2115
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        560,
+        -220,
+        1,
+        296
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        555,
+        1378,
+        7,
+        -2101
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        583,
+        -220,
+        -35,
+        299
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2549356,
+        2548551
+      ]
+    },
+    {
+      "obs_qs213": [
+        578,
+        -1818,
+        -29,
+        2686
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        542,
+        -219,
+        25,
+        279
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        538,
+        1379,
+        31,
+        -2111
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        565,
+        -220,
+        -12,
+        297
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2549356,
+        2548551
+      ]
+    },
+    {
+      "obs_qs213": [
+        561,
+        -1818,
+        -6,
+        2691
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        524,
+        -220,
+        48,
+        291
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        520,
+        1378,
+        54,
+        -2091
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580554,
+        2577776
+      ]
+    },
+    {
+      "obs_qs213": [
+        548,
+        -221,
+        12,
+        323
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        543,
+        1377,
+        19,
+        -2070
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        571,
+        -222,
+        -23,
+        333
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2554599,
+        2554464
+      ]
+    },
+    {
+      "obs_qs213": [
+        566,
+        -1820,
+        -16,
+        2724
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        530,
+        -221,
+        38,
+        321
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2555999,
+        2556875
+      ]
+    },
+    {
+      "obs_qs213": [
+        525,
+        1377,
+        45,
+        -2065
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        553,
+        -222,
+        4,
+        347
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2554599,
+        2554464
+      ]
+    },
+    {
+      "obs_qs213": [
+        549,
+        -1821,
+        10,
+        2746
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2540686,
+        2543570
+      ]
+    },
+    {
+      "obs_qs213": [
+        512,
+        -223,
+        65,
+        352
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2557895,
+        2561979
+      ]
+    },
+    {
+      "obs_qs213": [
+        508,
+        1375,
+        72,
+        -2025
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2582501,
+        2578797
+      ]
+    },
+    {
+      "obs_qs213": [
+        535,
+        -224,
+        32,
+        395
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553157,
+        2558669
+      ]
+    },
+    {
+      "obs_qs213": [
+        531,
+        1373,
+        40,
+        -1993
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580861,
+        2577972
+      ]
+    },
+    {
+      "obs_qs213": [
+        558,
+        -226,
+        0,
+        418
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2558753,
+        2563703
+      ]
+    },
+    {
+      "obs_qs213": [
+        554,
+        1373,
+        8,
+        -1980
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2575875,
+        2574278
+      ]
+    },
+    {
+      "obs_qs213": [
+        581,
+        -226,
+        -31,
+        420
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2561860,
+        2565345
+      ]
+    },
+    {
+      "obs_qs213": [
+        577,
+        1373,
+        -23,
+        -1987
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577441,
+        2575253
+      ]
+    },
+    {
+      "obs_qs213": [
+        604,
+        -225,
+        -63,
+        403
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2554287,
+        2555207
+      ]
+    },
+    {
+      "obs_qs213": [
+        600,
+        1374,
+        -55,
+        -2014
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2576415,
+        2572640
+      ]
+    },
+    {
+      "obs_qs213": [
+        627,
+        -223,
+        -95,
+        366
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2561064,
+        2560497
+      ]
+    },
+    {
+      "obs_qs213": [
+        623,
+        -1820,
+        -88,
+        2734
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2547667,
+        2551950
+      ]
+    },
+    {
+      "obs_qs213": [
+        586,
+        -221,
+        -33,
+        309
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2549356,
+        2548551
+      ]
+    },
+    {
+      "obs_qs213": [
+        582,
+        -1819,
+        -27,
+        2696
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        545,
+        -220,
+        27,
+        290
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2552467,
+        2552503
+      ]
+    },
+    {
+      "obs_qs213": [
+        541,
+        1378,
+        33,
+        -2099
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577893,
+        2574341
+      ]
+    },
+    {
+      "obs_qs213": [
+        569,
+        -221,
+        -9,
+        309
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2552207,
+        2552079
+      ]
+    },
+    {
+      "obs_qs213": [
+        564,
+        -1819,
+        -3,
+        2703
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        528,
+        -220,
+        51,
+        305
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560037,
+        2562641
+      ]
+    },
+    {
+      "obs_qs213": [
+        523,
+        1377,
+        57,
+        -2077
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577514,
+        2575103
+      ]
+    },
+    {
+      "obs_qs213": [
+        551,
+        -222,
+        16,
+        339
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2558392,
+        2559266
+      ]
+    },
+    {
+      "obs_qs213": [
+        546,
+        1376,
+        23,
+        -2053
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        574,
+        -223,
+        -18,
+        351
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2554599,
+        2554464
+      ]
+    },
+    {
+      "obs_qs213": [
+        570,
+        -1821,
+        -11,
+        2743
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2539637,
+        2542577
+      ]
+    },
+    {
+      "obs_qs213": [
+        533,
+        -222,
+        43,
+        342
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2564412,
+        2568057
+      ]
+    },
+    {
+      "obs_qs213": [
+        529,
+        1376,
+        50,
+        -2042
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577153,
+        2574514
+      ]
+    },
+    {
+      "obs_qs213": [
+        556,
+        -223,
+        9,
+        371
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560895,
+        2564365
+      ]
+    },
+    {
+      "obs_qs213": [
+        552,
+        1375,
+        17,
+        -2023
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577153,
+        2574514
+      ]
+    },
+    {
+      "obs_qs213": [
+        579,
+        -224,
+        -24,
+        380
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2556855,
+        2558602
+      ]
+    },
+    {
+      "obs_qs213": [
+        575,
+        1375,
+        -16,
+        -2025
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2576415,
+        2572640
+      ]
+    },
+    {
+      "obs_qs213": [
+        602,
+        -223,
+        -57,
+        367
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553321,
+        2554227
+      ]
+    },
+    {
+      "obs_qs213": [
+        598,
+        1376,
+        -49,
+        -2048
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2576415,
+        2572640
+      ]
+    },
+    {
+      "obs_qs213": [
+        625,
+        -222,
+        -90,
+        334
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2561377,
+        2559753
+      ]
+    },
+    {
+      "obs_qs213": [
+        621,
+        -1819,
+        -83,
+        2703
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2554599,
+        2557191
+      ]
+    },
+    {
+      "obs_qs213": [
+        585,
+        -219,
+        -29,
+        279
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2549356,
+        2548551
+      ]
+    },
+    {
+      "obs_qs213": [
+        580,
+        -1817,
+        -24,
+        2667
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        544,
+        -218,
+        29,
+        262
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2553282,
+        2553084
+      ]
+    },
+    {
+      "obs_qs213": [
+        539,
+        -1817,
+        35,
+        2669
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2539253,
+        2543110
+      ]
+    },
+    {
+      "obs_qs213": [
+        503,
+        -219,
+        88,
+        282
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2564412,
+        2568057
+      ]
+    },
+    {
+      "obs_qs213": [
+        499,
+        1378,
+        94,
+        -2087
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2579550,
+        2577444
+      ]
+    },
+    {
+      "obs_qs213": [
+        526,
+        -222,
+        52,
+        340
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2557895,
+        2561979
+      ]
+    },
+    {
+      "obs_qs213": [
+        522,
+        1376,
+        59,
+        -2041
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577153,
+        2574514
+      ]
+    },
+    {
+      "obs_qs213": [
+        549,
+        -224,
+        18,
+        375
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2565270,
+        2569781
+      ]
+    },
+    {
+      "obs_qs213": [
+        545,
+        1375,
+        25,
+        -2017
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577153,
+        2574514
+      ]
+    },
+    {
+      "obs_qs213": [
+        572,
+        -224,
+        -15,
+        388
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2560895,
+        2564365
+      ]
+    },
+    {
+      "obs_qs213": [
+        568,
+        1374,
+        -7,
+        -2014
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        595,
+        -224,
+        -47,
+        382
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553321,
+        2554227
+      ]
+    },
+    {
+      "obs_qs213": [
+        591,
+        1375,
+        -40,
+        -2031
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2576415,
+        2572640
+      ]
+    },
+    {
+      "obs_qs213": [
+        618,
+        -223,
+        -80,
+        354
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2560099,
+        2559517
+      ]
+    },
+    {
+      "obs_qs213": [
+        614,
+        -1820,
+        -73,
+        2726
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2543427,
+        2547992
+      ]
+    },
+    {
+      "obs_qs213": [
+        578,
+        -220,
+        -19,
+        306
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2552207,
+        2552079
+      ]
+    },
+    {
+      "obs_qs213": [
+        573,
+        -1819,
+        -13,
+        2697
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2544705,
+        2548229
+      ]
+    },
+    {
+      "obs_qs213": [
+        537,
+        -220,
+        41,
+        296
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2555999,
+        2556875
+      ]
+    },
+    {
+      "obs_qs213": [
+        532,
+        1378,
+        47,
+        -2089
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2580194,
+        2577189
+      ]
+    },
+    {
+      "obs_qs213": [
+        560,
+        -221,
+        5,
+        324
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2552207,
+        2552079
+      ]
+    },
+    {
+      "obs_qs213": [
+        555,
+        -1820,
+        12,
+        2723
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2540686,
+        2543570
+      ]
+    },
+    {
+      "obs_qs213": [
+        519,
+        -221,
+        66,
+        329
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2557895,
+        2561979
+      ]
+    },
+    {
+      "obs_qs213": [
+        515,
+        1376,
+        73,
+        -2048
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577514,
+        2575103
+      ]
+    },
+    {
+      "obs_qs213": [
+        542,
+        -223,
+        32,
+        373
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2559013,
+        2564130
+      ]
+    },
+    {
+      "obs_qs213": [
+        538,
+        1374,
+        39,
+        -2015
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2577153,
+        2574514
+      ]
+    },
+    {
+      "obs_qs213": [
+        565,
+        -225,
+        -1,
+        395
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2565270,
+        2569781
+      ]
+    },
+    {
+      "obs_qs213": [
+        561,
+        1374,
+        7,
+        -2002
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2575875,
+        2574278
+      ]
+    },
+    {
+      "obs_qs213": [
+        588,
+        -225,
+        -33,
+        397
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2556855,
+        2558602
+      ]
+    },
+    {
+      "obs_qs213": [
+        584,
+        1374,
+        -25,
+        -2011
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2575137,
+        2572403
+      ]
+    },
+    {
+      "obs_qs213": [
+        611,
+        -224,
+        -65,
+        379
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2558078,
+        2558646
+      ]
+    },
+    {
+      "obs_qs213": [
+        607,
+        1376,
+        -58,
+        -2039
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2576415,
+        2572640
+      ]
+    },
+    {
+      "obs_qs213": [
+        634,
+        -222,
+        -98,
+        340
+      ],
+      "expected_action": 0,
+      "expected_q_accum": [
+        2564856,
+        2563936
+      ]
+    },
+    {
+      "obs_qs213": [
+        630,
+        -1819,
+        -92,
+        2707
+      ],
+      "expected_action": 1,
+      "expected_q_accum": [
+        2553321,
+        2556955
+      ]
+    }
+  ]
+}

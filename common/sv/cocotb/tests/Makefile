@@ -105,6 +105,14 @@ else ifeq ($(TEST),neural_network)
                       $(SV_DIR)/q_accumulator.sv
     TOPLEVEL = neural_network
     MODULE = test_neural_network
+else ifeq ($(TEST),golden_vectors)
+    VERILOG_SOURCES = $(SV_DIR)/neural_network.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network
+    MODULE = test_golden_vectors
 else ifeq ($(TEST),uart_loopback)
     VERILOG_SOURCES = $(HOST_IF_DIR)/uart_rx.sv \
                       $(HOST_IF_DIR)/uart_tx.sv \
@@ -231,7 +239,7 @@ else ifeq ($(TEST),cp_integration_frac)
     TOPLEVEL = neural_network_fractional
     MODULE = test_cartpole_integration
 else
-    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
+    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'golden_vectors', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
 endif
 
 # Simulator - use Icarus for all tests (event-driven, correct timing)
@@ -331,6 +339,18 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc2_bias.mem\"
         COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_weights.mem\"
         COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_bias.mem\"
+    endif
+    ifeq ($(TEST),golden_vectors)
+        COMPILE_ARGS += -Pneural_network.NUM_INPUTS=4 -Pneural_network.HL1_SIZE=64
+        COMPILE_ARGS += -Pneural_network.HL2_SIZE=16 -Pneural_network.NUM_ACTIONS=2
+        COMPILE_ARGS += -Pneural_network.NUM_TIMESTEPS=10 -Pneural_network.Q_BATCH_SIZE=1
+        COMPILE_ARGS += -Pneural_network.FC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE=\"$(PWD)/weights/lif-64-16/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE=\"$(PWD)/weights/lif-64-16/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/lif-64-16/fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cp_integration_frac-16-4-32)
         # NOTE: This is one of the core models for testing and validation.
@@ -868,6 +888,9 @@ test_q_accumulator:
 test_neural_network:
 	$(MAKE) TEST=neural_network
 
+test_golden_vectors:
+	$(MAKE) TEST=golden_vectors
+
 test_uart_loopback:
 	$(MAKE) TEST=uart_loopback
 
@@ -915,4 +938,4 @@ clean::
 	rm -rf __pycache__
 	rm -rf .pytest_cache
 
-.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_fractional_lif_memory_constant_sweep test_fractional_lif_memory_constant_capture test_fractional_lif_memory_dropout_sweep test_fractional_lif_memory_dropout_capture test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_memory_constant_sweep test_bitshift_lif_memory_constant_capture test_bitshift_lif_memory_dropout_sweep test_bitshift_lif_memory_dropout_capture test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_uart_loopback test_uart_accel_ctrl test_uart_top_wrapper test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac
+.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_fractional_lif_memory_constant_sweep test_fractional_lif_memory_constant_capture test_fractional_lif_memory_dropout_sweep test_fractional_lif_memory_dropout_capture test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_memory_constant_sweep test_bitshift_lif_memory_constant_capture test_bitshift_lif_memory_dropout_sweep test_bitshift_lif_memory_dropout_capture test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_golden_vectors test_uart_loopback test_uart_accel_ctrl test_uart_top_wrapper test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac
