@@ -29,6 +29,7 @@ THRESHOLD = 1 << FRAC_BITS
 #   H=64 variant profile used by the corresponding hist64 target.
 HISTORY_LENGTH = 8
 COEFF_FRAC_BITS = 15  # QU1.15
+C_SCALED = 256  # Q8.8, C=1.0
 INV_DENOM = 58982  # Q0.16 for 1/(1+0.111...) ~ 0.9
 
 # Coefficient magnitudes |g_k| for alpha=0.5, k=1..7, QU1.15 integers
@@ -85,11 +86,13 @@ class FractionalGolden:
         self,
         history_length: int,
         coeff_frac_bits: int,
+        c_scaled: int,
         inv_denom: int,
         coeffs_mag: list[int],
     ):
         self.history_length = history_length
         self.coeff_frac_bits = coeff_frac_bits
+        self.c_scaled = c_scaled
         self.inv_denom = inv_denom
         self.coeffs_mag = coeffs_mag
         self.mem = 0
@@ -116,8 +119,8 @@ class FractionalGolden:
 
         reset_subtract = THRESHOLD if self.spike_prev else 0
 
-        # scaled_history = history_sum >>> coeff_frac_bits (C is hard-coded to 1)
-        scaled_history = history_sum >> self.coeff_frac_bits
+        # scaled_history = (c_scaled * history_sum) >>> (8 + coeff_frac_bits)
+        scaled_history = (self.c_scaled * history_sum) >> (8 + self.coeff_frac_bits)
 
         # numerator = current_extended + MEMBRANE_WIDTH'(scaled_history)
         scaled_hist_narrow = wrap_signed(scaled_history, MEMBRANE_WIDTH)
@@ -148,6 +151,7 @@ class FractionalGoldenBaseline(FractionalGolden):
         super().__init__(
             history_length=HISTORY_LENGTH,
             coeff_frac_bits=COEFF_FRAC_BITS,
+            c_scaled=C_SCALED,
             inv_denom=INV_DENOM,
             coeffs_mag=COEFFS_MAG,
         )
@@ -356,6 +360,7 @@ async def test_fractional_lif_matches_fixed_point_golden_hist64(dut):
     golden = FractionalGolden(
         history_length=history_len,
         coeff_frac_bits=int(dut.COEFF_FRAC_BITS.value),
+        c_scaled=int(dut.C_SCALED.value),
         inv_denom=int(dut.INV_DENOM.value),
         coeffs_mag=coeffs_mag,
     )

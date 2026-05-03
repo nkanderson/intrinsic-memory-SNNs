@@ -232,14 +232,14 @@ ifeq ($(SIM),icarus)
         # Match params from fractional_constants.txt for original 64-16 model
         COMPILE_ARGS += -Pfractional_lif.HISTORY_LENGTH=64
         COMPILE_ARGS += -Pfractional_lif.COEFF_WIDTH=16 -Pfractional_lif.COEFF_FRAC_BITS=15
-        COMPILE_ARGS += -Pfractional_lif.C_SCALED=256 -Pfractional_lif.INV_DENOM=58988
+        COMPILE_ARGS += -Pfractional_lif.INV_DENOM=58988
         COMPILE_ARGS += -Pfractional_lif.GL_COEFF_FILE=\"$(PWD)/weights/fractional_order/gl_coefficients.mem\"
     endif
     ifeq ($(TEST),fractional_lif_memory)
         # Memory-effect profile: maximize fractional history to amplify long-memory dynamics
         COMPILE_ARGS += -Pfractional_lif.HISTORY_LENGTH=256
         COMPILE_ARGS += -Pfractional_lif.COEFF_WIDTH=16 -Pfractional_lif.COEFF_FRAC_BITS=15
-        COMPILE_ARGS += -Pfractional_lif.C_SCALED=256 -Pfractional_lif.INV_DENOM=57553
+        COMPILE_ARGS += -Pfractional_lif.INV_DENOM=57553
         COMPILE_ARGS += -Pfractional_lif.GL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-256/gl_coefficients.mem\"
     endif
     ifeq ($(TEST),bitshift_lif)
@@ -310,7 +310,7 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_fractional.FC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=32
         COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=16
-        COMPILE_ARGS += -Pneural_network_fractional.C_SCALED=256 -Pneural_network_fractional.INV_DENOM=55727
+        COMPILE_ARGS += -Pneural_network_fractional.INV_DENOM=55727
         COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-32/gl_coefficients.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_weights.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_bias.mem\"
@@ -328,7 +328,7 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_fractional.FC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=16
         COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=16
-        COMPILE_ARGS += -Pneural_network_fractional.C_SCALED=256 -Pneural_network_fractional.INV_DENOM=62259
+        COMPILE_ARGS += -Pneural_network_fractional.INV_DENOM=62259
         COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional-32-4-16/gl_coefficients.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_weights.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_bias.mem\"
@@ -412,7 +412,7 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_fractional.FC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=64
         COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=15
-        COMPILE_ARGS += -Pneural_network_fractional.C_SCALED=256 -Pneural_network_fractional.INV_DENOM=58988
+        COMPILE_ARGS += -Pneural_network_fractional.INV_DENOM=58988
         COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional_order/gl_coefficients.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional_order/fc1_weights.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE=\"$(PWD)/weights/fractional_order/fc1_bias.mem\"
@@ -431,7 +431,7 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_fractional.FC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=8
         COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=15
-        COMPILE_ARGS += -Pneural_network_fractional.C_SCALED=256 -Pneural_network_fractional.INV_DENOM=61388
+        COMPILE_ARGS += -Pneural_network_fractional.INV_DENOM=61388
         COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional-32-16-8/gl_coefficients.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-16-8/fc1_weights.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE=\"$(PWD)/weights/fractional-32-16-8/fc1_bias.mem\"
@@ -451,7 +451,7 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_fractional.FC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=256
         COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=15
-        COMPILE_ARGS += -Pneural_network_fractional.C_SCALED=256 -Pneural_network_fractional.INV_DENOM=57553
+        COMPILE_ARGS += -Pneural_network_fractional.INV_DENOM=57553
         COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-256/gl_coefficients.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-256/fc1_weights.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-256/fc1_bias.mem\"
@@ -488,14 +488,14 @@ ifeq ($(SIM),verilator)
 				# Match params from fractional_constants.txt for original 64-16 model
         COMPILE_ARGS += -GHISTORY_LENGTH=64
         COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=15
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=58988
+        COMPILE_ARGS += -GINV_DENOM=58988
         COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional_order/gl_coefficients.mem\"
     endif
     ifeq ($(TEST),fractional_lif_memory)
         # Match Icarus memory-effect profile for consistency when switching simulators
         COMPILE_ARGS += -GHISTORY_LENGTH=256
         COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=15
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=57553
+        COMPILE_ARGS += -GINV_DENOM=57553
         COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-256/gl_coefficients.mem\"
     endif
     ifeq ($(TEST),bitshift_lif)
@@ -566,7 +566,7 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -GHISTORY_LENGTH=32
         COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=16
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=55727
+        COMPILE_ARGS += -GINV_DENOM=55727
         COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-32/gl_coefficients.mem\"
         COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_weights.mem\"
         COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_bias.mem\"
@@ -584,7 +584,7 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -GHISTORY_LENGTH=16
         COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=16
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=62259
+        COMPILE_ARGS += -GINV_DENOM=62259
         COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional-32-4-16/gl_coefficients.mem\"
         COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_weights.mem\"
         COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_bias.mem\"
@@ -664,7 +664,7 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -GHISTORY_LENGTH=64
         COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=15
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=58988
+        COMPILE_ARGS += -GINV_DENOM=58988
         COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional_order/gl_coefficients.mem\"
         COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional_order/fc1_weights.mem\"
         COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/fractional_order/fc1_bias.mem\"
@@ -683,7 +683,7 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -GHISTORY_LENGTH=8
         COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=15
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=61388
+        COMPILE_ARGS += -GINV_DENOM=61388
         COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional-32-16-8/gl_coefficients.mem\"
         COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-16-8/fc1_weights.mem\"
         COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/fractional-32-16-8/fc1_bias.mem\"
@@ -703,7 +703,7 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -GHISTORY_LENGTH=256
         COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=15
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=57553
+        COMPILE_ARGS += -GINV_DENOM=57553
         COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-256/gl_coefficients.mem\"
         COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-256/fc1_weights.mem\"
         COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-256/fc1_bias.mem\"

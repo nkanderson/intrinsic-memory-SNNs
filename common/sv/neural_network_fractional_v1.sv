@@ -24,7 +24,7 @@
 //
 // Pipelined execution: q_accumulator processes timestep T while HL2 works on T+1
 
-module neural_network_fractional #(
+module neural_network_fractional_v1 #(
     // Network architecture
     parameter NUM_INPUTS = 4,
     parameter HL1_SIZE = 64,
@@ -47,6 +47,7 @@ module neural_network_fractional #(
     parameter HISTORY_LENGTH = 64,
     parameter COEFF_WIDTH = 16,
     parameter COEFF_FRAC_BITS = 15,
+    parameter [15:0] C_SCALED = 16'd256,
     parameter [15:0] INV_DENOM = 16'd58988,
     parameter GL_COEFF_FILE = "gl_coefficients.mem",
     // Weight files
@@ -176,6 +177,7 @@ module neural_network_fractional #(
                 .HISTORY_LENGTH(HISTORY_LENGTH),
                 .COEFF_WIDTH(COEFF_WIDTH),
                 .COEFF_FRAC_BITS(COEFF_FRAC_BITS),
+                .C_SCALED(C_SCALED),
                 .INV_DENOM(INV_DENOM),
                 .GL_COEFF_FILE(GL_COEFF_FILE)
             ) hl1_lif (
@@ -300,6 +302,7 @@ module neural_network_fractional #(
                 .HISTORY_LENGTH(HISTORY_LENGTH),
                 .COEFF_WIDTH(COEFF_WIDTH),
                 .COEFF_FRAC_BITS(COEFF_FRAC_BITS),
+                .C_SCALED(C_SCALED),
                 .INV_DENOM(INV_DENOM),
                 .GL_COEFF_FILE(GL_COEFF_FILE)
             ) hl2_lif (
