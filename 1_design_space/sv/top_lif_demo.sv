@@ -83,7 +83,7 @@ module top_lif_demo (
         end
     end
 
-    lif #(
+    lif_v1 #(
         .THRESHOLD(THRESHOLD),
         .BETA(BETA),
         .DATA_WIDTH(DATA_WIDTH),
