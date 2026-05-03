@@ -61,10 +61,12 @@ module q_accumulator #(
     // Derived parameters
     localparam NUM_BATCHES = NUM_NEURONS / BATCH_SIZE;
     localparam BATCH_IDX_WIDTH = $clog2(NUM_BATCHES) > 0 ? $clog2(NUM_BATCHES) : 1;
+    localparam NEURON_IDX_WIDTH = $clog2(NUM_NEURONS) > 0 ? $clog2(NUM_NEURONS) : 1;
 
     // Counters
     logic [$clog2(NUM_TIMESTEPS)-1:0] timestep_counter;
     logic [BATCH_IDX_WIDTH-1:0] batch_counter;
+    logic [NEURON_IDX_WIDTH-1:0] base_idx;
 
     // Weights and biases
     // weights_flat[a * NUM_NEURONS + n] = weight for action a, neuron n
@@ -96,27 +98,28 @@ module q_accumulator #(
     state_t state;
 
     // Batch products - one per (action, batch_neuron) pair
-    // Total: NUM_ACTIONS × BATCH_SIZE multipliers
-    logic signed [MEMBRANE_WIDTH+DATA_WIDTH-1:0] products [0:NUM_ACTIONS-1][0:BATCH_SIZE-1];
+    // Registered to break the multiply path
+    (* use_dsp = "yes" *)
+    logic signed [MEMBRANE_WIDTH+DATA_WIDTH-1:0] products_r [0:NUM_ACTIONS-1][0:BATCH_SIZE-1];
 
     // Batch sums per action
     logic signed [ACCUM_WIDTH-1:0] batch_sum [0:NUM_ACTIONS-1];
 
+    // Pipeline control
+    logic batch_valid;
+    logic last_batch_r;
+
     // Output read_timestep to buffers
     assign read_timestep = timestep_counter;
+    assign base_idx = batch_counter * BATCH_SIZE;
 
-    // Combinational: compute all products and batch sums
+    // Combinational: compute batch sums from registered products
     always_comb begin
-        int neuron_idx;
         for (int a = 0; a < NUM_ACTIONS; a++) begin
             batch_sum[a] = '0;
             for (int b = 0; b < BATCH_SIZE; b++) begin
-                // Neuron index = batch_counter * BATCH_SIZE + b
-                neuron_idx = batch_counter * BATCH_SIZE + b;
-                products[a][b] = membrane_in[neuron_idx] *
-                                 weights_flat[a * NUM_NEURONS + neuron_idx];
                 // Scale and add to batch sum
-                batch_sum[a] = batch_sum[a] + (products[a][b] >>> FRAC_BITS);
+                batch_sum[a] = batch_sum[a] + (products_r[a][b] >>> FRAC_BITS);
             end
         end
     end
@@ -128,8 +131,15 @@ module q_accumulator #(
             batch_counter <= '0;
             done <= 1'b0;
             selected_action <= '0;
+            batch_valid <= 1'b0;
+            last_batch_r <= 1'b0;
             for (int a = 0; a < NUM_ACTIONS; a++) begin
                 q_accum[a] <= '0;
+            end
+            for (int a = 0; a < NUM_ACTIONS; a++) begin
+                for (int b = 0; b < BATCH_SIZE; b++) begin
+                    products_r[a][b] <= '0;
+                end
             end
         end else begin
             unique case (state)
@@ -142,6 +152,8 @@ module q_accumulator #(
                         end
                         timestep_counter <= '0;
                         batch_counter <= '0;
+                        batch_valid <= 1'b0;
+                        last_batch_r <= 1'b0;
                         state <= PROCESSING;
                     end else begin
                         state <= IDLE;
@@ -149,22 +161,43 @@ module q_accumulator #(
                 end
 
                 PROCESSING: begin
-                    // Add batch sums to accumulators (computed combinationally)
-                    for (int a = 0; a < NUM_ACTIONS; a++) begin
-                        q_accum[a] <= q_accum[a] + batch_sum[a];
+                    // Add batch sums to accumulators when valid
+                    if (batch_valid) begin
+                        for (int a = 0; a < NUM_ACTIONS; a++) begin
+                            if (last_batch_r) begin
+                                q_accum[a] <= q_accum[a] + batch_sum[a] +
+                                             $signed({{(ACCUM_WIDTH-DATA_WIDTH){biases[a][DATA_WIDTH-1]}}, biases[a]});
+                            end else begin
+                                q_accum[a] <= q_accum[a] + batch_sum[a];
+                            end
+                        end
                     end
 
-                    // Move to next batch or timestep
-                    if (batch_counter == BATCH_IDX_WIDTH'(NUM_BATCHES - 1)) begin
-                        // Finished all batches for this timestep, add biases
-                        for (int a = 0; a < NUM_ACTIONS; a++) begin
-                            q_accum[a] <= q_accum[a] + batch_sum[a] +
-                                         $signed({{(ACCUM_WIDTH-DATA_WIDTH){biases[a][DATA_WIDTH-1]}}, biases[a]});
-                        end
+                    if (batch_valid && last_batch_r) begin
+                        // Finished all batches for this timestep
                         batch_counter <= '0;
+                        batch_valid <= 1'b0;
+                        last_batch_r <= 1'b0;
                         state <= NEXT_TIMESTEP;
                     end else begin
-                        batch_counter <= batch_counter + 1'b1;
+                        // Compute next batch products
+                        int neuron_idx;
+                        for (int a = 0; a < NUM_ACTIONS; a++) begin
+                            for (int b = 0; b < BATCH_SIZE; b++) begin
+                                neuron_idx = base_idx + b;
+                                products_r[a][b] <= membrane_in[neuron_idx] *
+                                                    weights_flat[a * NUM_NEURONS + neuron_idx];
+                            end
+                        end
+                        last_batch_r <= (batch_counter == BATCH_IDX_WIDTH'(NUM_BATCHES - 1));
+                        batch_valid <= 1'b1;
+
+                        if (batch_counter == BATCH_IDX_WIDTH'(NUM_BATCHES - 1)) begin
+                            batch_counter <= '0;
+                        end else begin
+                            batch_counter <= batch_counter + 1'b1;
+                        end
+
                         state <= PROCESSING;
                     end
                 end
@@ -176,6 +209,9 @@ module q_accumulator #(
                         state <= DONE_STATE;
                     end else begin
                         timestep_counter <= timestep_counter + 1'b1;
+                        batch_counter <= '0;
+                        batch_valid <= 1'b0;
+                        last_batch_r <= 1'b0;
                         state <= PROCESSING;
                     end
                 end
