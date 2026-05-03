@@ -26,7 +26,8 @@
 //
 // Timing:
 //   - Assert 'start' when all neuron membrane buffers are full
-//   - Latency: NUM_TIMESTEPS × (NUM_NEURONS / BATCH_SIZE) + 1 cycles
+//   - Latency: NUM_TIMESTEPS × (NUM_NEURONS / BATCH_SIZE + 2) + 2 cycles
+//     (+2 per timestep: pipeline warmup cycle + drain cycle for last batch)
 //   - Asserts 'done' when selected_action is valid
 
 module q_accumulator #(
