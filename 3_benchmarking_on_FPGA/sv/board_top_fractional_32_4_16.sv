@@ -55,7 +55,6 @@ module board_top_fractional_32_4_16 (
         .HISTORY_LENGTH   (16),
         .COEFF_WIDTH      (16),
         .COEFF_FRAC_BITS  (16),
-        .C_SCALED         (16'd256),
         .INV_DENOM        (16'd62259),
         .GL_COEFF_FILE    ("gl_coefficients.mem"),
         .FC1_WEIGHTS_FILE ("fc1_weights.mem"),
