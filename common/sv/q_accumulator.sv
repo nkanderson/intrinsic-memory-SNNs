@@ -10,7 +10,14 @@
 // For each timestep t:
 //   Q[0] += Σ(w[0][n] × membrane[n][t]) + bias[0]
 //   Q[1] += Σ(w[1][n] × membrane[n][t]) + bias[1]
-// Final: Q_avg[q] = Q_total[q] / NUM_TIMESTEPS
+// Final action: argmax of the accumulated Q-values.
+//
+// We deliberately do NOT divide by NUM_TIMESTEPS before the argmax: dividing
+// each Q-value by the same positive constant preserves their order, and an
+// earlier version's `q_divided[a] <= q_accum[a] / NUM_TIMESTEPS` synthesized
+// to a ~37-deep CARRY4 chain (NUM_TIMESTEPS=10 isn't a power of two), which
+// blew through 100 MHz timing. The output `selected_action` is identical
+// whether the divide is performed or skipped.
 //
 // Batched processing: BATCH_SIZE neurons processed per cycle
 // Total multipliers: BATCH_SIZE × NUM_ACTIONS
@@ -19,9 +26,8 @@
 //
 // Timing:
 //   - Assert 'start' when all neuron membrane buffers are full
-//   - Latency: NUM_TIMESTEPS × (NUM_NEURONS / BATCH_SIZE) + 2 cycles
-//   - With defaults (30 × 4 + 2 = 122 cycles)
-//   - Asserts 'done' when Q-values are ready
+//   - Latency: NUM_TIMESTEPS × (NUM_NEURONS / BATCH_SIZE) + 1 cycles
+//   - Asserts 'done' when selected_action is valid
 
 module q_accumulator #(
     parameter NUM_NEURONS = 16,          // Number of neurons in final hidden layer
@@ -80,12 +86,11 @@ module q_accumulator #(
     logic signed [ACCUM_WIDTH-1:0] q_accum [0:NUM_ACTIONS-1];
 
     // State machine
-    typedef enum logic [2:0] {
+    typedef enum logic [1:0] {
         IDLE,
         PROCESSING,     // Computing weighted sums for current batch
         NEXT_TIMESTEP,  // Move to next timestep
-        DIVIDING,       // Divide by NUM_TIMESTEPS
-        DONE_STATE
+        DONE_STATE      // Compare q_accum directly and emit selected_action
     } state_t;
 
     state_t state;
@@ -96,9 +101,6 @@ module q_accumulator #(
 
     // Batch sums per action
     logic signed [ACCUM_WIDTH-1:0] batch_sum [0:NUM_ACTIONS-1];
-
-    // Division result
-    logic signed [ACCUM_WIDTH-1:0] q_divided [0:NUM_ACTIONS-1];
 
     // Output read_timestep to buffers
     assign read_timestep = timestep_counter;
@@ -128,7 +130,6 @@ module q_accumulator #(
             selected_action <= '0;
             for (int a = 0; a < NUM_ACTIONS; a++) begin
                 q_accum[a] <= '0;
-                q_divided[a] <= '0;
             end
         end else begin
             unique case (state)
@@ -138,7 +139,6 @@ module q_accumulator #(
                         // Initialize accumulators
                         for (int a = 0; a < NUM_ACTIONS; a++) begin
                             q_accum[a] <= '0;
-                            q_divided[a] <= '0;
                         end
                         timestep_counter <= '0;
                         batch_counter <= '0;
@@ -171,34 +171,28 @@ module q_accumulator #(
 
                 NEXT_TIMESTEP: begin
                     if (timestep_counter == $clog2(NUM_TIMESTEPS)'(NUM_TIMESTEPS - 1)) begin
-                        // All timesteps done, divide by NUM_TIMESTEPS
-                        state <= DIVIDING;
+                        // All timesteps done, go straight to argmax — the
+                        // divide-by-NUM_TIMESTEPS state is gone (see header).
+                        state <= DONE_STATE;
                     end else begin
                         timestep_counter <= timestep_counter + 1'b1;
                         state <= PROCESSING;
                     end
                 end
 
-                DIVIDING: begin
-                    // Divide accumulated Q-values by NUM_TIMESTEPS
-                    for (int a = 0; a < NUM_ACTIONS; a++) begin
-                        q_divided[a] <= q_accum[a] / $signed(NUM_TIMESTEPS);
-                    end
-                    state <= DONE_STATE;
-                end
-
                 DONE_STATE: begin
-                    // Select action from full-precision Q-values
+                    // Select action by comparing the un-divided Q accumulators
+                    // directly. argmax is invariant under positive scaling, so
+                    // dropping the divide preserves correctness.
                     // The comparison uses the full ACCUM_WIDTH bits, preserving
-                    // distinctions that would be lost if we saturated to DATA_WIDTH
-                    selected_action <= (q_divided[0] >= q_divided[1]) ? 1'b0 : 1'b1;
+                    // distinctions that would be lost if we saturated to DATA_WIDTH.
+                    selected_action <= (q_accum[0] >= q_accum[1]) ? 1'b0 : 1'b1;
                     done <= 1'b1;
 
                     // Return to processing on next start, else idle
                     if (start) begin
                         for (int a = 0; a < NUM_ACTIONS; a++) begin
                             q_accum[a] <= '0;
-                            q_divided[a] <= '0;
                         end
                         timestep_counter <= '0;
                         batch_counter <= '0;

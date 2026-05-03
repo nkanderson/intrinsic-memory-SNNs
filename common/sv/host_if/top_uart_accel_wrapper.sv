@@ -47,7 +47,13 @@ module top_uart_accel_wrapper #(
     input  wire clk,
     input  wire reset,
     input  wire uart_rx_i,
-    output wire uart_tx_o
+    output wire uart_tx_o,
+
+    // Optional status taps for board-level diagnostics (LEDs, logic analyzer).
+    // Leave unconnected if not needed.
+    output wire status_busy,
+    output wire status_done,
+    output wire [((NUM_ACTIONS > 1) ? $clog2(NUM_ACTIONS) : 1) - 1 : 0] status_action
 );
 
     localparam integer ACTION_WIDTH = (NUM_ACTIONS > 1) ? $clog2(NUM_ACTIONS) : 1;
@@ -119,6 +125,10 @@ module top_uart_accel_wrapper #(
             end
         end
     end
+
+    assign status_busy = accel_busy;
+    assign status_done = accel_done;
+    assign status_action = selected_action;
 
     generate
         if (MODEL_TYPE == 0) begin : gen_nn_standard
