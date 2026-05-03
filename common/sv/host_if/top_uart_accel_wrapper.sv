@@ -175,7 +175,6 @@ module top_uart_accel_wrapper #(
                 .HISTORY_LENGTH(HISTORY_LENGTH),
                 .COEFF_WIDTH(COEFF_WIDTH),
                 .COEFF_FRAC_BITS(COEFF_FRAC_BITS),
-                .C_SCALED(C_SCALED),
                 .INV_DENOM(INV_DENOM),
                 .GL_COEFF_FILE(GL_COEFF_FILE),
                 .FC1_WEIGHTS_FILE(FC1_WEIGHTS_FILE),
