@@ -15,6 +15,15 @@
 //   This provides approximate equivalence in membrane decay behavior.
 //
 // Fixed-point format: QS2.13 (16-bit signed, 2 integer bits, 13 fractional bits)
+//
+// Note on dt: this variant hard-codes C=1 (i.e. dt=1). The C * history_sum
+// multiplier is removed entirely; ST_PREP_NUM only right-shifts history_sum_acc
+// by COEFF_FRAC_BITS to peel off the fractional-bit scaling introduced by the
+// MAC. The previous variant shifted by (C_SCALED_FRAC_BITS + COEFF_FRAC_BITS)
+// because the C_SCALED multiplier had added C_SCALED_FRAC_BITS of fractional
+// scaling that also had to be undone. If a future model needs dt ≠ 1 (so
+// C ≠ 1), see fractional_lif_v1.sv, which retains the parameterized C_SCALED
+// multiplier.
 
 module fractional_lif #(
     // Standard LIF parameters (match lif.sv interface)
@@ -30,9 +39,7 @@ module fractional_lif #(
     // Precomputed constants (from generate_coefficients.py)
     // For α=0.5, dt=1.0, β=0.9 (→ λ=0.111): C=1.0, denom=1.111
     // Relationship: λ = (1 - β) / β
-    // C_SCALED in Q8.8: 1.0 * 256 = 256
-    parameter [15:0] C_SCALED = 16'd256,
-    parameter integer C_SCALED_FRAC_BITS = 8,
+    // C is hard-coded to 1.0 (dt=1). For dt ≠ 1 see fractional_lif_v1.sv.
     // INV_DENOM in Q0.16: 1/1.111 ≈ 0.9 * 65536 ≈ 58982
     parameter [15:0] INV_DENOM = 16'd58982,
     parameter integer INV_DENOM_FRAC_BITS = 16,
@@ -71,9 +78,7 @@ module fractional_lif #(
 
     localparam integer PRODUCT_WIDTH = MEMBRANE_WIDTH + COEFF_WIDTH + 1;
     localparam integer HISTORY_SUM_WIDTH = PRODUCT_WIDTH + ACCUM_GUARD_BITS_EFF;
-    localparam integer C_SCALED_WIDTH = $bits(C_SCALED) + 1;
-    localparam integer SCALED_HISTORY_WIDTH = HISTORY_SUM_WIDTH + C_SCALED_WIDTH;
-    localparam integer NUMERATOR_INPUT_WIDTH = (SCALED_HISTORY_WIDTH > MEMBRANE_WIDTH) ? SCALED_HISTORY_WIDTH : MEMBRANE_WIDTH;
+    localparam integer NUMERATOR_INPUT_WIDTH = (HISTORY_SUM_WIDTH > MEMBRANE_WIDTH) ? HISTORY_SUM_WIDTH : MEMBRANE_WIDTH;
     localparam integer NUMERATOR_WIDTH = NUMERATOR_INPUT_WIDTH + NUMERATOR_GUARD_BITS_EFF;
     localparam integer INV_DENOM_WIDTH = $bits(INV_DENOM) + 1;
     localparam integer SCALED_RESULT_WIDTH = NUMERATOR_WIDTH + INV_DENOM_WIDTH;
@@ -118,8 +123,7 @@ module fractional_lif #(
 
     // Pipeline combinational helper signals
     logic signed [MEMBRANE_WIDTH-1:0] reset_subtract;
-    (* use_dsp = "yes" *) logic signed [SCALED_HISTORY_WIDTH-1:0] prep_scaled_history_mult;
-    logic signed [SCALED_HISTORY_WIDTH-1:0] prep_scaled_history;
+    logic signed [HISTORY_SUM_WIDTH-1:0] prep_scaled_history;
     logic signed [NUMERATOR_WIDTH-1:0] prep_numerator;
     logic signed [NUMERATOR_WIDTH-1:0] numerator_reg;
     (* use_dsp = "yes" *) logic signed [SCALED_RESULT_WIDTH-1:0] mul_scaled_result;
@@ -153,13 +157,12 @@ module fractional_lif #(
         mac_acc_next = history_sum_acc + mac_product_ext;
     end
 
-    // ST_PREP_NUM stage: compute numerator = I[n] + C * history_sum
+    // ST_PREP_NUM stage: compute numerator = I[n] + C * history_sum (C = 1)
     always_comb begin
-        prep_scaled_history_mult = $signed({1'b0, C_SCALED}) * history_sum_acc;
-        prep_scaled_history = prep_scaled_history_mult >>> (C_SCALED_FRAC_BITS + COEFF_FRAC_BITS);
+        prep_scaled_history = history_sum_acc >>> COEFF_FRAC_BITS;
 
         prep_numerator = {{(NUMERATOR_WIDTH-MEMBRANE_WIDTH){current_latched[MEMBRANE_WIDTH-1]}}, current_latched} +
-                         {{(NUMERATOR_WIDTH-SCALED_HISTORY_WIDTH){prep_scaled_history[SCALED_HISTORY_WIDTH-1]}}, prep_scaled_history};
+                         {{(NUMERATOR_WIDTH-HISTORY_SUM_WIDTH){prep_scaled_history[HISTORY_SUM_WIDTH-1]}}, prep_scaled_history};
     end
 
     // ST_MUL_RECIP stage: reciprocal multiply
