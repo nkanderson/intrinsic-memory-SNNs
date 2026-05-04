@@ -3,6 +3,7 @@
 //
 // Dynamics mirror train/bitshift_lif.py with fixed-point arithmetic:
 //   V[n] = (I[n] - C * Σ_{k=1}^{H-1} (V[n-k] >> shift[k])) / (C + λ)
+// This variant hard-codes C=1 (dt=1). For configurable C, see bitshift_lif_v1.sv.
 //
 // Spike generation/reset style matches lif.sv timing:
 //   spike[t] = (V[t] >= threshold)
@@ -25,11 +26,9 @@ module bitshift_lif #(
   parameter [1:0] SHIFT_MODE = 2'd3,
   parameter integer CUSTOM_DECAY_RATE = 3,
 
-  // Fixed-point constants for C=1/dt^alpha and 1/(C+lam)
+  // Fixed-point reciprocal for divide by (1+lambda).
   // Defaults correspond to dt=1.0, alpha=0.5, lam≈0.111:
-  //   C = 1.0, INV_DENOM ≈ 1/1.111 ≈ 0.9
-  parameter [15:0] C_SCALED = 16'd256,
-  parameter integer C_SCALED_FRAC_BITS = 8,
+  //   INV_DENOM ≈ 1/1.111 ≈ 0.9
   parameter [15:0] INV_DENOM = 16'd58982,
   parameter integer INV_DENOM_FRAC_BITS = 16,
 
@@ -56,9 +55,7 @@ module bitshift_lif #(
   localparam integer NUMERATOR_GUARD_BITS_EFF = (NUMERATOR_GUARD_BITS < 0) ? 0 : NUMERATOR_GUARD_BITS;
 
   localparam integer HISTORY_SUM_WIDTH = MEMBRANE_WIDTH + ACCUM_GUARD_BITS_EFF;
-  localparam integer C_SCALED_WIDTH = $bits(C_SCALED) + 1;
-  localparam integer SCALED_HISTORY_WIDTH = HISTORY_SUM_WIDTH + C_SCALED_WIDTH;
-  localparam integer NUMERATOR_INPUT_WIDTH = (SCALED_HISTORY_WIDTH > MEMBRANE_WIDTH) ? SCALED_HISTORY_WIDTH : MEMBRANE_WIDTH;
+  localparam integer NUMERATOR_INPUT_WIDTH = (HISTORY_SUM_WIDTH > MEMBRANE_WIDTH) ? HISTORY_SUM_WIDTH : MEMBRANE_WIDTH;
   localparam integer NUMERATOR_WIDTH = NUMERATOR_INPUT_WIDTH + NUMERATOR_GUARD_BITS_EFF;
   localparam integer INV_DENOM_WIDTH = $bits(INV_DENOM) + 1;
   localparam integer SCALED_RESULT_WIDTH = NUMERATOR_WIDTH + INV_DENOM_WIDTH;
@@ -98,8 +95,7 @@ module bitshift_lif #(
   logic signed [HISTORY_SUM_WIDTH-1:0] accum_shifted_hist_ext;
   logic signed [HISTORY_SUM_WIDTH-1:0] accum_next;
 
-  (* use_dsp = "yes" *) logic signed [SCALED_HISTORY_WIDTH-1:0] prep_scaled_history_mult;
-  logic signed [SCALED_HISTORY_WIDTH-1:0] prep_scaled_history;
+  logic signed [HISTORY_SUM_WIDTH-1:0] prep_scaled_history;
   logic signed [NUMERATOR_WIDTH-1:0] prep_numerator;
   logic signed [NUMERATOR_WIDTH-1:0] numerator_reg;
 
@@ -207,16 +203,15 @@ module bitshift_lif #(
     accum_next = history_sum_acc + accum_shifted_hist_ext;
   end
 
-  // ST_PREP_NUM stage: numerator = I[n] - C*sum
+  // ST_PREP_NUM stage: numerator = I[n] + sum (C = 1)
   always_comb begin
-    prep_scaled_history_mult = $signed({1'b0, C_SCALED}) * history_sum_acc;
-    prep_scaled_history = prep_scaled_history_mult >>> C_SCALED_FRAC_BITS;
+    prep_scaled_history = history_sum_acc;
 
     prep_numerator = {{(NUMERATOR_WIDTH-MEMBRANE_WIDTH){current_latched[MEMBRANE_WIDTH-1]}}, current_latched} +
-                     {{(NUMERATOR_WIDTH-SCALED_HISTORY_WIDTH){prep_scaled_history[SCALED_HISTORY_WIDTH-1]}}, prep_scaled_history};
+                     {{(NUMERATOR_WIDTH-HISTORY_SUM_WIDTH){prep_scaled_history[HISTORY_SUM_WIDTH-1]}}, prep_scaled_history};
   end
 
-  // ST_MUL_DIV stage: divide by (C+lambda) using reciprocal multiply
+  // ST_MUL_DIV stage: divide by (1+lambda) using reciprocal multiply
   always_comb begin
     mul_scaled_result = numerator_reg * $signed({1'b0, INV_DENOM});
     mul_membrane_pre_reset = mul_scaled_result >>> INV_DENOM_FRAC_BITS;

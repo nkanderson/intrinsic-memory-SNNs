@@ -49,7 +49,6 @@ module neural_network_bitshift #(
     parameter SHIFT_WIDTH = 8,
     parameter [1:0] SHIFT_MODE = 2'd3,
     parameter integer CUSTOM_DECAY_RATE = 3,
-    parameter [15:0] C_SCALED = 16'd256,
     parameter [15:0] INV_DENOM = 16'd58982,
     // Weight files
     parameter FC1_WEIGHTS_FILE = "fc1_weights.mem",
@@ -179,7 +178,6 @@ module neural_network_bitshift #(
                 .SHIFT_WIDTH(SHIFT_WIDTH),
                 .SHIFT_MODE(SHIFT_MODE),
                 .CUSTOM_DECAY_RATE(CUSTOM_DECAY_RATE),
-                .C_SCALED(C_SCALED),
                 .INV_DENOM(INV_DENOM)
             ) hl1_lif (
                 .clk(clk),
@@ -304,7 +302,6 @@ module neural_network_bitshift #(
                 .SHIFT_WIDTH(SHIFT_WIDTH),
                 .SHIFT_MODE(SHIFT_MODE),
                 .CUSTOM_DECAY_RATE(CUSTOM_DECAY_RATE),
-                .C_SCALED(C_SCALED),
                 .INV_DENOM(INV_DENOM)
             ) hl2_lif (
                 .clk(clk),
