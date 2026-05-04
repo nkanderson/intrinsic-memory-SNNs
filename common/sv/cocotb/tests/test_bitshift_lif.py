@@ -141,7 +141,7 @@ class BitshiftGolden:
         reset_subtract = THRESHOLD if self.spike_prev else 0
 
         scaled_history = (self.c_scaled * history_sum) >> self.c_scaled_frac_bits
-        numerator = current_ext - scaled_history
+        numerator = current_ext + scaled_history
 
         scaled_result = numerator * self.inv_denom
         membrane_pre_reset = scaled_result >> self.inv_denom_frac_bits

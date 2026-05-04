@@ -212,7 +212,7 @@ module bitshift_lif #(
     prep_scaled_history_mult = $signed({1'b0, C_SCALED}) * history_sum_acc;
     prep_scaled_history = prep_scaled_history_mult >>> C_SCALED_FRAC_BITS;
 
-    prep_numerator = {{(NUMERATOR_WIDTH-MEMBRANE_WIDTH){current_latched[MEMBRANE_WIDTH-1]}}, current_latched} -
+    prep_numerator = {{(NUMERATOR_WIDTH-MEMBRANE_WIDTH){current_latched[MEMBRANE_WIDTH-1]}}, current_latched} +
                      {{(NUMERATOR_WIDTH-SCALED_HISTORY_WIDTH){prep_scaled_history[SCALED_HISTORY_WIDTH-1]}}, prep_scaled_history};
   end
 
