@@ -1,0 +1,113 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Mon May  4 17:24:01 2026
+[*]
+[dumpfile] "/Users/nik/Documents/Teuscher-Lab/intrinsic-memory-SNNs/common/waveforms/bitshift_lif.fst"
+[dumpfile_mtime] "Fri May  1 14:49:01 2026"
+[dumpfile_size] 5395
+[savefile] "/Users/nik/Documents/Teuscher-Lab/intrinsic-memory-SNNs/common/waveforms/bitshift-damping.gtkw"
+[timestart] 5125100
+[size] 1856 920
+[pos] 1952 66
+*-15.000000 5176000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 253
+[signals_width] 406
+[sst_expanded] 1
+[sst_vpaned_height] 270
+@420
+bitshift_lif.ACCUM_GUARD_BITS
+bitshift_lif.ACCUM_GUARD_BITS_EFF
+bitshift_lif.ADDR_WIDTH
+bitshift_lif.CUSTOM_DECAY_RATE
+bitshift_lif.C_SCALED
+bitshift_lif.C_SCALED_FRAC_BITS
+bitshift_lif.C_SCALED_WIDTH
+bitshift_lif.DATA_WIDTH
+bitshift_lif.HISTORY_LENGTH
+bitshift_lif.HISTORY_SUM_WIDTH
+bitshift_lif.INV_DENOM
+bitshift_lif.INV_DENOM_FRAC_BITS
+bitshift_lif.INV_DENOM_WIDTH
+bitshift_lif.MEMBRANE_MAX
+bitshift_lif.MEMBRANE_MIN
+bitshift_lif.MEMBRANE_WIDTH
+bitshift_lif.NUMERATOR_GUARD_BITS
+bitshift_lif.NUMERATOR_GUARD_BITS_EFF
+bitshift_lif.NUMERATOR_INPUT_WIDTH
+bitshift_lif.NUMERATOR_WIDTH
+bitshift_lif.SCALED_HISTORY_WIDTH
+bitshift_lif.SCALED_RESULT_WIDTH
+bitshift_lif.SHIFT_MODE
+bitshift_lif.SHIFT_WIDTH
+bitshift_lif.THRESHOLD
+@24
+bitshift_lif.accum_hist_idx[5:0]
+bitshift_lif.history_ptr[5:0]
+bitshift_lif.accum_index[5:0]
+bitshift_lif.accum_k_plus_1[5:0]
+@40000420
+[fpshift_count] 13
+bitshift_lif.accum_next[29:0]
+[fpshift_count] 13
+bitshift_lif.accum_shifted_hist_ext[29:0]
+@28
+bitshift_lif.clear
+bitshift_lif.busy
+bitshift_lif.reset
+bitshift_lif.clk
+bitshift_lif.enable
+bitshift_lif.output_valid
+@40000420
+[fpshift_count] 13
+bitshift_lif.current[15:0]
+[fpshift_count] 13
+bitshift_lif.membrane_out[23:0]
+@28
+bitshift_lif.spike_out
+@40000420
+[fpshift_count] 13
+bitshift_lif.accum_hist_val[23:0]
+[fpshift_count] 13
+bitshift_lif.accum_shifted_hist[23:0]
+@25
+bitshift_lif.accum_shift_amt[7:0]
+@40000420
+[fpshift_count] 13
+bitshift_lif.history_sum_acc[29:0]
+[fpshift_count] 13
+bitshift_lif.finalize_membrane_reg[23:0]
+@28
+bitshift_lif.finalize_spike_reg
+bitshift_lif.spike_prev
+@40000420
+[fpshift_count] 13
+bitshift_lif.current_latched[23:0]
+@22
+bitshift_lif.membrane_after_reset[64:0]
+bitshift_lif.membrane_max_ext[64:0]
+bitshift_lif.membrane_min_ext[64:0]
+bitshift_lif.membrane_potential[23:0]
+bitshift_lif.membrane_pre_reset_reg[64:0]
+bitshift_lif.mul_membrane_pre_reset[64:0]
+@420
+bitshift_lif.mul_scaled_result[64:0]
+@22
+bitshift_lif.numerator_reg[47:0]
+@40000420
+[fpshift_count] 13
+bitshift_lif.post_finalize_membrane[23:0]
+@28
+bitshift_lif.post_finalize_spike
+@40000420
+[fpshift_count] 13
+bitshift_lif.prep_numerator[47:0]
+[fpshift_count] 13
+bitshift_lif.prep_scaled_history[46:0]
+[fpshift_count] 21
+bitshift_lif.prep_scaled_history_mult[46:0]
+[fpshift_count] 13
+bitshift_lif.reset_subtract[23:0]
+@28
+bitshift_lif.state[5:0]
+[pattern_trace] 1
+[pattern_trace] 0

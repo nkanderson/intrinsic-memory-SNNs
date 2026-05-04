@@ -309,6 +309,7 @@ GL Coefficients:
 `C_SCALED` = 256 (default), 1.0 in Q8.8
 - C = 1 / dt^alpha = 1.000000
 - Since dt is 1 for all of our models, C is going to be 1
+- Only present in v1 fractional LIF. Subsequent models assumed a fixed dt, meaning C_SCALED would always be 1 and the expanded bit widths resulting from its inclusion were not beneficial and made synthesis more difficult.
 
 `INV_DENOM` = 58982 (default),  ~0.9 in Q0.16
 - INV_DENOM = 1 / (C + lambda)
@@ -362,3 +363,67 @@ All intermediate widths derive from `MEMBRANE_WIDTH`, `COEFF_WIDTH`, `COEFF_FRAC
   1. **Reset subtraction in the wide domain.** `reset_subtract` is sign-extended from 24 bits to SCALED_RESULT_WIDTH (79 bits) so the subtraction happens at QS65.13 — the membrane format matches (both 13 frac bits), only the integer headroom is wider.
   2. **Saturation against MEMBRANE_MAX / MEMBRANE_MIN** (≈ ±1024 in real terms). This is the only place in the entire datapath that catches genuine out-of-range values; every prior stage uses wider containers and cannot saturate. Saturation is a safety net, not a normal operating mode — with C ≈ 1, INV_DENOM ≈ 0.9, and bounded inputs the membrane should never reach ±1024 in real operation. Saturation firing in a waveform is a diagnostic that something upstream is wrong (corrupted coefficients, untrained dynamics blowing up, parameter mismatch).
   3. **Truncation to MEMBRANE_WIDTH** in the in-range branch: keeps the bottom 24 bits. Lossless of value because the upper 55 bits are all sign-extension once the saturation guard has passed.
+
+### bitshift_lif.sv
+
+`THRESHOLD` = 8192 (default), 1.0 in QS2.13
+
+`C_SCALED` = 256 (default), 1.0 in Q8.8
+- C = 1 / dt^alpha = 1.000000
+- Since dt is 1 for all of our models, C is going to be 1
+
+`INV_DENOM` = 58982 (default),  ~0.9 in Q0.16
+- INV_DENOM = 1 / (C + lambda)
+
+input `current` in QS2.13 when using default DATA_WIDTH = 16
+- Unit tests use values in decimal such as ~0.6, ~0.8, ~1.2, ~0.3, ~0.1, 0.75, ~0.2, -0.05, ~0.4, ~0.55, -0.1, ~0.95, ~0.15
+
+All intermediate widths derive from `MEMBRANE_WIDTH`, `C_SCALED_FRAC_BITS`, `INV_DENOM_FRAC_BITS`, `ACCUM_GUARD_BITS`, and `NUMERATOR_GUARD_BITS`. Changing the membrane or frac-bit constants ripples through every signal; the two GUARD_BITS are local knobs.
+
+#### Accumulator signals
+`accum_hist_val`, `accum_shifted_hist`
+- 24-bit signed, QS10.13 (same as `membrane_potential`)
+
+`accum_shifted_hist_ext`
+- 30-bit signed to account for possible overflow due to summing of all history terms
+- QS16.13
+
+`accum_next`
+- 30-bit signed to account for possible overflow due to summing of all history terms
+- QS16.13
+
+`history_sum_acc`
+- 30-bit signed to account for possible overflow due to summing of all history terms
+- QS16.13
+- `ACCUM_GUARD_BITS = $clog2(HISTORY_LENGTH)` adds the headroom over MEMBRANE_WIDTH. It would likely be safe to reduce this slightly if it would result in synthesis improvements, as the worst case with adding maximum values is unlikely or not possible.
+
+
+#### Prep numerator
+`prep_scaled_history_mult`
+- 47 bits, QS24.21
+- Result of C_SCALED (signed) * `history_sum_acc`, which is QS8.8 * QS16.13.
+
+`prep_scaled_history`
+- Drops 8 fractional bits to become QS33.13
+
+`prep_numerator`
+- QS34.13
+
+#### Reciprocal multiply
+`mul_scaled_result`
+- QS35.29
+- Result of `numerator_reg` (registered result of `prep_numerator`, which is QS34.13) * `INV_DENOM` (signed) (Q0.16 + sign bit)
+
+`mul_membrane_pre_reset`
+- QS51.13
+- Shift to scale back down to 13 fractional bits
+- Could probably consider dropping upper bits of this value
+
+#### Finalize
+`membrane_after_reset`
+- 65 bits, QS51.13
+- Result of `membrane_pre_reset_reg` (QS51.13) - sign-extended `reset_subtract`
+
+`post_finalize_membrane`
+- Lower `MEMBRANE_WIDTH` bits of `membrane_after_reset`
+- QS10.13
