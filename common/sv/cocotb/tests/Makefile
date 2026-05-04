@@ -285,37 +285,37 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pbitshift_lif.HISTORY_LENGTH=64
         COMPILE_ARGS += -Pbitshift_lif.SHIFT_WIDTH=8 -Pbitshift_lif.SHIFT_MODE=3
         COMPILE_ARGS += -Pbitshift_lif.CUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -Pbitshift_lif.C_SCALED=256 -Pbitshift_lif.INV_DENOM=58982
+        COMPILE_ARGS += -Pbitshift_lif.INV_DENOM=58982
     endif
     ifeq ($(TEST),bitshift_lif_memory)
         COMPILE_ARGS += -Pbitshift_lif.HISTORY_LENGTH=64
         COMPILE_ARGS += -Pbitshift_lif.SHIFT_WIDTH=8 -Pbitshift_lif.SHIFT_MODE=3
         COMPILE_ARGS += -Pbitshift_lif.CUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -Pbitshift_lif.C_SCALED=256 -Pbitshift_lif.INV_DENOM=58982
+        COMPILE_ARGS += -Pbitshift_lif.INV_DENOM=58982
     endif
     ifeq ($(TEST),bitshift_lif_mode0)
         COMPILE_ARGS += -Pbitshift_lif.HISTORY_LENGTH=64
         COMPILE_ARGS += -Pbitshift_lif.SHIFT_WIDTH=8 -Pbitshift_lif.SHIFT_MODE=0
         COMPILE_ARGS += -Pbitshift_lif.CUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -Pbitshift_lif.C_SCALED=256 -Pbitshift_lif.INV_DENOM=58982
+        COMPILE_ARGS += -Pbitshift_lif.INV_DENOM=58982
     endif
     ifeq ($(TEST),bitshift_lif_mode1)
         COMPILE_ARGS += -Pbitshift_lif.HISTORY_LENGTH=64
         COMPILE_ARGS += -Pbitshift_lif.SHIFT_WIDTH=8 -Pbitshift_lif.SHIFT_MODE=1
         COMPILE_ARGS += -Pbitshift_lif.CUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -Pbitshift_lif.C_SCALED=256 -Pbitshift_lif.INV_DENOM=58982
+        COMPILE_ARGS += -Pbitshift_lif.INV_DENOM=58982
     endif
     ifeq ($(TEST),bitshift_lif_mode2)
         COMPILE_ARGS += -Pbitshift_lif.HISTORY_LENGTH=64
         COMPILE_ARGS += -Pbitshift_lif.SHIFT_WIDTH=8 -Pbitshift_lif.SHIFT_MODE=2
         COMPILE_ARGS += -Pbitshift_lif.CUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -Pbitshift_lif.C_SCALED=256 -Pbitshift_lif.INV_DENOM=58982
+        COMPILE_ARGS += -Pbitshift_lif.INV_DENOM=58982
     endif
     ifeq ($(TEST),bitshift_lif_mode3)
         COMPILE_ARGS += -Pbitshift_lif.HISTORY_LENGTH=64
         COMPILE_ARGS += -Pbitshift_lif.SHIFT_WIDTH=8 -Pbitshift_lif.SHIFT_MODE=3
         COMPILE_ARGS += -Pbitshift_lif.CUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -Pbitshift_lif.C_SCALED=256 -Pbitshift_lif.INV_DENOM=58982
+        COMPILE_ARGS += -Pbitshift_lif.INV_DENOM=58982
     endif
     ifeq ($(TEST),membrane_buffer)
         COMPILE_ARGS += -Pmembrane_buffer.NUM_NEURONS=4 -Pmembrane_buffer.NUM_TIMESTEPS=3
@@ -421,7 +421,7 @@ ifeq ($(SIM),icarus)
         # Bitshift custom_slow_decay model from weights/bitshift-custom_slow_decay: 32 HL1, 8 HL2, 10 timesteps
         # NOTE: This profile uses QS3.12 weights. Keep FRAC_BITS=12 and constants aligned
         # with train/configs/bitshift-custom_slow_decay-32hl1-8hl2-8hist.yaml + generated
-        # fractional_constants.txt (C_SCALED=256, INV_DENOM=59823).
+        # fractional_constants.txt (C_SCALED=256 (only needed in v1 variant), INV_DENOM=59823).
         COMPILE_ARGS += -Pneural_network_bitshift.NUM_INPUTS=4 -Pneural_network_bitshift.HL1_SIZE=32
         COMPILE_ARGS += -Pneural_network_bitshift.HL2_SIZE=8 -Pneural_network_bitshift.NUM_ACTIONS=2
         COMPILE_ARGS += -Pneural_network_bitshift.NUM_TIMESTEPS=10 -Pneural_network_bitshift.Q_BATCH_SIZE=4
@@ -430,7 +430,7 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_bitshift.HISTORY_LENGTH=8
         COMPILE_ARGS += -Pneural_network_bitshift.SHIFT_WIDTH=8 -Pneural_network_bitshift.SHIFT_MODE=3
         COMPILE_ARGS += -Pneural_network_bitshift.CUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -Pneural_network_bitshift.C_SCALED=256 -Pneural_network_bitshift.INV_DENOM=59823
+        COMPILE_ARGS += -Pneural_network_bitshift.INV_DENOM=59823
         COMPILE_ARGS += -Pneural_network_bitshift.FC1_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc1_weights.mem\"
         COMPILE_ARGS += -Pneural_network_bitshift.FC1_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc1_bias.mem\"
         COMPILE_ARGS += -Pneural_network_bitshift.FC2_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc2_weights.mem\"
@@ -578,37 +578,37 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GHISTORY_LENGTH=64
         COMPILE_ARGS += -GSHIFT_WIDTH=8 -GSHIFT_MODE=3
         COMPILE_ARGS += -GCUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=58982
+        COMPILE_ARGS += -GINV_DENOM=58982
     endif
     ifeq ($(TEST),bitshift_lif_memory)
         COMPILE_ARGS += -GHISTORY_LENGTH=64
         COMPILE_ARGS += -GSHIFT_WIDTH=8 -GSHIFT_MODE=3
         COMPILE_ARGS += -GCUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=58982
+        COMPILE_ARGS += -GINV_DENOM=58982
     endif
     ifeq ($(TEST),bitshift_lif_mode0)
         COMPILE_ARGS += -GHISTORY_LENGTH=64
         COMPILE_ARGS += -GSHIFT_WIDTH=8 -GSHIFT_MODE=0
         COMPILE_ARGS += -GCUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=58982
+        COMPILE_ARGS += -GINV_DENOM=58982
     endif
     ifeq ($(TEST),bitshift_lif_mode1)
         COMPILE_ARGS += -GHISTORY_LENGTH=64
         COMPILE_ARGS += -GSHIFT_WIDTH=8 -GSHIFT_MODE=1
         COMPILE_ARGS += -GCUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=58982
+        COMPILE_ARGS += -GINV_DENOM=58982
     endif
     ifeq ($(TEST),bitshift_lif_mode2)
         COMPILE_ARGS += -GHISTORY_LENGTH=64
         COMPILE_ARGS += -GSHIFT_WIDTH=8 -GSHIFT_MODE=2
         COMPILE_ARGS += -GCUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=58982
+        COMPILE_ARGS += -GINV_DENOM=58982
     endif
     ifeq ($(TEST),bitshift_lif_mode3)
         COMPILE_ARGS += -GHISTORY_LENGTH=64
         COMPILE_ARGS += -GSHIFT_WIDTH=8 -GSHIFT_MODE=3
         COMPILE_ARGS += -GCUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=58982
+        COMPILE_ARGS += -GINV_DENOM=58982
     endif
     ifeq ($(TEST),membrane_buffer)
         COMPILE_ARGS += -GNUM_NEURONS=4 -GNUM_TIMESTEPS=3
@@ -709,7 +709,7 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GHISTORY_LENGTH=8
         COMPILE_ARGS += -GSHIFT_WIDTH=8 -GSHIFT_MODE=3
         COMPILE_ARGS += -GCUSTOM_DECAY_RATE=3
-        COMPILE_ARGS += -GC_SCALED=256 -GINV_DENOM=59823
+        COMPILE_ARGS += -GINV_DENOM=59823
         COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc1_weights.mem\"
         COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc1_bias.mem\"
         COMPILE_ARGS += -GFC2_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc2_weights.mem\"

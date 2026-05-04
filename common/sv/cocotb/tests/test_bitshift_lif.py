@@ -99,8 +99,6 @@ class BitshiftGolden:
         shift_mode: int,
         shift_width: int,
         custom_decay_rate: int,
-        c_scaled: int,
-        c_scaled_frac_bits: int,
         inv_denom: int,
         inv_denom_frac_bits: int,
     ):
@@ -108,8 +106,6 @@ class BitshiftGolden:
         self.shift_mode = shift_mode
         self.shift_width = shift_width
         self.custom_decay_rate = custom_decay_rate
-        self.c_scaled = c_scaled
-        self.c_scaled_frac_bits = c_scaled_frac_bits
         self.inv_denom = inv_denom
         self.inv_denom_frac_bits = inv_denom_frac_bits
 
@@ -140,8 +136,7 @@ class BitshiftGolden:
 
         reset_subtract = THRESHOLD if self.spike_prev else 0
 
-        scaled_history = (self.c_scaled * history_sum) >> self.c_scaled_frac_bits
-        numerator = current_ext + scaled_history
+        numerator = current_ext + history_sum
 
         scaled_result = numerator * self.inv_denom
         membrane_pre_reset = scaled_result >> self.inv_denom_frac_bits
@@ -259,8 +254,6 @@ async def test_bitshift_lif_matches_fixed_point_golden(dut):
     shift_mode = int(dut.SHIFT_MODE.value)
     shift_width = int(dut.SHIFT_WIDTH.value)
     custom_decay_rate = int(dut.CUSTOM_DECAY_RATE.value)
-    c_scaled = int(dut.C_SCALED.value)
-    c_scaled_frac_bits = int(dut.C_SCALED_FRAC_BITS.value)
     inv_denom = int(dut.INV_DENOM.value)
     inv_denom_frac_bits = int(dut.INV_DENOM_FRAC_BITS.value)
 
@@ -269,8 +262,6 @@ async def test_bitshift_lif_matches_fixed_point_golden(dut):
         shift_mode=shift_mode,
         shift_width=shift_width,
         custom_decay_rate=custom_decay_rate,
-        c_scaled=c_scaled,
-        c_scaled_frac_bits=c_scaled_frac_bits,
         inv_denom=inv_denom,
         inv_denom_frac_bits=inv_denom_frac_bits,
     )

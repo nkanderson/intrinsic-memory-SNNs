@@ -56,7 +56,6 @@ module board_top_bitshift_custom_slow_decay (
         .SHIFT_WIDTH      (8),
         .SHIFT_MODE       (2'd3),
         .CUSTOM_DECAY_RATE(3),
-        .C_SCALED         (16'd256),
         .INV_DENOM        (16'd59823),
         .FC1_WEIGHTS_FILE ("fc1_weights.mem"),
         .FC1_BIAS_FILE    ("fc1_bias.mem"),

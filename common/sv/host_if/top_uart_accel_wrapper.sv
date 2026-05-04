@@ -24,7 +24,6 @@ module top_uart_accel_wrapper #(
     parameter integer HISTORY_LENGTH = 32,
     parameter integer COEFF_WIDTH = 16,
     parameter integer COEFF_FRAC_BITS = 15,
-    parameter [15:0] C_SCALED = 16'd256,
     parameter [15:0] INV_DENOM = 16'd58988,
     parameter GL_COEFF_FILE = "gl_coefficients.mem",
 
@@ -209,7 +208,6 @@ module top_uart_accel_wrapper #(
                 .SHIFT_WIDTH(SHIFT_WIDTH),
                 .SHIFT_MODE(SHIFT_MODE),
                 .CUSTOM_DECAY_RATE(CUSTOM_DECAY_RATE),
-                .C_SCALED(C_SCALED),
                 .INV_DENOM(INV_DENOM),
                 .FC1_WEIGHTS_FILE(FC1_WEIGHTS_FILE),
                 .FC1_BIAS_FILE(FC1_BIAS_FILE),
