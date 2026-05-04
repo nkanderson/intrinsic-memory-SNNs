@@ -300,6 +300,7 @@ internal `membrane_potential` has 13 fractional bits, based on the input current
 - The 24-bit three-operand adder is **not** worst-case-overflow-safe — three 24-bit signed operands would need 26 bits to never overflow. It works because of bounded inputs: at sustained max-current with continuous spiking, steady-state |membrane| is ~30, max |current| ≈ 4, |reset| = 1, sum magnitude ≤ ~35 — easily inside QS10.13's ±1024 range. Anyone widening DATA_WIDTH or pushing BETA toward 1.0 should re-check this bound.
 
 ### fractional_lif.sv
+**TODO:** Update with values post-C_SCALED removal.
 
 `THRESHOLD` = 8192 (default), 1.0 in QS2.13
 
@@ -365,6 +366,7 @@ All intermediate widths derive from `MEMBRANE_WIDTH`, `COEFF_WIDTH`, `COEFF_FRAC
   3. **Truncation to MEMBRANE_WIDTH** in the in-range branch: keeps the bottom 24 bits. Lossless of value because the upper 55 bits are all sign-extension once the saturation guard has passed.
 
 ### bitshift_lif.sv
+**TODO:** Update with values post-C_SCALED removal.
 
 `THRESHOLD` = 8192 (default), 1.0 in QS2.13
 
