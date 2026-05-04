@@ -25,7 +25,7 @@ file mkdir $proj_dir
 create_project $proj_name $proj_dir -part xc7a100tcsg324-1 -force
 set_property target_language Verilog [current_project]
 
-add_files [file join $common_neuron_dir bitshift_lif.sv]
+add_files [file join $common_neuron_dir bitshift_lif_v1.sv]
 add_files [file join $root_dir sv hex7seg.sv]
 add_files [file join $root_dir sv top_bitshift_lif_demo.sv]
 add_files -fileset constrs_1 [file join $root_dir sv top_lif_demo.xdc]

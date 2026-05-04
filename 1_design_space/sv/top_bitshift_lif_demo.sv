@@ -77,7 +77,7 @@ module top_bitshift_lif_demo #(
         end
     end
 
-    bitshift_lif #(
+    bitshift_lif_v1 #(
         .THRESHOLD(THRESHOLD),
         .DATA_WIDTH(DATA_WIDTH),
         .MEMBRANE_WIDTH(MEMBRANE_WIDTH),
