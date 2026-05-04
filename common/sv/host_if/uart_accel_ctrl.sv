@@ -66,6 +66,12 @@ module uart_accel_ctrl #(
     logic [7:0] resp_pending_status;
     logic [7:0] resp_pending_len;
 
+    // OPCODE_EXEC_ACTION deferred completion. Set when EXEC_ACTION is
+    // accepted; cleared when accel_done pulses, at which point the action
+    // byte is staged into rsp_payload[0] and resp_pending is raised exactly
+    // as RX_GET_CSUM would — same one-cycle deferral, same queue_response.
+    logic exec_action_pending;
+
     task automatic write_reg_byte(
         input  logic [7:0] reg_addr,
         input  logic [7:0] reg_data,
@@ -174,6 +180,7 @@ module uart_accel_ctrl #(
             resp_pending <= 1'b0;
             resp_pending_status <= 8'h00;
             resp_pending_len <= 8'h00;
+            exec_action_pending <= 1'b0;
 
             start_pulse <= 1'b0;
             for (int i = 0; i < NUM_INPUTS; i++) begin
@@ -211,6 +218,17 @@ module uart_accel_ctrl #(
             if (resp_pending && !tx_active) begin
                 resp_pending <= 1'b0;
                 queue_response(resp_pending_status, resp_pending_len);
+            end
+
+            // EXEC_ACTION completion: accel_done is a 1-cycle pulse. Capture
+            // the action byte into rsp_payload[0] and raise resp_pending so
+            // the deferred branch above sends the response next cycle.
+            if (exec_action_pending && accel_done) begin
+                exec_action_pending <= 1'b0;
+                rsp_payload[0]      <= 8'(accel_action);
+                resp_pending        <= 1'b1;
+                resp_pending_status <= ST_OK;
+                resp_pending_len    <= 8'h01;
             end
 
             // RX command parser
@@ -304,6 +322,19 @@ module uart_accel_ctrl #(
                                         resp_pending <= 1'b1;
                                         resp_pending_status <= ST_OK;
                                         resp_pending_len <= 8'h00;
+                                    end
+                                end
+
+                                OPCODE_EXEC_ACTION: begin
+                                    if (accel_busy) begin
+                                        resp_pending        <= 1'b1;
+                                        resp_pending_status <= ST_BUSY;
+                                        resp_pending_len    <= 8'h00;
+                                    end else begin
+                                        start_pulse         <= 1'b1;
+                                        exec_action_pending <= 1'b1;
+                                        // No resp_pending here — response is
+                                        // deferred until accel_done pulses.
                                     end
                                 end
 

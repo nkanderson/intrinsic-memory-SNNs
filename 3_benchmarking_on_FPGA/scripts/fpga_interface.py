@@ -32,10 +32,11 @@ import serial
 SOF_HOST = 0xA5
 SOF_FPGA = 0x5A
 
-OPCODE_WRITE = 0x01
-OPCODE_READ  = 0x02
-OPCODE_EXEC  = 0x03
-OPCODE_PING  = 0x7F
+OPCODE_WRITE        = 0x01
+OPCODE_READ         = 0x02
+OPCODE_EXEC         = 0x03
+OPCODE_EXEC_ACTION  = 0x04  # trigger inference; response deferred until done, contains action
+OPCODE_PING         = 0x7F
 
 ST_OK       = 0x00
 ST_BAD_CSUM = 0x01
@@ -187,4 +188,15 @@ class FpgaInterface:
         """Read and return the selected action (0 or 1)."""
         status, payload = self._transact(build_read_frame(REG_ACTION, 1))
         self._check(status, "READ ACTION")
+        return payload[0] & 0x01
+
+    def exec_and_read_action(self) -> int:
+        """Trigger inference and return the action in a single round-trip.
+
+        Sends OPCODE_EXEC_ACTION and blocks until the FPGA responds, which
+        happens only after inference completes. Replaces the three-transaction
+        sequence start_inference() + wait_done() + read_action() with one.
+        """
+        status, payload = self._transact(build_frame(OPCODE_EXEC_ACTION, 0x00))
+        self._check(status, "EXEC_ACTION")
         return payload[0] & 0x01

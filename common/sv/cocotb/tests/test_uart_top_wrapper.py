@@ -20,10 +20,11 @@ from cocotb.utils import get_sim_time
 SOF_HOST_TO_FPGA = 0xA5
 SOF_FPGA_TO_HOST = 0x5A
 
-OPCODE_WRITE = 0x01
-OPCODE_READ = 0x02
-OPCODE_EXEC = 0x03
-OPCODE_PING = 0x7F
+OPCODE_WRITE        = 0x01
+OPCODE_READ         = 0x02
+OPCODE_EXEC         = 0x03
+OPCODE_EXEC_ACTION  = 0x04
+OPCODE_PING         = 0x7F
 
 ST_OK = 0x00
 
@@ -138,7 +139,7 @@ async def reset_dut(dut):
     await ClockCycles(dut.clk, 5)
 
 
-async def watchdog(dut, timeout_ns: int = 50_000):
+async def watchdog(dut, timeout_ns: int = 300_000):
     """Hang detector. Silent during a normal-paced test; if the simulation
     runs longer than `timeout_ns` without the test completing, dumps the
     controller's internal state and fails the test so we don't hang.
@@ -215,10 +216,11 @@ async def test_wrapper_full_inference(dut):
     status, _, csum_ok = parse_response_frame(await collect_response(captured))
     assert csum_ok and status == ST_OK, f"EXEC status: 0x{status:02X}"
 
-    # 3. Poll STATUS. With NUM_TIMESTEPS=10 and a small network the inference
-    # finishes in well under a millisecond, so a handful of polls is plenty.
+    # 3. Poll STATUS. At 10 Mbaud sim clock, fc2 (HL1=64 inputs, HL2=16 outputs)
+    # takes ~1041 cycles per timestep × 10 timesteps ≈ 104 µs at 10 ns/cycle.
+    # Each poll round-trip is ~1.1 µs, so ~100 polls are needed before done.
     done = False
-    for poll in range(20):
+    for poll in range(150):
         await uart_send_frame(dut, build_read_frame(REG_STATUS, 1))
         status, payload, csum_ok = parse_response_frame(await collect_response(captured))
         assert csum_ok and status == ST_OK
@@ -226,7 +228,7 @@ async def test_wrapper_full_inference(dut):
             done = True
             dut._log.info(f"done bit set after {poll + 1} STATUS poll(s)")
             break
-    assert done, "STATUS done bit never set after 20 polls"
+    assert done, "STATUS done bit never set after 150 polls"
 
     # 4. READ ACTION.
     await uart_send_frame(dut, build_read_frame(REG_ACTION, 1))
@@ -234,4 +236,33 @@ async def test_wrapper_full_inference(dut):
     assert csum_ok and status == ST_OK
     action = payload[0] & 0x01  # 1-bit action for NUM_ACTIONS=2
     dut._log.info(f"selected action: {action}")
+    assert action in (0, 1)
+
+
+@cocotb.test()
+async def test_wrapper_exec_action(dut):
+    """EXEC_ACTION round-trip: WRITE OBS then EXEC_ACTION returns the action
+    in one deferred response, skipping the STATUS poll + READ ACTION steps.
+
+    The response arrives only after inference completes, so collect_response
+    may block for ~100 µs sim time — well within the 300 µs watchdog.
+    """
+    captured = await setup_test(dut)
+
+    obs_int16 = [0x0100, -0x0050, 0x00C0, 0x0010]
+    obs_payload = b""
+    for v in obs_int16:
+        obs_payload += int(v & 0xFFFF).to_bytes(2, "little", signed=False)
+    await uart_send_frame(dut, build_host_frame(OPCODE_WRITE, REG_OBS0, obs_payload))
+    status, _, csum_ok = parse_response_frame(await collect_response(captured))
+    assert csum_ok and status == ST_OK, f"WRITE OBS status: 0x{status:02X}"
+
+    await uart_send_frame(dut, build_host_frame(OPCODE_EXEC_ACTION, 0x00))
+    # Response is deferred until inference completes — collect_response blocks here.
+    status, payload, csum_ok = parse_response_frame(await collect_response(captured))
+    assert csum_ok, "EXEC_ACTION response CSUM bad"
+    assert status == ST_OK, f"EXEC_ACTION status: 0x{status:02X}"
+    assert len(payload) == 1, f"expected 1 payload byte, got {len(payload)}"
+    action = payload[0] & 0x01
+    dut._log.info(f"EXEC_ACTION selected action: {action}")
     assert action in (0, 1)

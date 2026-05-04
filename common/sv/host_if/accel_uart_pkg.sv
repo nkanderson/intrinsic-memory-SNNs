@@ -5,10 +5,14 @@ package accel_uart_pkg;
   localparam logic [7:0] SOF_FPGA_TO_HOST = 8'h5A;
 
   // Opcodes
-  localparam logic [7:0] OPCODE_WRITE = 8'h01;
-  localparam logic [7:0] OPCODE_READ  = 8'h02;
-  localparam logic [7:0] OPCODE_EXEC  = 8'h03;
-  localparam logic [7:0] OPCODE_PING  = 8'h7F;
+  localparam logic [7:0] OPCODE_WRITE        = 8'h01;
+  localparam logic [7:0] OPCODE_READ         = 8'h02;
+  localparam logic [7:0] OPCODE_EXEC         = 8'h03;
+  // EXEC_ACTION: like EXEC but response is deferred until inference completes
+  // and the 1-byte action is returned in the payload. Saves a STATUS poll
+  // and a READ ACTION round-trip compared to EXEC + manual polling.
+  localparam logic [7:0] OPCODE_EXEC_ACTION  = 8'h04;
+  localparam logic [7:0] OPCODE_PING         = 8'h7F;
 
   // Status codes in responses
   localparam logic [7:0] ST_OK       = 8'h00;

@@ -59,9 +59,7 @@ class SNNPolicyHardware(nn.Module):
         obs_q = float_to_qs2_13(obs_np)
 
         self._fpga.write_obs(obs_q)
-        self._fpga.start_inference()
-        self._fpga.wait_done()
-        action = self._fpga.read_action()
+        action = self._fpga.exec_and_read_action()
 
         result = torch.zeros(1, self.n_actions)
         result[0, action] = 1.0

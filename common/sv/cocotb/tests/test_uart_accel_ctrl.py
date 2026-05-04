@@ -26,10 +26,11 @@ from cocotb.triggers import ClockCycles, RisingEdge
 SOF_HOST_TO_FPGA = 0xA5
 SOF_FPGA_TO_HOST = 0x5A
 
-OPCODE_WRITE = 0x01
-OPCODE_READ = 0x02
-OPCODE_EXEC = 0x03
-OPCODE_PING = 0x7F
+OPCODE_WRITE        = 0x01
+OPCODE_READ         = 0x02
+OPCODE_EXEC         = 0x03
+OPCODE_EXEC_ACTION  = 0x04
+OPCODE_PING         = 0x7F
 
 ST_OK = 0x00
 ST_BAD_CSUM = 0x01
@@ -481,3 +482,50 @@ async def test_multibyte_response_with_busy_handshake(dut):
             f"obs[{i}]: read {actual}, wrote {expected} "
             f"(payload bytes: {resp.payload.hex()})"
         )
+
+
+@cocotb.test()
+async def test_exec_action_returns_action_after_done(dut):
+    """EXEC_ACTION defers the response until accel_done pulses, then returns
+    the action byte in the payload.
+
+    Timeline:
+      1. Send EXEC_ACTION frame — no response yet.
+      2. Wait a few cycles (inference in flight).
+      3. Assert accel_done for 1 cycle with accel_action=1.
+      4. Expect ST_OK response with payload[0] == 1.
+    """
+    captured = await setup_test(dut)
+    dut.accel_busy.value = 0
+    dut.accel_action.value = 0b01  # action = 1
+
+    # Send EXEC_ACTION — the controller should not respond yet.
+    await send_bytes(dut, build_host_frame(OPCODE_EXEC_ACTION, 0x00))
+
+    # Simulate inference latency: wait a few cycles then pulse accel_done.
+    await ClockCycles(dut.clk, 10)
+    dut.accel_done.value = 1
+    await RisingEdge(dut.clk)
+    dut.accel_done.value = 0
+
+    # Now the controller should queue a response.
+    resp = parse_response_frame(await collect_response(dut, captured))
+    assert resp.csum_ok, "response CSUM bad"
+    assert resp.status == ST_OK, f"EXEC_ACTION status: 0x{resp.status:02X}"
+    assert len(resp.payload) == 1, f"expected 1 payload byte, got {len(resp.payload)}"
+    assert resp.payload[0] & 0x01 == 1, (
+        f"expected action=1, got payload[0]=0x{resp.payload[0]:02X}"
+    )
+
+
+@cocotb.test()
+async def test_exec_action_while_busy_returns_st_busy(dut):
+    """EXEC_ACTION while accel_busy=1 returns ST_BUSY immediately."""
+    captured = await setup_test(dut)
+    dut.accel_busy.value = 1
+
+    await send_bytes(dut, build_host_frame(OPCODE_EXEC_ACTION, 0x00))
+    resp = parse_response_frame(await collect_response(dut, captured))
+
+    assert resp.status == ST_BUSY, f"expected ST_BUSY, got 0x{resp.status:02X}"
+    assert len(resp.payload) == 0, "ST_BUSY response should carry no payload"
