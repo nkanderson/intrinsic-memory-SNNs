@@ -105,14 +105,46 @@ else ifeq ($(TEST),neural_network)
                       $(SV_DIR)/q_accumulator.sv
     TOPLEVEL = neural_network
     MODULE = test_neural_network
-else ifeq ($(TEST),golden_vectors)
+else ifeq ($(TEST),golden_vectors_lif-64-16)
     VERILOG_SOURCES = $(SV_DIR)/neural_network.sv \
                       $(SV_DIR)/linear_layer.sv \
                       $(COMMON_NEURON_DIR)/lif.sv \
                       $(SV_DIR)/neuron_membrane_buffer.sv \
                       $(SV_DIR)/q_accumulator.sv
     TOPLEVEL = neural_network
-    MODULE = test_golden_vectors
+    MODULE = test_golden_vectors_lif_64_16
+else ifeq ($(TEST),golden_vectors_lif-32-16)
+    VERILOG_SOURCES = $(SV_DIR)/neural_network.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network
+    MODULE = test_golden_vectors_lif_32_16
+else ifeq ($(TEST),golden_vectors_fractional-16-4-32)
+    VERILOG_SOURCES = $(SV_DIR)/neural_network_fractional.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/fractional_lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network_fractional
+    MODULE = test_golden_vectors_fractional_16_4_32
+else ifeq ($(TEST),golden_vectors_fractional-32-4-16)
+    VERILOG_SOURCES = $(SV_DIR)/neural_network_fractional.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/fractional_lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network_fractional
+    MODULE = test_golden_vectors_fractional_32_4_16
+else ifeq ($(TEST),golden_vectors_bitshift-custom_slow_decay)
+    VERILOG_SOURCES = $(SV_DIR)/neural_network_bitshift.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/bitshift_lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network_bitshift
+    MODULE = test_golden_vectors_bitshift_custom_slow_decay
 else ifeq ($(TEST),uart_loopback)
     VERILOG_SOURCES = $(HOST_IF_DIR)/uart_rx.sv \
                       $(HOST_IF_DIR)/uart_tx.sv \
@@ -239,7 +271,7 @@ else ifeq ($(TEST),cp_integration_frac)
     TOPLEVEL = neural_network_fractional
     MODULE = test_cartpole_integration
 else
-    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'golden_vectors', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
+    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'golden_vectors_lif-64-16', 'golden_vectors_lif-32-16', 'golden_vectors_fractional-16-4-32', 'golden_vectors_fractional-32-4-16', 'golden_vectors_bitshift-custom_slow_decay', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
 endif
 
 # Simulator - use Icarus for all tests (event-driven, correct timing)
@@ -340,7 +372,7 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_weights.mem\"
         COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_bias.mem\"
     endif
-    ifeq ($(TEST),golden_vectors)
+    ifeq ($(TEST),golden_vectors_lif-64-16)
         COMPILE_ARGS += -Pneural_network.NUM_INPUTS=4 -Pneural_network.HL1_SIZE=64
         COMPILE_ARGS += -Pneural_network.HL2_SIZE=16 -Pneural_network.NUM_ACTIONS=2
         COMPILE_ARGS += -Pneural_network.NUM_TIMESTEPS=10 -Pneural_network.Q_BATCH_SIZE=1
@@ -351,6 +383,67 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE=\"$(PWD)/weights/lif-64-16/fc2_bias.mem\"
         COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/lif-64-16/fc_out_weights.mem\"
         COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/lif-64-16/fc_out_bias.mem\"
+    endif
+    ifeq ($(TEST),golden_vectors_lif-32-16)
+        COMPILE_ARGS += -Pneural_network.NUM_INPUTS=4 -Pneural_network.HL1_SIZE=32
+        COMPILE_ARGS += -Pneural_network.HL2_SIZE=16 -Pneural_network.NUM_ACTIONS=2
+        COMPILE_ARGS += -Pneural_network.NUM_TIMESTEPS=10 -Pneural_network.Q_BATCH_SIZE=1
+        COMPILE_ARGS += -Pneural_network.FC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE=\"$(PWD)/weights/lif-32-16/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE=\"$(PWD)/weights/lif-32-16/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_WEIGHTS_FILE=\"$(PWD)/weights/lif-32-16/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE=\"$(PWD)/weights/lif-32-16/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/lif-32-16/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/lif-32-16/fc_out_bias.mem\"
+    endif
+    ifeq ($(TEST),golden_vectors_fractional-16-4-32)
+        COMPILE_ARGS += -Pneural_network_fractional.NUM_INPUTS=4 -Pneural_network_fractional.HL1_SIZE=16
+        COMPILE_ARGS += -Pneural_network_fractional.HL2_SIZE=4 -Pneural_network_fractional.NUM_ACTIONS=2
+        COMPILE_ARGS += -Pneural_network_fractional.NUM_TIMESTEPS=20 -Pneural_network_fractional.Q_BATCH_SIZE=1
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=32
+        COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=16
+        COMPILE_ARGS += -Pneural_network_fractional.INV_DENOM=55727
+        COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-32/gl_coefficients.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_BIAS_FILE=\"$(PWD)/weights/fractional-16-4-32/fc_out_bias.mem\"
+    endif
+    ifeq ($(TEST),golden_vectors_fractional-32-4-16)
+        COMPILE_ARGS += -Pneural_network_fractional.NUM_INPUTS=4 -Pneural_network_fractional.HL1_SIZE=32
+        COMPILE_ARGS += -Pneural_network_fractional.HL2_SIZE=4 -Pneural_network_fractional.NUM_ACTIONS=2
+        COMPILE_ARGS += -Pneural_network_fractional.NUM_TIMESTEPS=10 -Pneural_network_fractional.Q_BATCH_SIZE=1
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=16
+        COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=16
+        COMPILE_ARGS += -Pneural_network_fractional.INV_DENOM=62259
+        COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional-32-4-16/gl_coefficients.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_BIAS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_BIAS_FILE=\"$(PWD)/weights/fractional-32-4-16/fc_out_bias.mem\"
+    endif
+    ifeq ($(TEST),golden_vectors_bitshift-custom_slow_decay)
+        COMPILE_ARGS += -Pneural_network_bitshift.NUM_INPUTS=4 -Pneural_network_bitshift.HL1_SIZE=32
+        COMPILE_ARGS += -Pneural_network_bitshift.HL2_SIZE=8 -Pneural_network_bitshift.NUM_ACTIONS=2
+        COMPILE_ARGS += -Pneural_network_bitshift.NUM_TIMESTEPS=10 -Pneural_network_bitshift.Q_BATCH_SIZE=1
+        COMPILE_ARGS += -Pneural_network_bitshift.FRAC_BITS=12
+        COMPILE_ARGS += -Pneural_network_bitshift.FC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -Pneural_network_bitshift.HISTORY_LENGTH=8
+        COMPILE_ARGS += -Pneural_network_bitshift.SHIFT_WIDTH=8 -Pneural_network_bitshift.SHIFT_MODE=3
+        COMPILE_ARGS += -Pneural_network_bitshift.CUSTOM_DECAY_RATE=3
+        COMPILE_ARGS += -Pneural_network_bitshift.INV_DENOM=59823
+        COMPILE_ARGS += -Pneural_network_bitshift.FC1_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift.FC1_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift.FC2_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift.FC2_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift.FC_OUT_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cp_integration_frac-16-4-32)
         # NOTE: This is one of the core models for testing and validation.
@@ -888,8 +981,20 @@ test_q_accumulator:
 test_neural_network:
 	$(MAKE) TEST=neural_network
 
-test_golden_vectors:
-	$(MAKE) TEST=golden_vectors
+test_golden_vectors_lif-64-16:
+	$(MAKE) TEST=golden_vectors_lif-64-16
+
+test_golden_vectors_lif-32-16:
+	$(MAKE) TEST=golden_vectors_lif-32-16
+
+test_golden_vectors_fractional-16-4-32:
+	$(MAKE) TEST=golden_vectors_fractional-16-4-32
+
+test_golden_vectors_fractional-32-4-16:
+	$(MAKE) TEST=golden_vectors_fractional-32-4-16
+
+test_golden_vectors_bitshift-custom_slow_decay:
+	$(MAKE) TEST=golden_vectors_bitshift-custom_slow_decay
 
 test_uart_loopback:
 	$(MAKE) TEST=uart_loopback
@@ -938,4 +1043,4 @@ clean::
 	rm -rf __pycache__
 	rm -rf .pytest_cache
 
-.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_fractional_lif_memory_constant_sweep test_fractional_lif_memory_constant_capture test_fractional_lif_memory_dropout_sweep test_fractional_lif_memory_dropout_capture test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_memory_constant_sweep test_bitshift_lif_memory_constant_capture test_bitshift_lif_memory_dropout_sweep test_bitshift_lif_memory_dropout_capture test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_golden_vectors test_uart_loopback test_uart_accel_ctrl test_uart_top_wrapper test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac
+.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_fractional_lif_memory_constant_sweep test_fractional_lif_memory_constant_capture test_fractional_lif_memory_dropout_sweep test_fractional_lif_memory_dropout_capture test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_memory_constant_sweep test_bitshift_lif_memory_constant_capture test_bitshift_lif_memory_dropout_sweep test_bitshift_lif_memory_dropout_capture test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_golden_vectors_lif-64-16 test_golden_vectors_lif-32-16 test_golden_vectors_fractional-16-4-32 test_golden_vectors_fractional-32-4-16 test_golden_vectors_bitshift-custom_slow_decay test_uart_loopback test_uart_accel_ctrl test_uart_top_wrapper test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac

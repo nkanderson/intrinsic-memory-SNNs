@@ -1,11 +1,10 @@
-"""Golden-vector test for lif-64-16 using QS2.13 reference outputs."""
+"""Shared helpers for golden vector cocotb tests."""
 from __future__ import annotations
 
 import json
 import os
 from pathlib import Path
 
-import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, ClockCycles
 
@@ -37,12 +36,11 @@ def estimate_timeout(dut) -> int:
     return max(DEFAULT_TIMEOUT_CYCLES, scaled)
 
 
-def resolve_vectors_path() -> Path:
+def resolve_vectors_path(model_name: str) -> Path:
     env_path = os.getenv("GOLDEN_VECTORS")
     if env_path:
         return Path(env_path)
-    # Default: local cocotb tests directory
-    return Path(__file__).resolve().parent / "golden_vectors.json"
+    return Path(__file__).resolve().parent / "golden_vectors" / f"{model_name}.json"
 
 
 async def reset_dut(dut):
@@ -71,16 +69,19 @@ async def run_inference(dut, obs_qs213, timeout_cycles: int):
     raise TimeoutError(f"Inference did not complete within {timeout_cycles} cycles")
 
 
-@cocotb.test()
-async def test_golden_vectors(dut):
+async def run_golden_vectors(dut, model_name: str):
     clock = Clock(dut.clk, 10, unit="ns")
-    cocotb.start_soon(clock.start())
+    dut._log.info(f"Golden vectors model: {model_name}")
+    dut._log.info(f"Golden vectors path: {resolve_vectors_path(model_name)}")
+    from cocotb import start_soon
 
-    vectors_path = resolve_vectors_path()
+    start_soon(clock.start())
+
+    vectors_path = resolve_vectors_path(model_name)
     if not vectors_path.exists():
         raise FileNotFoundError(
             f"Golden vectors not found at {vectors_path}. "
-            "Set GOLDEN_VECTORS or run 2_training_and_simulation/train/scripts/golden_vectors.py"
+            "Set GOLDEN_VECTORS or run golden_vectors.py"
         )
 
     data = json.loads(vectors_path.read_text())

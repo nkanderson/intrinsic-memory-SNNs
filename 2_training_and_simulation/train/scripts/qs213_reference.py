@@ -2,9 +2,17 @@
 from __future__ import annotations
 
 import argparse
+from functools import lru_cache
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Tuple
+
+from history_coefficients import (
+    custom_bitshift,
+    custom_slow_decay_bitshift,
+    simple_bitshift,
+    slow_decay_bitshift,
+)
 
 
 DATA_WIDTH = 16
@@ -22,6 +30,7 @@ class ModelConfig:
     hl2_size: int
     num_actions: int
     num_timesteps: int
+    threshold: int
     fc2_output_width: int
     frac_bits: int
     weights_dir: Path
@@ -36,8 +45,6 @@ class ModelConfig:
     shift_width: int = 8
     shift_mode: int = 3
     custom_decay_rate: int = 3
-    c_scaled: int = 256
-    c_scaled_frac_bits: int = 8
 
 
 def repo_root() -> Path:
@@ -173,7 +180,7 @@ def fractional_step(
     mul_scaled = wrap_signed(numerator * cfg.inv_denom, scaled_result_width)
     div_membrane = wrap_signed(mul_scaled >> cfg.inv_denom_frac_bits, scaled_result_width)
 
-    reset_subtract = THRESHOLD if spike_prev else 0
+    reset_subtract = cfg.threshold if spike_prev else 0
     membrane_after_reset = div_membrane - reset_subtract
 
     membrane_max = (1 << (MEMBRANE_WIDTH - 1)) - 1
@@ -185,49 +192,36 @@ def fractional_step(
     else:
         finalize_membrane = wrap_signed(membrane_after_reset, MEMBRANE_WIDTH)
 
-    finalize_spike = 1 if finalize_membrane >= THRESHOLD else 0
+    finalize_spike = 1 if finalize_membrane >= cfg.threshold else 0
 
     history[history_ptr] = wrap_signed(membrane, MEMBRANE_WIDTH)
     history_ptr = 0 if history_ptr == history_length - 1 else history_ptr + 1
     return finalize_membrane, finalize_spike, history, history_ptr
 
 
-def bitshift_shift_amount(idx: int, cfg: ModelConfig) -> int:
-    shift_mode = cfg.shift_mode
+@lru_cache(maxsize=None)
+def _bitshift_sequence(
+    history_length: int, shift_mode: int, custom_decay_rate: int
+) -> Tuple[int, ...]:
     if shift_mode == 0:
-        return idx
-    if shift_mode == 1:
-        return 0 if idx == 0 else (idx + 1) // 2
-    if shift_mode == 2:
-        if idx == 0:
-            return 0
-        if idx == 1:
-            return 1
-        if idx == 2:
-            return 3
-        if idx == 3:
-            return 4
-        return 5 + ((idx - 4) // cfg.custom_decay_rate)
+        seq = simple_bitshift(history_length)
+    elif shift_mode == 1:
+        seq = slow_decay_bitshift(history_length)
+    elif shift_mode == 2:
+        seq = custom_bitshift(history_length, custom_decay_rate)
+    else:
+        seq = custom_slow_decay_bitshift(history_length)
+    return tuple(seq)
 
-    if idx == 0:
+
+def bitshift_shift_amount(idx: int, cfg: ModelConfig) -> int:
+    seq = _bitshift_sequence(cfg.history_length, cfg.shift_mode, cfg.custom_decay_rate)
+    shift = seq[idx] if idx < len(seq) else seq[-1]
+    max_shift = (1 << cfg.shift_width) - 1
+    if shift < 0:
         return 0
-    if idx == 1:
-        return 1
-    if idx == 2:
-        return 3
-    if idx == 3:
-        return 4
-
-    rem = idx - 4
-    shift = 5
-    found = False
-    for s in range(5, (1 << cfg.shift_width)):
-        repeat = s - 2
-        if not found and rem < repeat:
-            shift = s
-            found = True
-        elif not found:
-            rem -= repeat
+    if shift > max_shift:
+        return max_shift
     return shift
 
 
@@ -240,9 +234,8 @@ def bitshift_step(
     cfg: ModelConfig,
 ) -> Tuple[int, int, List[int], int]:
     history_length = cfg.history_length
-    history_sum_width = MEMBRANE_WIDTH + max(1, history_length.bit_length())
-    scaled_history_width = history_sum_width + (cfg.c_scaled.bit_length() + 1)
-    numerator_input_width = max(scaled_history_width, MEMBRANE_WIDTH)
+    history_sum_width = MEMBRANE_WIDTH + max(0, (history_length - 1).bit_length())
+    numerator_input_width = max(history_sum_width, MEMBRANE_WIDTH)
     numerator_width = numerator_input_width + 1
     inv_denom_width = 16 + 1
     scaled_result_width = numerator_width + inv_denom_width
@@ -258,14 +251,16 @@ def bitshift_step(
         shifted = wrap_signed(hist_val >> shift_amt, MEMBRANE_WIDTH)
         history_sum_acc = wrap_signed(history_sum_acc + shifted, history_sum_width)
 
-    scaled_mult = wrap_signed(cfg.c_scaled * history_sum_acc, scaled_history_width)
-    scaled_history = wrap_signed(scaled_mult >> cfg.c_scaled_frac_bits, scaled_history_width)
     current_latched = wrap_signed(current, MEMBRANE_WIDTH)
-    numerator = wrap_signed(current_latched - scaled_history, numerator_width)
+    numerator = wrap_signed(
+        wrap_signed(current_latched, numerator_width)
+        + wrap_signed(history_sum_acc, numerator_width),
+        numerator_width,
+    )
     mul_scaled = wrap_signed(numerator * cfg.inv_denom, scaled_result_width)
     membrane_pre_reset = wrap_signed(mul_scaled >> cfg.inv_denom_frac_bits, scaled_result_width)
 
-    reset_subtract = THRESHOLD if spike_prev else 0
+    reset_subtract = cfg.threshold if spike_prev else 0
     membrane_after_reset = membrane_pre_reset - reset_subtract
 
     membrane_max = (1 << (MEMBRANE_WIDTH - 1)) - 1
@@ -277,7 +272,7 @@ def bitshift_step(
     else:
         finalize_membrane = wrap_signed(membrane_after_reset, MEMBRANE_WIDTH)
 
-    finalize_spike = 1 if finalize_membrane >= THRESHOLD else 0
+    finalize_spike = 1 if finalize_membrane >= cfg.threshold else 0
 
     history[history_ptr] = wrap_signed(membrane, MEMBRANE_WIDTH)
     history_ptr = 0 if history_ptr == history_length - 1 else history_ptr + 1
@@ -321,6 +316,7 @@ def model_matrix() -> Dict[str, ModelConfig]:
             hl2_size=16,
             num_actions=2,
             num_timesteps=10,
+            threshold=THRESHOLD,
             fc2_output_width=24,
             frac_bits=13,
             weights_dir=base / "lif-64-16",
@@ -333,6 +329,7 @@ def model_matrix() -> Dict[str, ModelConfig]:
             hl2_size=16,
             num_actions=2,
             num_timesteps=10,
+            threshold=THRESHOLD,
             fc2_output_width=24,
             frac_bits=13,
             weights_dir=base / "lif-32-16",
@@ -345,6 +342,7 @@ def model_matrix() -> Dict[str, ModelConfig]:
             hl2_size=4,
             num_actions=2,
             num_timesteps=20,
+            threshold=THRESHOLD,
             fc2_output_width=24,
             frac_bits=13,
             weights_dir=base / "fractional-16-4-32",
@@ -363,6 +361,7 @@ def model_matrix() -> Dict[str, ModelConfig]:
             hl2_size=4,
             num_actions=2,
             num_timesteps=10,
+            threshold=THRESHOLD,
             fc2_output_width=24,
             frac_bits=13,
             weights_dir=base / "fractional-32-4-16",
@@ -381,6 +380,7 @@ def model_matrix() -> Dict[str, ModelConfig]:
             hl2_size=8,
             num_actions=2,
             num_timesteps=10,
+            threshold=1 << 12,
             fc2_output_width=24,
             frac_bits=12,
             weights_dir=base / "bitshift-custom_slow_decay",
@@ -388,8 +388,6 @@ def model_matrix() -> Dict[str, ModelConfig]:
             shift_width=8,
             shift_mode=3,
             custom_decay_rate=3,
-            c_scaled=256,
-            c_scaled_frac_bits=8,
             inv_denom=59823,
             inv_denom_frac_bits=16,
         ),
@@ -433,26 +431,53 @@ def run_inference(obs_fixed: List[int], cfg: ModelConfig) -> Tuple[int, List[int
     hl2_mem = [0 for _ in range(cfg.hl2_size)]
     hl2_spike_prev = [0 for _ in range(cfg.hl2_size)]
 
+    hl1_history = [[0 for _ in range(cfg.history_length)] for _ in range(cfg.hl1_size)]
+    hl1_history_ptr = [0 for _ in range(cfg.hl1_size)]
     hl2_history = [[0 for _ in range(cfg.history_length)] for _ in range(cfg.hl2_size)]
     hl2_history_ptr = [0 for _ in range(cfg.hl2_size)]
 
     membranes_by_timestep: List[List[int]] = []
+    hl1_spikes_for_fc2 = [0 for _ in range(cfg.hl1_size)]
+    use_delayed_hl1 = cfg.neuron_type in ("fractional", "bitshift")
 
     for _t in range(cfg.num_timesteps):
         hl1_spikes: List[int] = []
         for i in range(cfg.hl1_size):
-            hl1_mem[i], hl1_spike_prev[i] = lif_step(
-                hl1_mem[i],
-                hl1_spike_prev[i],
-                hl1_currents[i],
-                data_width=DATA_WIDTH,
-                membrane_width=MEMBRANE_WIDTH,
-                threshold=THRESHOLD,
-                beta=BETA,
-            )
+            if cfg.neuron_type == "lif":
+                hl1_mem[i], hl1_spike_prev[i] = lif_step(
+                    hl1_mem[i],
+                    hl1_spike_prev[i],
+                    hl1_currents[i],
+                    data_width=DATA_WIDTH,
+                    membrane_width=MEMBRANE_WIDTH,
+                    threshold=THRESHOLD,
+                    beta=BETA,
+                )
+            elif cfg.neuron_type == "fractional":
+                hl1_mem[i], hl1_spike_prev[i], hl1_history[i], hl1_history_ptr[i] = fractional_step(
+                    hl1_mem[i],
+                    hl1_spike_prev[i],
+                    hl1_currents[i],
+                    hl1_history[i],
+                    hl1_history_ptr[i],
+                    cfg,
+                )
+            else:
+                hl1_mem[i], hl1_spike_prev[i], hl1_history[i], hl1_history_ptr[i] = bitshift_step(
+                    hl1_mem[i],
+                    hl1_spike_prev[i],
+                    hl1_currents[i],
+                    hl1_history[i],
+                    hl1_history_ptr[i],
+                    cfg,
+                )
             hl1_spikes.append(hl1_spike_prev[i])
 
-        fc2_inputs = [THRESHOLD if s else 0 for s in hl1_spikes]
+        if use_delayed_hl1:
+            fc2_inputs = [cfg.threshold if s else 0 for s in hl1_spikes_for_fc2]
+            hl1_spikes_for_fc2 = hl1_spikes
+        else:
+            fc2_inputs = [cfg.threshold if s else 0 for s in hl1_spikes]
         hl2_currents = linear_layer(
             fc2_inputs,
             fc2_weights,
