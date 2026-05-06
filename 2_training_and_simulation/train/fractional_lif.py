@@ -190,9 +190,9 @@ class FractionalLIF(snn.Leaky):
         #                     |                  (e.g., batch=128 during training, batch=1 during inference)
         #                     |
         #                     +-- Time dimension: past membrane values
-        #                         hist[0] = most recent (V[n-1])
-        #                         hist[1] = one step older (V[n-2])
-        #                         hist[k] = V[n-k-1]
+        #                         hist[0] = most recent (V[n])
+        #                         hist[1] = one step older (V[n-1])
+        #                         hist[k] = V[n-k]
         #
         # WHY 3D? Each sample in a batch is independent (different episode/state),
         # so each needs its own history. We process them in parallel for efficiency.
@@ -225,9 +225,9 @@ class FractionalLIF(snn.Leaky):
         mem_new = numerator / denominator
 
         # Update history buffer: shift in-place (faster than cat)
-        # Roll the history buffer and insert current mem at position 0
+        # Roll the history buffer and insert newly computed mem at position 0
         self.hist = torch.roll(self.hist, shifts=1, dims=0)
-        self.hist[0] = self.mem
+        self.hist[0] = mem_new
 
         return mem_new
 
