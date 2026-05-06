@@ -172,9 +172,9 @@ class BitshiftLIF(snn.Leaky):
         mem_new = numerator / denominator
 
         # Update history buffer: shift in-place
-        # Roll the history buffer and insert current mem at position 0
+        # Roll the history buffer and insert newly computed mem at position 0
         self.hist = torch.roll(self.hist, shifts=1, dims=0)
-        self.hist[0] = self.mem
+        self.hist[0] = mem_new
 
         return mem_new
 

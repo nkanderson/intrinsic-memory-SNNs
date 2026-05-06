@@ -320,8 +320,8 @@ module bitshift_lif #(
         end
 
         ST_WRITEBACK: begin
-          // Store current membrane in history before updating
-          history_buffer[history_ptr] <= membrane_potential;
+          // Store newly computed membrane in history
+          history_buffer[history_ptr] <= finalize_membrane_reg;
           history_ptr <= (history_ptr == ADDR_WIDTH'(HISTORY_LENGTH - 1)) ? '0 : history_ptr + 1'b1;
 
           membrane_potential <= finalize_membrane_reg;

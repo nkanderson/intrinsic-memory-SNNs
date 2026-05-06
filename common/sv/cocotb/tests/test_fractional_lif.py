@@ -132,8 +132,8 @@ class FractionalGolden:
         )
         next_spike = 1 if next_mem >= THRESHOLD else 0
 
-        # Sequential update order matches RTL
-        self.history[self.ptr] = self.mem
+        # Sequential update order matches RTL (store newly computed membrane)
+        self.history[self.ptr] = next_mem
         self.ptr = (self.ptr + 1) % self.history_length
         self.mem = next_mem
         self.spike_prev = next_spike

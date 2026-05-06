@@ -145,7 +145,7 @@ class BitshiftGolden:
         next_mem = wrap_signed(membrane_after_reset, MEMBRANE_WIDTH)
         next_spike = 1 if next_mem >= THRESHOLD else 0
 
-        self.history[self.ptr] = self.mem
+        self.history[self.ptr] = next_mem
         self.ptr = (self.ptr + 1) % self.history_length
         self.mem = next_mem
         self.spike_prev = next_spike
