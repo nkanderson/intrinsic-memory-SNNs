@@ -167,7 +167,7 @@ class BitshiftLIF(snn.Leaky):
         history_sum = history_shifted.sum(dim=0)  # (batch, features)
 
         # Compute new membrane potential
-        numerator = input_ - C * history_sum
+        numerator = input_ + C * history_sum
         denominator = C + self.lam
         mem_new = numerator / denominator
 

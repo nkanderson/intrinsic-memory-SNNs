@@ -429,3 +429,74 @@ All intermediate widths derive from `MEMBRANE_WIDTH`, `C_SCALED_FRAC_BITS`, `INV
 `post_finalize_membrane`
 - Lower `MEMBRANE_WIDTH` bits of `membrane_after_reset`
 - QS10.13
+
+### Membrane Potential Bit Width
+This section provides conservative steady-state bounds on membrane magnitude using a
+real-valued input bound and the documented default decay parameters. These bounds
+assume no reset (spike_prev=0), which yields the largest steady-state magnitude. If
+you want the steady-state bound under continuous spiking, replace I_max with
+I_max - THRESHOLD.
+
+Defaults used below:
+- I_max = 4.8 (cart-pole max input; note this exceeds QS2.13 range)
+- THRESHOLD = 1.0
+- beta = 0.9 -> lambda = (1 - beta) / beta = 0.111111...
+- C = 1 (dt = 1)
+- FRAC_BITS = 13
+
+General sizing rule:
+- Integer bits needed: ceil(log2(|V_max| + 1))
+- Total width = 1 (sign) + integer_bits + FRAC_BITS
+
+#### lif.sv (beta LIF)
+No-reset recurrence (maximal steady-state magnitude):
+- V[n] = beta * V[n-1] + I_max
+- V_max = I_max / (1 - beta) = 4.8 / 0.1 = 48.0
+
+Continuous-spike steady-state (reset every cycle):
+- V_max_spike = (I_max - THRESHOLD) / (1 - beta) = 3.8 / 0.1 = 38.0
+
+Sizing example (conservative, no-reset):
+- integer_bits = ceil(log2(48.0 + 1)) = 6
+- total width = 1 + 6 + 13 = 20 bits
+
+#### fractional_lif.sv (GL coefficients)
+For 0 < alpha <= 1, g_k <= 0 for k >= 1, so use magnitudes |g_k|. With C = 1:
+- V[n] = (I_max + sum_{k=1..H-1} |g_k| * V[n-k]) / (1 + lambda)
+- V_max = I_max / (1 + lambda - sum |g_k|)
+
+Using alpha = 0.5, HISTORY_LENGTH = 64:
+- sum |g_k| = 0.9290596866
+- denom = 1 + lambda - sum |g_k| = 0.1820514245
+- V_max = 4.8 / 0.1820514245 = 26.37
+
+Continuous-spike steady-state:
+- V_max_spike = 3.8 / 0.1820514245 = 20.87
+
+Sizing example (conservative, no-reset):
+- integer_bits = ceil(log2(26.37 + 1)) = 5
+- total width = 1 + 5 + 13 = 19 bits
+
+#### bitshift_lif.sv (shifted-history kernel)
+Let a_k = 2^(-shift[k]) from the compile-time shift profile. With C = 1:
+- V[n] = (I_max + sum_{k=1..H-1} a_k * V[n-k]) / (1 + lambda)
+- V_max = I_max / (1 + lambda - sum a_k)
+
+Using SHIFT_MODE = custom_slow_decay (3), CUSTOM_DECAY_RATE = 3, HISTORY_LENGTH = 64:
+- sum a_k = 0.935546875
+- denom = 1 + lambda - sum a_k = 0.1755642361
+- V_max = 4.8 / 0.1755642361 = 27.34
+
+Continuous-spike steady-state:
+- V_max_spike = 3.8 / 0.1755642361 = 21.64
+
+Sizing example (conservative, no-reset):
+- integer_bits = ceil(log2(27.34 + 1)) = 5
+- total width = 1 + 5 + 13 = 19 bits
+
+Notes:
+- If you clamp inputs to QS2.13 (|I| <= ~4.0), substitute I_max = 4.0.
+- Weight quantization does not constrain input current; use the true bound of
+    your observation pipeline.
+- If alpha, HISTORY_LENGTH, or shift profile changes, recompute the coefficient
+    sum and V_max.
