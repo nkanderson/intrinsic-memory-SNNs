@@ -39,7 +39,7 @@ from common.scripts.plot_styles import (  # noqa: E402
     AXIS_LABEL_FONTSIZE,
     TICK_LABEL_FONTSIZE,
     LEGEND_FONTSIZE,
-    get_latex_figsize,
+    DEFAULT_FIGSIZE,
 )
 
 # 1_design_space/scripts/ already contains max_history.py.
@@ -179,8 +179,7 @@ def plot_coefficient_magnitude(save_path: str = None, max_k: int = 20):
     """
     alpha_values = [0.1, 0.5, 0.9]
 
-    figsize = get_latex_figsize()
-    fig, ax = plt.subplots(figsize=(figsize["width"], figsize["height"]))
+    fig, ax = plt.subplots(figsize=DEFAULT_FIGSIZE)
 
     k_values = list(range(1, max_k + 1))
 
@@ -244,8 +243,7 @@ def plot_normalized_coefficient_magnitude(save_path: str = None, max_k: int = 20
     """
     alpha_values = [0.1, 0.3, 0.5, 0.7, 0.9]
 
-    figsize = get_latex_figsize()
-    fig, ax = plt.subplots(figsize=(figsize["width"], figsize["height"]))
+    fig, ax = plt.subplots(figsize=DEFAULT_FIGSIZE)
 
     k_values = list(range(1, max_k + 1))
 
@@ -335,8 +333,7 @@ def plot_alpha_sweep(save_path: str = None, alpha_bits: int = 4, max_k: int = 30
             format_results[f"{alpha}"] = max_history
         results[format_str] = format_results
 
-    figsize = get_latex_figsize()
-    fig, ax = plt.subplots(figsize=(figsize["width"], figsize["height"]))
+    fig, ax = plt.subplots(figsize=DEFAULT_FIGSIZE)
 
     for format_name in format_styles:
         data = results[format_name]

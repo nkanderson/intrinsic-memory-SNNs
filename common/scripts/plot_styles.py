@@ -69,13 +69,12 @@ COLOR_SAVE = OKABE_ITO[5]    # checkpoint save-event markers
 
 # ---------------------------------------------------------------------------
 # Font sizes
-# Canonical values sourced from 1_design_space/v1-092025/scripts/plot.py
-# and common/scripts/plot_membrane_potential.py (both use the same values).
+# Sized for ~7" wide figures that scale down cleanly in LaTeX.
 # ---------------------------------------------------------------------------
 
-AXIS_LABEL_FONTSIZE: int = 8
-TICK_LABEL_FONTSIZE: int = 6
-LEGEND_FONTSIZE: int = 6
+AXIS_LABEL_FONTSIZE: int = 12
+TICK_LABEL_FONTSIZE: int = 10
+LEGEND_FONTSIZE: int = 8
 
 # ---------------------------------------------------------------------------
 # Marker shapes — paired with Okabe-Ito colors so series are distinguishable
@@ -87,6 +86,10 @@ COMPARISON_MARKERS = ["o", "s", "^", "D", "P", "X", "v", "*"]
 # ---------------------------------------------------------------------------
 # Figure sizing
 # ---------------------------------------------------------------------------
+
+# Default figure size: 7" wide, golden-ratio height (~4.3").
+# Large enough for detail; scales down cleanly to LaTeX column width.
+DEFAULT_FIGSIZE: tuple[float, float] = (7.0, 4.3)
 
 
 def get_latex_figsize(width_scale: float = 1.0, height_scale: float | None = None) -> dict:

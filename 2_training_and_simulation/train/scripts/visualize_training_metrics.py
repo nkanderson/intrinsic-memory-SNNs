@@ -74,6 +74,10 @@ from common.scripts.plot_styles import (  # noqa: E402
     COLOR_SAVE,
     COLOR_RAW,
     COMPARISON_MARKERS,
+    DEFAULT_FIGSIZE,
+    AXIS_LABEL_FONTSIZE,
+    TICK_LABEL_FONTSIZE,
+    LEGEND_FONTSIZE,
 )
 
 DEFAULT_INPUT_RELATIVE = "metrics/core-v2"
@@ -172,7 +176,7 @@ def plot_comparison_lines(
       - "both": running average solid + generalization dashed (busier, shows
         the train-vs-eval gap).
     """
-    fig, ax = plt.subplots(figsize=(12, 7), constrained_layout=True)
+    fig, ax = plt.subplots(figsize=DEFAULT_FIGSIZE, constrained_layout=True)
 
     model_handles: list[Line2D] = []
     show_gen = mode == "both"
@@ -404,7 +408,7 @@ def plot_comparison_efficiency(
     performance. Models that never reached gen=500 are omitted (with a
     warning to stderr) because there's no honest x-value for them.
     """
-    fig, ax = plt.subplots(figsize=(10, 7), constrained_layout=True)
+    fig, ax = plt.subplots(figsize=DEFAULT_FIGSIZE, constrained_layout=True)
 
     plotted_any = False
     skipped: list[str] = []
@@ -497,7 +501,7 @@ def plot_comparison_stack_running(
     n = len(frames)
     fig, axes = plt.subplots(
         n, 1,
-        figsize=(11, 1.7 * n + 1.0),
+        figsize=(DEFAULT_FIGSIZE[0], 1.7 * n + 1.0),
         sharex=True,
         constrained_layout=True,
     )
@@ -587,7 +591,7 @@ def plot_comparison_stack_generalization(
     n = len(frames)
     fig, axes = plt.subplots(
         n, 1,
-        figsize=(11, 1.7 * n + 1.0),
+        figsize=(DEFAULT_FIGSIZE[0], 1.7 * n + 1.0),
         sharex=True,
         constrained_layout=True,
     )
@@ -694,7 +698,7 @@ def plot_detail(
 
     fig, (ax_train, ax_gen) = plt.subplots(
         2, 1,
-        figsize=(12, 8),
+        figsize=(DEFAULT_FIGSIZE[0], 8),
         sharex=True,
         gridspec_kw={"height_ratios": [3, 2], "hspace": 0.08},
         constrained_layout=True,

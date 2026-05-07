@@ -32,6 +32,7 @@ from common.scripts.plot_styles import (  # type: ignore  # noqa: E402
     AXIS_LABEL_FONTSIZE,
     TICK_LABEL_FONTSIZE,
     LEGEND_FONTSIZE,
+    DEFAULT_FIGSIZE,
 )
 
 try:
@@ -241,7 +242,7 @@ def plot_relative_error_comparison(
     x = series["history"]
     marker_stride = max(1, history_length // 12)
 
-    plt.figure(figsize=(12, 7))
+    plt.figure(figsize=DEFAULT_FIGSIZE)
 
     plt.plot(
         x,
@@ -297,10 +298,11 @@ def plot_relative_error_comparison(
     # plt.title(
     #     f"Coefficient Relative Error Comparison (alpha={alpha}, H={history_length})"
     # )
-    plt.xlabel("History Step (k)")
-    plt.ylabel("Relative Error (%)")
+    plt.xlabel("History Step (k)", fontsize=AXIS_LABEL_FONTSIZE)
+    plt.ylabel("Relative Error (%)", fontsize=AXIS_LABEL_FONTSIZE)
     plt.grid(True, alpha=0.25)
-    plt.legend(loc="best")
+    plt.legend(loc="best", fontsize=LEGEND_FONTSIZE)
+    plt.tick_params(axis="both", which="major", labelsize=TICK_LABEL_FONTSIZE)
     plt.tight_layout()
 
     if output_path is not None:
@@ -366,7 +368,8 @@ def plot_relative_error_abslog(
         "custom_slow": "v",
     }
 
-    plt.figure(figsize=(12, 7))
+
+    plt.figure(figsize=DEFAULT_FIGSIZE)
     for idx, name in enumerate(method_names):
         plt.plot(
             x,
@@ -392,13 +395,14 @@ def plot_relative_error_abslog(
     y_max = float(np.max(abs_matrix))
     plt.ylim(0.0, max(1.0, y_max * 1.1))
 
-    plt.xlabel("History Step (k)")
+    plt.xlabel("History Step (k)", fontsize=AXIS_LABEL_FONTSIZE)
     # NOTE: This is symlog scale, see comments above. The plot visually shows the
     # absolute relative error, but the y-axis is not a pure percentage scale due
     # to the symlog transformation.
-    plt.ylabel("Absolute Relative Error (%)")
+    plt.ylabel("Absolute Relative Error (%)", fontsize=AXIS_LABEL_FONTSIZE)
     plt.grid(True, alpha=0.25, which="both")
-    plt.legend(loc="best")
+    plt.legend(loc="best", fontsize=LEGEND_FONTSIZE)
+    plt.tick_params(axis="both", which="major", labelsize=TICK_LABEL_FONTSIZE)
     plt.tight_layout()
 
     if output_path is not None:
@@ -433,10 +437,12 @@ def plot_mean_absolute_error_bar(
     method_names, matrix = _method_series_from_relative_error(series)
     mae = np.mean(np.abs(matrix), axis=1)
 
-    plt.figure(figsize=(8, 5))
+
+    plt.figure(figsize=DEFAULT_FIGSIZE)
     bars = plt.bar(method_names, mae, width=0.65)
-    plt.ylabel("Mean Absolute Relative Error (%)")
-    plt.xlabel("Method")
+    plt.ylabel("Mean Absolute Relative Error (%)", fontsize=AXIS_LABEL_FONTSIZE)
+    plt.xlabel("Method", fontsize=AXIS_LABEL_FONTSIZE)
+    plt.tick_params(axis="both", which="major", labelsize=TICK_LABEL_FONTSIZE)
     plt.grid(True, axis="y", alpha=0.25)
 
     for bar, value in zip(bars, mae):
@@ -556,7 +562,7 @@ def plot_magnitude_decay(
     marker_stride = max(1, history_length // 10)
 
     # ---- figure ---------------------------------------------------------
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=DEFAULT_FIGSIZE)
 
     for label, values, color, ls, marker in series:
         # Replace exact zeros with NaN so log scale doesn't swallow them;
@@ -648,7 +654,7 @@ def plot_bitshift_growth(
 
     marker_stride = max(1, history_length // 10)
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=DEFAULT_FIGSIZE)
 
     for label, shifts, color, ls, marker in series:
         ax.plot(
