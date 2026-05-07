@@ -212,3 +212,27 @@ Bottom panel — generalization:
 | Best-avg line | `best_running_avg_100` | Raw. |
 | Best-gen line | `best_generalization_avg` | Raw. |
 | Save-event marks | `saved_best_*_model` | Raw (boolean flags). |
+
+## Fractional Dynamics Verification
+
+To ensure the correctness of the Python `FractionalLIF` model, we provide a suite of automated unit tests and visualization scripts in `train/scripts/`.
+
+### Automated Tests (`test_fractional_lif.py`)
+- **`test_history_dependence`**: Validates that neurons with identically matched instantaneous membrane potentials but different historical trajectories diverge over time, a core requirement of fractional order memory.
+- **`test_alpha_1_classic_lif`**: Ensures the model cleanly reverts to standard, history-independent Markovian leaky integrate-and-fire behavior when $\alpha = 1.0$.
+- **`test_spike_frequency_adaptation`**: Verifies that fractional order neurons ($\alpha < 1.0$) exhibit **Spike Frequency Acceleration** under constant input current. The Inter-Spike Interval (ISI) decreases monotonically over time because past spikes contribute positive historical momentum (negative GL coefficients) that makes the neuron easier to fire.
+
+### Sub-threshold Dynamics Visualization
+`plot_python_subthreshold.py` applies a square-wave input to neurons with varying $\alpha$ values, with a high threshold to prevent spiking. 
+
+The resulting charge and discharge curves illustrate the fundamental tradeoff in fractional dynamics:
+- **Higher $\alpha$** values ($\alpha \approx 1.0$) receive a massive, immediate feedback boost from their most recent state (since $|g_1| = \alpha$). They charge up to a much higher peak extremely quickly, but their memory drops off rapidly, causing them to discharge completely very quickly.
+- **Lower $\alpha$** values ($\alpha \approx 0.1$) have a sluggish initial response, but their historical memory coefficients decay via a very slow power-law. As a result, they retain their charge over incredibly long time horizons, producing the characteristic "flattened" curves with extremely long tails.
+
+#### The Mittag-Leffler Transition
+By passing the `--log` flag, the script plots the discharge phase on a **log-log** scale. On a log-log plot, an exponential decay drops almost vertically, while a pure power-law decay forms a straight line. 
+Because the `FractionalLIF` model incorporates a leak term ($\lambda = 0.1$), the governing mathematical solution is not a pure power law, but rather the **Mittag-Leffler function**. This function is characterized by an exponential-like drop at early time steps that smoothly transitions into a heavy power-law tail. The log-log plot beautifully captures this "knee" transition, with the curves eventually straightening out into parallel power-law tails at large timescales.
+
+### Spike Frequency Adaptation Visualization
+`plot_python_spike_adaptation.py` feeds a constant low current ($0.3$) into the neuron and plots the Inter-Spike Interval (ISI) over the sequence of emitted spikes. 
+The script generates stacked subplots for different $\alpha$ values against a baseline `snnTorch.Leaky` neuron. The baseline and $\alpha=1.0$ maintain a perfectly constant firing rate, while the lower fractional orders clearly display inverse power-law acceleration, their ISIs plummeting over time as the long-term memory buffer accumulates positive historical charge.

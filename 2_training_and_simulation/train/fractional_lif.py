@@ -20,7 +20,6 @@ if str(ROOT_DIR) not in sys.path:
 
 from common.scripts.utils import compute_gl_coefficients
 
-
 # Module-level cache for GL coefficients
 # Key: (alpha, history_length) -> Value: torch.Tensor of coefficients (CPU, float64)
 _GL_COEFF_CACHE = OrderedDict()
@@ -198,9 +197,9 @@ class FractionalLIF(snn.Leaky):
         # so each needs its own history. We process them in parallel for efficiency.
         # ============================================================
 
-        # Slice to get H-1 past values (matches H-1 coefficients after excluding g_0)
-        # history_length = number of GL coefficients computed, so effective history depth = H-1
-        history_valid = self.hist[: self.history_length - 1]  # (H-1, batch, features)
+        # Because we rolled the history buffer in forward() BEFORE calling this function,
+        # the past membrane potentials (V[n-1], V[n-2], ...) are now located at indices 1, 2, ...
+        history_valid = self.hist[1 : self.history_length]  # (H-1, batch, features)
 
         # ============================================================
         # BROADCASTING FOR VECTORIZED MULTIPLY-ACCUMULATE
@@ -224,12 +223,39 @@ class FractionalLIF(snn.Leaky):
         denominator = C + self.lam
         mem_new = numerator / denominator
 
-        # Update history buffer: shift in-place (faster than cat)
-        # Roll the history buffer and insert newly computed mem at position 0
-        self.hist = torch.roll(self.hist, shifts=1, dims=0)
-        self.hist[0] = mem_new
-
         return mem_new
+
+    def forward(self, input_, mem=None):
+        """
+        Override parent forward to properly manage the history buffer.
+        We roll the history BEFORE the step, let snnTorch compute the new state
+        and apply resets, and then capture the FINAL post-reset state into hist[0].
+        """
+        # 1. Initialize or reshape history buffer before rolling
+        if (
+            not hasattr(self, "hist")
+            or self.hist.shape[0] == 0
+            or self.hist.shape[1:] != input_.shape
+        ):
+            hist_shape = (self.history_length,) + input_.shape
+            self.hist = torch.zeros(
+                hist_shape, device=input_.device, dtype=input_.dtype
+            )
+
+        # 2. Roll history buffer. V[n-1] moves from hist[0] to hist[1].
+        self.hist = torch.roll(self.hist, shifts=1, dims=0)
+
+        # 3. Call snnTorch forward, which uses _base_state_function and applies reset.
+        if self.init_hidden:
+            spike = super().forward(input_, mem)
+            # 4. Capture final post-reset membrane potential
+            self.hist[0] = self.mem
+            return spike
+        else:
+            spike, mem_final = super().forward(input_, mem)
+            # 4. Capture final post-reset membrane potential
+            self.hist[0] = mem_final
+            return spike, mem_final
 
     @classmethod
     def reset_hidden(cls):
