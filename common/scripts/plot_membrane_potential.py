@@ -24,7 +24,7 @@ import numpy as np
 from matplotlib.ticker import FuncFormatter
 from vcdvcd import VCDVCD
 
-from common.scripts.plot_styles import (
+from plot_styles import (
     OKABE_ITO,
     COLOR_RAW,
     COLOR_MEMBRANE,
@@ -47,7 +47,12 @@ def _to_int(value_bits: str, width: int, signed: bool):
 
 
 _UNIT_TO_NS = {
-    "fs": 1e-6, "ps": 1e-3, "ns": 1.0, "us": 1e3, "ms": 1e6, "s": 1e9,
+    "fs": 1e-6,
+    "ps": 1e-3,
+    "ns": 1.0,
+    "us": 1e3,
+    "ms": 1e6,
+    "s": 1e9,
 }
 
 
@@ -66,6 +71,7 @@ def _vcd_time_scale_to_ns(vcd) -> float:
         unit = ts.get("unit", "ns")
     else:
         import re
+
         m = re.match(r"\s*(\d+)\s*([a-zA-Z]+)", str(ts))
         if not m:
             return 1.0
@@ -101,8 +107,14 @@ def _resolve_signal_name(vcd, requested: str, fallback_suffixes):
     return None
 
 
-def _extract_signal(vcd, signal_name: str, tmax_ns: float, signed: bool, width: int,
-                    time_scale_ns: float = 1.0):
+def _extract_signal(
+    vcd,
+    signal_name: str,
+    tmax_ns: float,
+    signed: bool,
+    width: int,
+    time_scale_ns: float = 1.0,
+):
     """Extract a signal's (time, value) trace. tmax_ns and returned times are both in ns."""
     if signal_name is None or signal_name not in vcd.references_to_ids:
         return None, None
@@ -192,7 +204,9 @@ def _load_phase_metadata(json_path: Path):
         return None
     with json_path.open() as f:
         data = json.load(f)
-    return [(p["t_start_ns"], p["t_end_ns"], p["label"]) for p in data.get("phases", [])]
+    return [
+        (p["t_start_ns"], p["t_end_ns"], p["label"]) for p in data.get("phases", [])
+    ]
 
 
 def _compute_isi_excluding_cross_phase(spike_edge_times, phase_labels):
@@ -282,10 +296,16 @@ def _compute_phase_spans(spike_edge_times, phase_labels, vcd_end_ns: float):
 
 
 def _plot_per_phase_panels(
-    mem_times, mem_values,
-    spike_edge_times, phase_labels, phase_spans,
-    zoom_n, padding, max_points,
-    output_file, show_plot,
+    mem_times,
+    mem_values,
+    spike_edge_times,
+    phase_labels,
+    phase_spans,
+    zoom_n,
+    padding,
+    max_points,
+    output_file,
+    show_plot,
 ):
     """1-row × N-phase figure: one membrane-trace panel per phase, each zoomed to first N spikes.
 
@@ -302,7 +322,8 @@ def _plot_per_phase_panels(
     n_panels = len(phase_spans)
     figsize = get_latex_figsize(width_scale=1.6, height_scale=0.55)
     fig, axes = plt.subplots(
-        1, n_panels,
+        1,
+        n_panels,
         figsize=(figsize["width"], figsize["height"]),
         sharey=True,
     )
@@ -339,7 +360,10 @@ def _plot_per_phase_panels(
                 spk_in_window,
                 np.ones(len(spk_in_window)) * 0.97,
                 transform=ax.get_xaxis_transform(),
-                marker="|", s=60, color=COLOR_SPIKE, linewidth=0.8,
+                marker="|",
+                s=60,
+                color=COLOR_SPIKE,
+                linewidth=0.8,
             )
 
         ax.axvspan(xmin, xmax, alpha=0.12, color=color, linewidth=0)
@@ -347,7 +371,9 @@ def _plot_per_phase_panels(
         ax.set_title(label, fontsize=AXIS_LABEL_FONTSIZE, color=color)
         ax.set_xlabel("Time (ns)", fontsize=AXIS_LABEL_FONTSIZE)
         ax.xaxis.set_major_formatter(
-            FuncFormatter(lambda x, _: f"{x:.2e}".replace("e+0", "e").replace("e+", "e"))
+            FuncFormatter(
+                lambda x, _: f"{x:.2e}".replace("e+0", "e").replace("e+", "e")
+            )
         )
         ax.tick_params(axis="both", which="major", labelsize=TICK_LABEL_FONTSIZE)
         ax.grid(True, which="both", linestyle=":", alpha=0.6)
@@ -357,7 +383,9 @@ def _plot_per_phase_panels(
 
     output_path = Path(output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(output_path, format=output_path.suffix.lstrip(".") or "svg", bbox_inches="tight")
+    plt.savefig(
+        output_path, format=output_path.suffix.lstrip(".") or "svg", bbox_inches="tight"
+    )
     if show_plot:
         plt.show()
     else:
@@ -401,7 +429,9 @@ def plot_signal(
     # to nanoseconds so phase metadata from the sidecar JSON (which uses get_sim_time(unit="ns"))
     # lines up with VCD-derived timestamps.
     time_scale_ns = _vcd_time_scale_to_ns(vcd)
-    print(f"VCD timescale: {getattr(vcd, 'timescale', '?')}, multiplier→ns = {time_scale_ns}")
+    print(
+        f"VCD timescale: {getattr(vcd, 'timescale', '?')}, multiplier→ns = {time_scale_ns}"
+    )
 
     if tmax is None:
         tmax = float(vcd.endtime) * time_scale_ns
@@ -470,7 +500,9 @@ def plot_signal(
         distinct = set(phase_labels)
         if len(distinct) > 1 and not zoom_full:
             zoom_full = True
-            print(f"Multi-phase CSV detected ({distinct}); switching to full-span zoom.")
+            print(
+                f"Multi-phase CSV detected ({distinct}); switching to full-span zoom."
+            )
 
     spike_edge_times = []
     if spk_name is not None:
@@ -496,13 +528,17 @@ def plot_signal(
         sidecar = _load_phase_metadata(sidecar_path)
         if sidecar:
             phase_spans = sidecar
-            print(f"Phase spans (from sidecar {sidecar_path.name}): "
-                  f"{[(round(s), round(e), l) for s, e, l in phase_spans]}")
+            print(
+                f"Phase spans (from sidecar {sidecar_path.name}): "
+                f"{[(round(s), round(e), l) for s, e, l in phase_spans]}"
+            )
 
     if not phase_spans and phase_labels and spike_edge_times:
         phase_spans = _compute_phase_spans(spike_edge_times, phase_labels, tmax)
-        print(f"Phase spans (inferred from spikes): "
-              f"{[(round(s), round(e), l) for s, e, l in phase_spans]}")
+        print(
+            f"Phase spans (inferred from spikes): "
+            f"{[(round(s), round(e), l) for s, e, l in phase_spans]}"
+        )
 
     # 3-panel per-phase view: one membrane panel per phase, each zoomed to first N spikes.
     if zoom_early_spikes_per_phase > 0 and phase_spans:
@@ -530,15 +566,16 @@ def plot_signal(
             n = min(zoom_early_spikes, len(spike_edge_times))
             x_min = max(0, spike_edge_times[0] - auto_window_padding)
             x_max = min(tmax, spike_edge_times[n - 1] + auto_window_padding)
-            print(f"Early-spike window (N={zoom_early_spikes}): x_min={x_min}, x_max={x_max}")
+            print(
+                f"Early-spike window (N={zoom_early_spikes}): x_min={x_min}, x_max={x_max}"
+            )
 
     # --phase-zoom-spikes N: trim x_max to the Nth spike of the last active (non-dropout) phase.
     # Useful for cutting the long stable tail of recovery while keeping the full x_min context.
     if phase_zoom_spikes > 0 and phase_labels and spike_edge_times:
         n_paired = min(len(spike_edge_times), len(phase_labels))
         last_active_spikes = [
-            spike_edge_times[i] for i in range(n_paired)
-            if phase_labels[i] != "dropout"
+            spike_edge_times[i] for i in range(n_paired) if phase_labels[i] != "dropout"
         ]
         # Spikes of the last active phase only.
         last_phase_label = next(
@@ -546,13 +583,16 @@ def plot_signal(
         )
         if last_phase_label:
             last_phase_spikes = [
-                spike_edge_times[i] for i in range(n_paired)
+                spike_edge_times[i]
+                for i in range(n_paired)
                 if phase_labels[i] == last_phase_label
             ]
             n_trim = min(phase_zoom_spikes, len(last_phase_spikes))
             if n_trim > 0:
                 x_max = min(tmax, last_phase_spikes[n_trim - 1] + auto_window_padding)
-                print(f"Phase-zoom trim: x_max capped at spike {n_trim} of {last_phase_label} ({x_max} ns)")
+                print(
+                    f"Phase-zoom trim: x_max capped at spike {n_trim} of {last_phase_label} ({x_max} ns)"
+                )
 
     if x_min is None:
         x_min = 0
@@ -597,9 +637,12 @@ def plot_signal(
         for t_start, t_end, label in phase_spans:
             mid = (t_start + t_end) / 2
             ax_mem.text(
-                mid, 0.97, label,
+                mid,
+                0.97,
+                label,
                 transform=ax_mem.get_xaxis_transform(),
-                ha="center", va="top",
+                ha="center",
+                va="top",
                 fontsize=TICK_LABEL_FONTSIZE,
                 color=PHASE_COLORS.get(label, COLOR_RAW),
             )
@@ -613,9 +656,14 @@ def plot_signal(
         ax_cur = axes[ax_index]
         if cur_times is None or not cur_times:
             ax_cur.text(
-                0.5, 0.5, "Current signal unavailable",
+                0.5,
+                0.5,
+                "Current signal unavailable",
                 transform=ax_cur.transAxes,
-                ha="center", va="center", fontsize=10, color="gray",
+                ha="center",
+                va="center",
+                fontsize=10,
+                color="gray",
             )
         else:
             cur_times, cur_values = _downsample(cur_times, cur_values, max_points)
@@ -634,9 +682,14 @@ def plot_signal(
             ax_spk.scatter(spike_edge_times, y, marker="|", s=80, color=COLOR_SPIKE)
         else:
             ax_spk.text(
-                0.5, 0.5, "No spike rising edges detected",
+                0.5,
+                0.5,
+                "No spike rising edges detected",
                 transform=ax_spk.transAxes,
-                ha="center", va="center", fontsize=10, color="gray",
+                ha="center",
+                va="center",
+                fontsize=10,
+                color="gray",
             )
         _draw_phase_spans(ax_spk)
         ax_spk.set_ylabel("Spikes", fontsize=AXIS_LABEL_FONTSIZE)
@@ -662,9 +715,14 @@ def plot_signal(
             ax_isi.scatter(isi_times, isi_values, color=COLOR_ISI, s=4, alpha=0.7)
         else:
             ax_isi.text(
-                0.5, 0.5, "Not enough spikes for ISI",
+                0.5,
+                0.5,
+                "Not enough spikes for ISI",
                 transform=ax_isi.transAxes,
-                ha="center", va="center", fontsize=10, color="gray",
+                ha="center",
+                va="center",
+                fontsize=10,
+                color="gray",
             )
         _draw_phase_spans(ax_isi)
         ax_isi.set_ylabel("ISI (ns)", fontsize=AXIS_LABEL_FONTSIZE)
@@ -696,7 +754,9 @@ if __name__ == "__main__":
             "fst2vcd <file>.fst -o <file>.vcd"
         )
     )
-    parser.add_argument("vcd_file", help="Path to VCD file (.fst input prints a conversion hint)")
+    parser.add_argument(
+        "vcd_file", help="Path to VCD file (.fst input prints a conversion hint)"
+    )
     parser.add_argument(
         "--membrane-signal",
         default="fractional_lif.membrane_out[23:0]",
@@ -716,43 +776,67 @@ if __name__ == "__main__":
     parser.add_argument("--current-width", type=int, default=16)
     parser.add_argument("--spike-width", type=int, default=1)
     parser.add_argument(
-        "--tmax", type=int, default=None,
+        "--tmax",
+        type=int,
+        default=None,
         help="Maximum simulation time to plot (ns). Defaults to the full VCD duration.",
     )
-    parser.add_argument("--no-current", action="store_true", help="Disable current subplot")
+    parser.add_argument(
+        "--no-current", action="store_true", help="Disable current subplot"
+    )
     parser.add_argument("--no-spike", action="store_true", help="Disable spike subplot")
     parser.add_argument("--no-isi", action="store_true", help="Disable ISI subplot")
     parser.add_argument("--max-points", type=int, default=200_000)
-    parser.add_argument("--x-min", type=int, default=None, help="Manual x-axis minimum (ns)")
-    parser.add_argument("--x-max", type=int, default=None, help="Manual x-axis maximum (ns)")
     parser.add_argument(
-        "--zoom-early-spikes", type=int, default=20, metavar="N",
-        help="Window x-axis from the first to the Nth detected spike (default: 20). "
-             "Set to 0 to disable.",
+        "--x-min", type=int, default=None, help="Manual x-axis minimum (ns)"
     )
     parser.add_argument(
-        "--zoom-full", action="store_true",
+        "--x-max", type=int, default=None, help="Manual x-axis maximum (ns)"
+    )
+    parser.add_argument(
+        "--zoom-early-spikes",
+        type=int,
+        default=20,
+        metavar="N",
+        help="Window x-axis from the first to the Nth detected spike (default: 20). "
+        "Set to 0 to disable.",
+    )
+    parser.add_argument(
+        "--zoom-full",
+        action="store_true",
         help="Window x-axis from first to last spike (overrides --zoom-early-spikes)",
     )
     parser.add_argument(
-        "--auto-window-padding", type=int, default=5_000,
+        "--auto-window-padding",
+        type=int,
+        default=5_000,
         help="Padding (ns) added around the auto-computed spike window (default: 5000)",
     )
     parser.add_argument(
-        "--phase-csv", default=None, metavar="PATH",
+        "--phase-csv",
+        default=None,
+        metavar="PATH",
         help="Path to spike-cycles CSV with a 'phase' column; adds shaded phase regions",
     )
     parser.add_argument(
-        "--phase-zoom-spikes", type=int, default=0, metavar="N",
+        "--phase-zoom-spikes",
+        type=int,
+        default=0,
+        metavar="N",
         help="Trim x_max to the Nth spike of the last active phase (e.g. recovery). "
-             "Leaves x_min at the default full-span start. Use with --phase-csv.",
+        "Leaves x_min at the default full-span start. Use with --phase-csv.",
     )
     parser.add_argument(
-        "--zoom-early-spikes-per-phase", type=int, default=0, metavar="N",
+        "--zoom-early-spikes-per-phase",
+        type=int,
+        default=0,
+        metavar="N",
         help="3-panel layout: one membrane panel per phase, each showing the first N spikes. "
-             "Requires --phase-csv. Overrides --zoom-early-spikes / --zoom-full.",
+        "Requires --phase-csv. Overrides --zoom-early-spikes / --zoom-full.",
     )
-    parser.add_argument("--show", action="store_true", help="Display interactive window after saving")
+    parser.add_argument(
+        "--show", action="store_true", help="Display interactive window after saving"
+    )
     parser.add_argument(
         "--output",
         default="images/fractional_lif_memory_constant.svg",
