@@ -61,28 +61,20 @@ import pandas as pd
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 
-# Okabe-Ito colorblind-safe palette. Deuteranopia-, protanopia-, and
-# tritanopia-distinguishable. Used by both the comparison and detail plots.
-OKABE_ITO = [
-    "#0072B2",  # blue
-    "#D55E00",  # vermillion
-    "#009E73",  # bluish green
-    "#CC79A7",  # reddish purple
-    "#56B4E9",  # sky blue
-    "#E69F00",  # orange
-    "#F0E442",  # yellow
-    "#000000",  # black
-]
+# Ensure project root is on sys.path so the shared style module can be found.
+ROOT_DIR = Path(__file__).resolve().parents[3]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
-COLOR_TRAIN = OKABE_ITO[0]   # running average
-COLOR_GEN = OKABE_ITO[2]     # generalization
-COLOR_BEST = OKABE_ITO[1]    # best-so-far reference lines
-COLOR_SAVE = OKABE_ITO[5]    # checkpoint save-event markers
-COLOR_RAW = "#999999"        # faint raw episode-reward scatter
-
-# Marker shapes: paired with Okabe-Ito colors so series are distinguishable
-# without color.
-COMPARISON_MARKERS = ["o", "s", "^", "D", "P", "X", "v", "*"]
+from common.scripts.plot_styles import (  # noqa: E402
+    OKABE_ITO,
+    COLOR_TRAIN,
+    COLOR_GEN,
+    COLOR_BEST,
+    COLOR_SAVE,
+    COLOR_RAW,
+    COMPARISON_MARKERS,
+)
 
 DEFAULT_INPUT_RELATIVE = "metrics/core-v2"
 DEFAULT_OUTPUT_RELATIVE = "images/core-v2"

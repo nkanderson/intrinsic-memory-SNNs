@@ -27,6 +27,12 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from common.scripts.utils import compute_gl_coefficients  # type: ignore
+from common.scripts.plot_styles import (  # type: ignore  # noqa: E402
+    OKABE_ITO,
+    AXIS_LABEL_FONTSIZE,
+    TICK_LABEL_FONTSIZE,
+    LEGEND_FONTSIZE,
+)
 
 try:
     import history_coefficients as hc  # type: ignore
@@ -168,7 +174,7 @@ def build_relative_error_series(
     alpha: float = 0.5,
     history_length: int = 16,
     coeff_bits: int = 16,
-    coeff_frac_bits: int = 15,
+    coeff_frac_bits: int = 16,
 ) -> Dict[str, np.ndarray]:
     """
     Build aligned relative-error series (%):
@@ -473,6 +479,217 @@ def print_compact_table(rows: List[Dict[str, str]], max_rows: int = 32):
         print(line)
 
 
+def plot_magnitude_decay(
+    alpha: float = 0.5,
+    history_length: int = 64,
+    coeff_bits: int = 16,
+    coeff_frac_bits: int = 16,
+    output_path: Path | None = None,
+    use_svg: bool = False,
+):
+    """
+    Plot coefficient magnitude vs. history step k on a log scale.
+
+    Shows six series starting at k=1 (g_0=1 is skipped):
+      - Analytical GL magnitude (true float values)
+      - Q0.16 quantized magnitude
+      - bitshift: simple   (2^0, 2^-1, 2^-2, ...)
+      - bitshift: slow_decay
+      - bitshift: custom
+      - bitshift: custom_slow
+
+    A horizontal dashed reference line marks the Q0.16 quantization floor
+    (1 / 2^coeff_frac_bits) so it is easy to see when each series reaches
+    the representable limit.
+
+    X-axis: history step index k (1 … history_length)
+    Y-axis: coefficient magnitude (log scale)
+
+    Args:
+        alpha: Fractional order.
+        history_length: Number of history steps to plot (starting at k=1).
+        coeff_bits: Total bit width for quantization.
+        coeff_frac_bits: Number of fractional bits (Q0.16 → coeff_frac_bits=16).
+        output_path: File path to save the figure; shows interactively if None.
+        use_svg: Save as SVG instead of PNG.
+    """
+    # ---- data -----------------------------------------------------------
+    coeffs = compute_gl_coefficients(alpha, history_length + 1)  # need k=0..history_length
+    coeffs_np = coeffs.numpy() if hasattr(coeffs, "numpy") else np.array(coeffs)
+
+    # Skip k=0 (g_0 = 1 by definition; not operationally stored).
+    k_values = np.arange(1, history_length + 1)
+    analytical = np.abs(coeffs_np[1 : history_length + 1].astype(float))
+
+    # Q0.16 quantized values for k=1..H
+    quantized_vals = []
+    for v in analytical:
+        _, q_float = quantize_magnitude(float(v), bits=coeff_bits, frac_bits=coeff_frac_bits)
+        quantized_vals.append(q_float)
+    quantized = np.array(quantized_vals, dtype=float)
+
+    # Bitshift sequences (also skip k=0 by slicing from index 1).
+    # These are raw float magnitudes (powers of 2), NOT quantized — the whole
+    # point of bitshift is to avoid stored coefficients.  The y-axis is clipped
+    # at the Q0.16 floor so series that would be unrepresentable simply exit
+    # the visible area.
+    simple = np.array(hc.simple_sequence(history_length + 1)[1:], dtype=float)
+    slow_decay = np.array(hc.slow_decay_sequence(history_length + 1)[1:], dtype=float)
+    custom = np.array(hc.custom_sequence(history_length + 1, decay_rate=3)[1:], dtype=float)
+    custom_slow = np.array(hc.custom_slow_decay_sequence(history_length + 1)[1:], dtype=float)
+
+    # Quantization floor: smallest nonzero value in Q0.{coeff_frac_bits}
+    q_floor = 1.0 / (1 << coeff_frac_bits)
+
+    # ---- style ----------------------------------------------------------
+    # Series drawn in Okabe-Ito order; GL gets the first slot (blue), quantized
+    # gets the second (vermillion), then the four bitshift variants.
+    series = [
+        ("GL analytical",       analytical,  OKABE_ITO[0], "-",    "o"),
+        (f"Q0.{coeff_frac_bits} quantized", quantized,  OKABE_ITO[1], "--",   "s"),
+        ("bitshift: simple",    simple,      OKABE_ITO[2], "-.",   "^"),
+        ("bitshift: slow_decay",slow_decay,  OKABE_ITO[5], ":",    "D"),
+        ("bitshift: custom",    custom,      OKABE_ITO[3], (0,(5,2)),"v"),
+        ("bitshift: custom_slow",custom_slow,OKABE_ITO[4], (0,(1,1)),"P"),
+    ]
+
+    marker_stride = max(1, history_length // 10)
+
+    # ---- figure ---------------------------------------------------------
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    for label, values, color, ls, marker in series:
+        # Replace exact zeros with NaN so log scale doesn't swallow them;
+        # they'll simply disappear from the line (which is the desired
+        # visual indicator that the series has hit zero).
+        y = np.where(values == 0.0, np.nan, values)
+        ax.plot(
+            k_values,
+            y,
+            label=label,
+            color=color,
+            linestyle=ls,
+            linewidth=1.6,
+            marker=marker,
+            markersize=4,
+            markevery=marker_stride,
+            alpha=0.9,
+        )
+
+    # Quantization floor reference line.
+    ax.axhline(
+        q_floor,
+        color="#666666",
+        linewidth=0.9,
+        linestyle=":",
+        label=f"Q0.{coeff_frac_bits} floor ({q_floor:.2e})",
+        alpha=0.8,
+    )
+
+    ax.set_yscale("log")
+    ax.set_xlabel("History Step (k)", fontsize=AXIS_LABEL_FONTSIZE)
+    ax.set_ylabel("Coefficient Magnitude", fontsize=AXIS_LABEL_FONTSIZE)
+    ax.tick_params(axis="both", which="major", labelsize=TICK_LABEL_FONTSIZE)
+    ax.grid(True, which="both", alpha=0.25, linestyle=":")
+    ax.set_axisbelow(True)
+
+    # Clip y-axis at the Q0.16 floor so bitshift series that would be
+    # unrepresentable simply exit the visible area — no misleading 10^-18.
+    ax.set_ylim(bottom=q_floor * 0.4)
+    ax.legend(loc="upper right", fontsize=LEGEND_FONTSIZE, framealpha=0.9)
+
+    plt.tight_layout()
+
+    if output_path is not None:
+        final_path = resolve_plot_path(output_path, use_svg)
+        final_path.parent.mkdir(parents=True, exist_ok=True)
+        if use_svg:
+            plt.savefig(final_path, format="svg", bbox_inches="tight")
+        else:
+            plt.savefig(final_path, dpi=150, bbox_inches="tight")
+        print(f"Wrote magnitude decay plot to {final_path}")
+
+    plt.close(fig)
+
+
+def plot_bitshift_growth(
+    history_length: int = 64,
+    output_path: Path | None = None,
+    use_svg: bool = False,
+):
+    """
+    Plot bit-shift amounts (the exponent) vs. history step k.
+
+    Shows how aggressively each bitshift strategy increases its right-shift
+    amount over the history window.  A larger shift means a smaller coefficient
+    (2^{-shift}), so faster growth → faster magnitude decay.
+
+    X-axis: history step index k (1 … history_length)
+    Y-axis: shift amount (integer, linear scale)
+
+    Args:
+        history_length: Number of history steps to plot.
+        output_path: File path to save the figure; shows interactively if None.
+        use_svg: Save as SVG instead of PNG.
+    """
+    # Shift amount sequences (skip k=0 by slicing from index 1).
+    k_values = np.arange(1, history_length + 1)
+    simple_shifts = np.array(hc.simple_bitshift(history_length + 1)[1:])
+    slow_shifts = np.array(hc.slow_decay_bitshift(history_length + 1)[1:])
+    custom_shifts = np.array(hc.custom_bitshift(history_length + 1, decay_rate=3)[1:])
+    custom_slow_shifts = np.array(hc.custom_slow_decay_bitshift(history_length + 1)[1:])
+
+    series = [
+        ("simple",      simple_shifts,       OKABE_ITO[2], "-.",      "^"),
+        ("slow_decay",  slow_shifts,         OKABE_ITO[5], ":",       "D"),
+        ("custom",      custom_shifts,       OKABE_ITO[3], (0,(5,2)), "v"),
+        ("custom_slow", custom_slow_shifts,  OKABE_ITO[4], (0,(1,1)), "P"),
+    ]
+
+    marker_stride = max(1, history_length // 10)
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    for label, shifts, color, ls, marker in series:
+        ax.plot(
+            k_values,
+            shifts,
+            label=label,
+            color=color,
+            linestyle=ls,
+            linewidth=1.6,
+            marker=marker,
+            markersize=4,
+            markevery=marker_stride,
+            alpha=0.9,
+        )
+
+    ax.set_xlabel("History Step (k)", fontsize=AXIS_LABEL_FONTSIZE)
+    ax.set_ylabel("Right-Shift Amount (bits)", fontsize=AXIS_LABEL_FONTSIZE)
+    ax.tick_params(axis="both", which="major", labelsize=TICK_LABEL_FONTSIZE)
+    ax.grid(True, alpha=0.25, linestyle=":")
+    ax.set_axisbelow(True)
+
+    # Reference lines at common signal widths.
+    ax.axhline(16, color="#666666", linewidth=0.9, linestyle="--", alpha=0.7)
+    ax.axhline(32, color="#666666", linewidth=0.9, linestyle="--", alpha=0.7)
+
+    ax.legend(loc="upper left", fontsize=LEGEND_FONTSIZE, framealpha=0.9)
+
+    plt.tight_layout()
+
+    if output_path is not None:
+        final_path = resolve_plot_path(output_path, use_svg)
+        final_path.parent.mkdir(parents=True, exist_ok=True)
+        if use_svg:
+            plt.savefig(final_path, format="svg", bbox_inches="tight")
+        else:
+            plt.savefig(final_path, dpi=150, bbox_inches="tight")
+        print(f"Wrote bitshift growth plot to {final_path}")
+
+    plt.close(fig)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Analyze GL coefficients and bit-shift approximations"
@@ -480,7 +697,7 @@ def main():
     parser.add_argument("--alpha", type=float, default=0.5)
     parser.add_argument("--history-length", type=int, default=16)
     parser.add_argument("--coeff-bits", type=int, default=16)
-    parser.add_argument("--coeff-frac-bits", type=int, default=15)
+    parser.add_argument("--coeff-frac-bits", type=int, default=16)
     parser.add_argument("--precision", type=int, default=8)
     parser.add_argument(
         "--out-quant-csv",
@@ -511,6 +728,25 @@ def main():
         type=str,
         default=None,
         help="Output image path for mean absolute relative-error bar chart",
+    )
+    parser.add_argument(
+        "--out-bitshift-growth",
+        type=str,
+        default=None,
+        help=(
+            "Output image path for bitshift shift-amount growth plot "
+            "(shows how aggressively each strategy increases its right-shift)."
+        ),
+    )
+    parser.add_argument(
+        "--out-magnitude-decay",
+        type=str,
+        default=None,
+        help=(
+            "Output image path for coefficient magnitude decay plot "
+            "(GL analytical, Q0.16 quantized, all bitshift variants). "
+            "Defaults: alpha=0.5, history-length=64, coeff-bits=16, coeff-frac-bits=16."
+        ),
     )
     parser.add_argument(
         "--svg",
@@ -585,6 +821,23 @@ def main():
             coeff_bits=args.coeff_bits,
             coeff_frac_bits=args.coeff_frac_bits,
             output_path=Path(args.out_relerr_mae_bar),
+            use_svg=args.svg,
+        )
+
+    if args.out_bitshift_growth:
+        plot_bitshift_growth(
+            history_length=args.history_length,
+            output_path=Path(args.out_bitshift_growth),
+            use_svg=args.svg,
+        )
+
+    if args.out_magnitude_decay:
+        plot_magnitude_decay(
+            alpha=args.alpha,
+            history_length=args.history_length,
+            coeff_bits=args.coeff_bits,
+            coeff_frac_bits=args.coeff_frac_bits,
+            output_path=Path(args.out_magnitude_decay),
             use_svg=args.svg,
         )
 

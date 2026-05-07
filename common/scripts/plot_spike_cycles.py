@@ -1,46 +1,26 @@
 import argparse
 import csv
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Ensure project root is on sys.path for the plot_styles import.
+ROOT_DIR = Path(__file__).resolve().parents[2]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
-OKABE_ITO = [
-    "#0072B2",  # blue
-    "#D55E00",  # vermillion
-    "#009E73",  # bluish green
-    "#CC79A7",  # reddish purple
-    "#56B4E9",  # sky blue
-    "#E69F00",  # orange
-    "#F0E442",  # yellow
-    "#000000",  # black
-]
-COLOR_RAW = "#999999"
-
-PHASE_COLORS = {
-    "constant": OKABE_ITO[2],   # bluish green
-    "startup": COLOR_RAW,
-    "dropout": OKABE_ITO[1],    # vermillion
-    "recovery": OKABE_ITO[2],   # bluish green
-}
-COLOR_MA = OKABE_ITO[7]         # black
-
-
-def get_latex_figsize(width_scale=1.0, height_scale=None):
-    doc_textwidth_mm = 117.0
-    inches_per_mm = 1 / 25.4
-    doc_textwidth_in = doc_textwidth_mm * inches_per_mm
-
-    fig_width = doc_textwidth_in * width_scale
-
-    if height_scale is None:
-        golden_ratio = (np.sqrt(5) - 1.0) / 2.0
-        fig_height = fig_width * golden_ratio
-    else:
-        fig_height = doc_textwidth_in * height_scale
-
-    return {"width": fig_width, "height": fig_height}
+from common.scripts.plot_styles import (
+    OKABE_ITO,
+    COLOR_RAW,
+    COLOR_MA,
+    PHASE_COLORS,
+    AXIS_LABEL_FONTSIZE,
+    TICK_LABEL_FONTSIZE,
+    LEGEND_FONTSIZE,
+    get_latex_figsize,
+)
 
 
 def load_spike_cycles(csv_path: Path):

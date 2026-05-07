@@ -24,46 +24,19 @@ import numpy as np
 from matplotlib.ticker import FuncFormatter
 from vcdvcd import VCDVCD
 
-
-OKABE_ITO = [
-    "#0072B2",  # blue
-    "#D55E00",  # vermillion
-    "#009E73",  # bluish green
-    "#CC79A7",  # reddish purple
-    "#56B4E9",  # sky blue
-    "#E69F00",  # orange
-    "#F0E442",  # yellow
-    "#000000",  # black
-]
-COLOR_RAW = "#999999"
-
-COLOR_MEMBRANE = OKABE_ITO[0]   # blue
-COLOR_CURRENT = OKABE_ITO[5]    # orange
-COLOR_SPIKE = OKABE_ITO[1]      # vermillion
-COLOR_ISI = OKABE_ITO[2]        # bluish green
-COLOR_MA = OKABE_ITO[7]         # black
-
-PHASE_COLORS = {
-    "startup": COLOR_RAW,
-    "dropout": OKABE_ITO[1],   # vermillion
-    "recovery": OKABE_ITO[2],  # bluish green
-}
-
-
-def get_latex_figsize(width_scale=1.0, height_scale=None):
-    doc_textwidth_mm = 117.0
-    inches_per_mm = 1 / 25.4
-    doc_textwidth_in = doc_textwidth_mm * inches_per_mm
-
-    fig_width = doc_textwidth_in * width_scale
-
-    if height_scale is None:
-        golden_ratio = (np.sqrt(5) - 1.0) / 2.0
-        fig_height = fig_width * golden_ratio
-    else:
-        fig_height = doc_textwidth_in * height_scale
-
-    return {"width": fig_width, "height": fig_height}
+from common.scripts.plot_styles import (
+    OKABE_ITO,
+    COLOR_RAW,
+    COLOR_MEMBRANE,
+    COLOR_CURRENT,
+    COLOR_SPIKE,
+    COLOR_ISI,
+    COLOR_MA,
+    PHASE_COLORS,
+    AXIS_LABEL_FONTSIZE,
+    TICK_LABEL_FONTSIZE,
+    get_latex_figsize,
+)
 
 
 def _to_int(value_bits: str, width: int, signed: bool):
@@ -319,9 +292,6 @@ def _plot_per_phase_panels(
     For phases with no spikes (e.g. dropout) the full phase duration is shown.
     This layout is the clearest way to compare startup vs. recovery spiking density.
     """
-    axis_label_fontsize = 8
-    tick_label_fontsize = 6
-
     # Group VCD spike times by phase label (preserving order).
     n_paired = min(len(spike_edge_times), len(phase_labels))
     phase_spike_times: dict[str, list] = {}
@@ -374,15 +344,15 @@ def _plot_per_phase_panels(
 
         ax.axvspan(xmin, xmax, alpha=0.12, color=color, linewidth=0)
         ax.set_xlim(xmin, xmax)
-        ax.set_title(label, fontsize=axis_label_fontsize, color=color)
-        ax.set_xlabel("Time (ns)", fontsize=axis_label_fontsize)
+        ax.set_title(label, fontsize=AXIS_LABEL_FONTSIZE, color=color)
+        ax.set_xlabel("Time (ns)", fontsize=AXIS_LABEL_FONTSIZE)
         ax.xaxis.set_major_formatter(
             FuncFormatter(lambda x, _: f"{x:.2e}".replace("e+0", "e").replace("e+", "e"))
         )
-        ax.tick_params(axis="both", which="major", labelsize=tick_label_fontsize)
+        ax.tick_params(axis="both", which="major", labelsize=TICK_LABEL_FONTSIZE)
         ax.grid(True, which="both", linestyle=":", alpha=0.6)
 
-    axes[0].set_ylabel("Membrane", fontsize=axis_label_fontsize)
+    axes[0].set_ylabel("Membrane", fontsize=AXIS_LABEL_FONTSIZE)
     plt.tight_layout()
 
     output_path = Path(output_file)
@@ -424,9 +394,6 @@ def plot_signal(
             f"  fst2vcd {vcd_file} -o {Path(vcd_file).with_suffix('.vcd')}"
         )
         return
-
-    axis_label_fontsize = 8
-    tick_label_fontsize = 6
 
     vcd = VCDVCD(vcd_file, store_tvs=True)
 
@@ -633,11 +600,11 @@ def plot_signal(
                 mid, 0.97, label,
                 transform=ax_mem.get_xaxis_transform(),
                 ha="center", va="top",
-                fontsize=tick_label_fontsize,
+                fontsize=TICK_LABEL_FONTSIZE,
                 color=PHASE_COLORS.get(label, COLOR_RAW),
             )
-    ax_mem.set_ylabel("Membrane", fontsize=axis_label_fontsize)
-    ax_mem.tick_params(axis="both", which="major", labelsize=tick_label_fontsize)
+    ax_mem.set_ylabel("Membrane", fontsize=AXIS_LABEL_FONTSIZE)
+    ax_mem.tick_params(axis="both", which="major", labelsize=TICK_LABEL_FONTSIZE)
     ax_mem.xaxis.set_major_formatter(FuncFormatter(scientific_formatter))
     ax_mem.grid(True, which="both", linestyle=":", alpha=0.6)
     ax_index += 1
@@ -654,8 +621,8 @@ def plot_signal(
             cur_times, cur_values = _downsample(cur_times, cur_values, max_points)
             ax_cur.step(cur_times, cur_values, where="post", color=COLOR_CURRENT)
         _draw_phase_spans(ax_cur)
-        ax_cur.set_ylabel("Current", fontsize=axis_label_fontsize)
-        ax_cur.tick_params(axis="both", which="major", labelsize=tick_label_fontsize)
+        ax_cur.set_ylabel("Current", fontsize=AXIS_LABEL_FONTSIZE)
+        ax_cur.tick_params(axis="both", which="major", labelsize=TICK_LABEL_FONTSIZE)
         ax_cur.xaxis.set_major_formatter(FuncFormatter(scientific_formatter))
         ax_cur.grid(True, which="both", linestyle=":", alpha=0.6)
         ax_index += 1
@@ -672,9 +639,9 @@ def plot_signal(
                 ha="center", va="center", fontsize=10, color="gray",
             )
         _draw_phase_spans(ax_spk)
-        ax_spk.set_ylabel("Spikes", fontsize=axis_label_fontsize)
+        ax_spk.set_ylabel("Spikes", fontsize=AXIS_LABEL_FONTSIZE)
         ax_spk.set_ylim(0.0, 1.5)
-        ax_spk.tick_params(axis="both", which="major", labelsize=tick_label_fontsize)
+        ax_spk.tick_params(axis="both", which="major", labelsize=TICK_LABEL_FONTSIZE)
         ax_spk.xaxis.set_major_formatter(FuncFormatter(scientific_formatter))
         ax_spk.grid(True, which="both", linestyle=":", alpha=0.6)
         ax_index += 1
@@ -700,12 +667,12 @@ def plot_signal(
                 ha="center", va="center", fontsize=10, color="gray",
             )
         _draw_phase_spans(ax_isi)
-        ax_isi.set_ylabel("ISI (ns)", fontsize=axis_label_fontsize)
-        ax_isi.tick_params(axis="both", which="major", labelsize=tick_label_fontsize)
+        ax_isi.set_ylabel("ISI (ns)", fontsize=AXIS_LABEL_FONTSIZE)
+        ax_isi.tick_params(axis="both", which="major", labelsize=TICK_LABEL_FONTSIZE)
         ax_isi.xaxis.set_major_formatter(FuncFormatter(scientific_formatter))
         ax_isi.grid(True, which="both", linestyle=":", alpha=0.6)
 
-    axes[-1].set_xlabel("Time (ns)", fontsize=axis_label_fontsize)
+    axes[-1].set_xlabel("Time (ns)", fontsize=AXIS_LABEL_FONTSIZE)
     axes[-1].set_xlim(x_min, x_max)
 
     plt.tight_layout()
