@@ -26,7 +26,7 @@ from common.scripts.plot_styles import (
 )
 
 
-def plot_spike_adaptation(output_file, show_plot=False):
+def plot_spike_adaptation(output_file, show_plot=False, include_bitshift=False):
     torch.set_default_dtype(torch.float64)
     alphas = [1.0, 0.9, 0.7, 0.5, 0.3]
     dt = 1.0
@@ -77,7 +77,34 @@ def plot_spike_adaptation(output_file, show_plot=False):
         isis = [spikes[i] - spikes[i - 1] for i in range(1, len(spikes))]
         isi_traces[alpha] = isis
 
+    if include_bitshift:
+        from bitshift_lif import BitshiftLIF
+        from scripts.history_coefficients import custom_slow_decay_bitshift
+
+        neuron = BitshiftLIF(
+            shift_func=custom_slow_decay_bitshift,
+            lam=lam,
+            history_length=history_length,
+            dt=dt,
+            threshold=threshold,
+            init_hidden=True,
+        )
+        BitshiftLIF.reset_hidden()
+
+        spikes = []
+        for t in range(total_steps):
+            inp = inputs[t : t + 1]
+            spk = neuron(inp)
+            if spk.item() > 0:
+                spikes.append(t)
+
+        isis = [spikes[i] - spikes[i - 1] for i in range(1, len(spikes))]
+        isi_traces["BitshiftLIF"] = isis
+
     plot_keys = ["Leaky"] + alphas
+    if include_bitshift:
+        plot_keys.append("BitshiftLIF")
+
     figsize = get_latex_figsize(width_scale=1.6, height_scale=0.85 * len(plot_keys))
     fig, axes = plt.subplots(
         len(plot_keys), 1, figsize=(figsize["width"], figsize["height"]), sharex=True
@@ -92,6 +119,9 @@ def plot_spike_adaptation(output_file, show_plot=False):
         if key == "Leaky":
             color = COLOR_RAW
             label = "snnTorch.Leaky Baseline"
+        elif key == "BitshiftLIF":
+            color = OKABE_ITO[7]
+            label = "BitshiftLIF ($\\approx \\alpha=0.5$)"
         else:
             color = OKABE_ITO[i % len(OKABE_ITO)]
             label = f"$\\alpha$ = {key}"
@@ -156,6 +186,11 @@ if __name__ == "__main__":
         help="Output plot path",
     )
     parser.add_argument("--show", action="store_true", help="Show interactive window")
+    parser.add_argument(
+        "--bitshift",
+        action="store_true",
+        help="Include BitshiftLIF (custom slow decay) trace",
+    )
     args = parser.parse_args()
 
-    plot_spike_adaptation(args.output, args.show)
+    plot_spike_adaptation(args.output, args.show, args.bitshift)

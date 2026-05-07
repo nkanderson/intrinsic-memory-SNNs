@@ -32,6 +32,7 @@ def plot_subthreshold_dynamics(
     include_baseline=False,
     use_log=False,
     steps_discharge=None,
+    include_bitshift=False,
 ):
     torch.set_default_dtype(torch.float64)
     alphas = [0.1, 0.3, 0.5, 0.7, 0.9, 1.0]
@@ -90,6 +91,28 @@ def plot_subthreshold_dynamics(
 
         traces["Leaky"] = leaky_trace
 
+    if include_bitshift:
+        from bitshift_lif import BitshiftLIF
+        from scripts.history_coefficients import custom_slow_decay_bitshift
+
+        bitshift_neuron = BitshiftLIF(
+            shift_func=custom_slow_decay_bitshift,
+            lam=lam,
+            history_length=history_length,
+            dt=dt,
+            threshold=threshold,
+            init_hidden=True,
+        )
+        BitshiftLIF.reset_hidden()
+
+        bitshift_trace = []
+        for t in range(total_steps):
+            inp = inputs[t : t + 1]
+            bitshift_neuron(inp)
+            bitshift_trace.append(bitshift_neuron.mem.item())
+
+        traces["BitshiftLIF"] = bitshift_trace
+
     figsize = get_latex_figsize(width_scale=1.6, height_scale=0.85)
     fig, ax = plt.subplots(figsize=(figsize["width"], figsize["height"]))
 
@@ -118,6 +141,17 @@ def plot_subthreshold_dynamics(
                 linewidth=1.5,
             )
 
+        if include_bitshift:
+            ax.plot(
+                range(1, steps_discharge + 1),
+                traces["BitshiftLIF"][steps_charge:],
+                label="BitshiftLIF ($\\approx \\alpha=0.5$)",
+                color=OKABE_ITO[7],
+                linewidth=2.5,
+                linestyle=":",
+                zorder=6,
+            )
+
         ax.set_title(
             "FractionalLIF Discharge Dynamics (Log-Log Scale)",
             fontsize=AXIS_LABEL_FONTSIZE,
@@ -144,6 +178,17 @@ def plot_subthreshold_dynamics(
                 label=f"$\\alpha$ = {alpha}",
                 color=color,
                 linewidth=1.5,
+            )
+
+        if include_bitshift:
+            ax.plot(
+                range(total_steps),
+                traces["BitshiftLIF"],
+                label="BitshiftLIF ($\\approx \\alpha=0.5$)",
+                color=OKABE_ITO[7],
+                linewidth=2.5,
+                linestyle=":",
+                zorder=6,
             )
 
         # Draw a dashed vertical line to indicate when current turns off
@@ -198,6 +243,11 @@ if __name__ == "__main__":
         default=None,
         help="Number of discharge steps (default: 2000 if --log, 150 otherwise)",
     )
+    parser.add_argument(
+        "--bitshift",
+        action="store_true",
+        help="Include BitshiftLIF (custom slow decay) trace",
+    )
     args = parser.parse_args()
 
     output_path = args.output
@@ -205,5 +255,5 @@ if __name__ == "__main__":
         output_path = "common/images/plot_python_subthreshold_log.svg"
 
     plot_subthreshold_dynamics(
-        output_path, args.show, args.baseline, args.log, args.steps
+        output_path, args.show, args.baseline, args.log, args.steps, args.bitshift
     )

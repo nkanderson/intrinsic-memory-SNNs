@@ -112,6 +112,39 @@ class BitshiftLIF(snn.Leaky):
             self._shifts_device = device
         return self._shifts
 
+    def forward(self, input_, mem=None):
+        """
+        Override parent forward to properly manage the history buffer.
+        We roll the history BEFORE the step, let snnTorch compute the new state 
+        and apply resets, and then capture the FINAL post-reset state into hist[0].
+        """
+        device = input_.device
+        dtype = input_.dtype
+        
+        # 1. Initialize or reshape history buffer before rolling
+        if not hasattr(self, "hist") or self.hist.shape[0] == 0:
+            hist_shape = (self.history_length,) + input_.shape
+            self.hist = torch.zeros(hist_shape, device=device, dtype=dtype)
+        elif self.hist.shape[1:] != input_.shape:
+            # Reshape if batch size changed
+            hist_shape = (self.history_length,) + input_.shape
+            self.hist = torch.zeros(hist_shape, device=device, dtype=dtype)
+            
+        # 2. Roll history buffer. V[n-1] moves from hist[0] to hist[1].
+        self.hist = torch.roll(self.hist, shifts=1, dims=0)
+        
+        # 3. Call snnTorch forward, which uses _base_state_function and applies reset.
+        if self.init_hidden:
+            spike = super().forward(input_, mem)
+            # 4. Capture final post-reset membrane potential
+            self.hist[0] = self.mem
+            return spike
+        else:
+            spike, mem_final = super().forward(input_, mem)
+            # 4. Capture final post-reset membrane potential
+            self.hist[0] = mem_final
+            return spike, mem_final
+
     def _base_state_function(self, input_):
         """
         Override parent's state function to use bit-shift approximation dynamics.
@@ -129,15 +162,6 @@ class BitshiftLIF(snn.Leaky):
         # Get shift amounts
         shifts = self._get_shifts(device)
 
-        # Initialize or reshape history buffer if needed
-        if not hasattr(self, "hist") or self.hist.shape[0] == 0:
-            hist_shape = (self.history_length,) + input_.shape
-            self.hist = torch.zeros(hist_shape, device=device, dtype=dtype)
-        elif self.hist.shape[1:] != input_.shape:
-            # Reshape if batch size changed
-            hist_shape = (self.history_length,) + input_.shape
-            self.hist = torch.zeros(hist_shape, device=device, dtype=dtype)
-
         # Compute fractional membrane update using bit-shifts
         # V[n] = (I[n] - C * Σ_{k=1}^{H-1} (V[n-k] >> shift[k])) / (C + λ)
         C = 1.0 / (self.dt**self.alpha)
@@ -145,8 +169,8 @@ class BitshiftLIF(snn.Leaky):
         # Extract past shift amounts (skip shift[0]=0 which corresponds to g_0=1 multiplying V[n])
         shifts_past = shifts[1 : self.history_length]
 
-        # History buffer for k=1..H-1
-        history_valid = self.hist[: self.history_length - 1]  # (H-1, batch, features)
+        # History buffer for k=1..H-1 (already rolled by forward())
+        history_valid = self.hist[1 : self.history_length]  # (H-1, batch, features)
 
         # Apply bit-shifts to history values using vectorized operations
         # For each position k, we right-shift by shifts_past[k] bits
@@ -170,11 +194,6 @@ class BitshiftLIF(snn.Leaky):
         numerator = input_ + C * history_sum
         denominator = C + self.lam
         mem_new = numerator / denominator
-
-        # Update history buffer: shift in-place
-        # Roll the history buffer and insert newly computed mem at position 0
-        self.hist = torch.roll(self.hist, shifts=1, dims=0)
-        self.hist[0] = mem_new
 
         return mem_new
 
