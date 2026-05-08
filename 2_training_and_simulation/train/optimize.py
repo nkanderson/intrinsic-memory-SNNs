@@ -83,23 +83,6 @@ def sample_params(trial, search_space: dict) -> dict:
         for param_name, spec in section.items():
             ptype = spec["type"]
 
-            # --- Dynamic Constraints ---
-            if param_name == "hidden2_size" and "hidden1_size" in params:
-                h1 = params["hidden1_size"]
-                if ptype == "categorical":
-                    valid_choices = [c for c in spec.get("choices", []) if c <= h1]
-                    if valid_choices:
-                        spec = spec.copy()
-                        spec["choices"] = valid_choices
-            
-            if param_name == "history_length" and params.get("neuron_type") == "bitshift" and params.get("shift_func") == "simple":
-                if ptype == "categorical":
-                    valid_choices = [c for c in spec.get("choices", []) if c <= 20]
-                    if valid_choices:
-                        spec = spec.copy()
-                        spec["choices"] = valid_choices
-            # ---------------------------
-
             if ptype == "fixed":
                 params[param_name] = spec["value"]
             elif ptype == "int":
@@ -210,6 +193,14 @@ def create_objective(
     def objective(trial):
         # Sample hyperparameters
         params = sample_params(trial, search_space)
+
+        # Optuna strictly requires CategoricalDistribution choices to remain static across a study.
+        # To enforce constraints without corrupting the dashboard or crashing, we prune invalid trials.
+        if params.get("hidden2_size", 0) > params.get("hidden1_size", 0):
+            raise optuna.TrialPruned("Constraint violated: hidden2_size > hidden1_size")
+        if params.get("neuron_type") == "bitshift" and params.get("shift_func") == "simple":
+            if params.get("history_length", 0) > 20:
+                raise optuna.TrialPruned("Constraint violated: simple shift_func needs history_length <= 20")
 
         # Override num_episodes if requested
         if num_episodes_override is not None:
