@@ -32,7 +32,7 @@ training:
     log: true
   num_episodes:
     type: fixed
-    value: 2000
+    value: 2500
 
 snn:
   num_steps:
@@ -64,7 +64,7 @@ snn:
     high: 0.3
   history_length:
     type: categorical
-    choices: [ 8, 16, 32, 64 ]
+    choices: [ 4, 8, 16, 32 ]
   dt:
     type: fixed
     value: 1.0

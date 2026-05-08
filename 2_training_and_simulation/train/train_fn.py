@@ -85,6 +85,7 @@ def train(
     device: str = "cpu",
     verbose: bool = True,
     save_models: bool = False,
+    save_best_model: bool = False,
     model_prefix: str = "optuna",
     optuna_trial=None,
 ) -> dict:
@@ -212,9 +213,11 @@ def train(
 
     # ── Training loop ──
     episode_durations = []
+    episode_losses = []
     steps_done = 0
     best_avg_reward = 0.0
     best_model_file = None
+    final_model_file = None
 
     if save_models:
         models_dir = Path("models")
@@ -223,6 +226,8 @@ def train(
     for i_episode in range(num_episodes):
         state, _info = env.reset()
         state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
+        episode_loss_sum = 0.0
+        episode_loss_count = 0
 
         for t in count():
             action = _select_action(
@@ -247,7 +252,10 @@ def train(
             state = next_state
 
             # optimization step (on the policy network)
-            agent.optimize(batch_size=batch_size, gamma=gamma)
+            loss = agent.optimize(batch_size=batch_size, gamma=gamma)
+            if loss is not None:
+                episode_loss_sum += loss
+                episode_loss_count += 1
 
             # Soft update target network: θ' <- τ θ + (1 − τ) θ'
             with torch.no_grad():
@@ -277,6 +285,8 @@ def train(
 
             if done:
                 episode_durations.append(t + 1)
+                avg_loss = episode_loss_sum / episode_loss_count if episode_loss_count > 0 else 0.0
+                episode_losses.append(avg_loss)
                 break
 
         # ── Track best rolling average ──
@@ -284,10 +294,10 @@ def train(
             recent_avg = sum(episode_durations[-100:]) / 100
             if recent_avg > best_avg_reward:
                 best_avg_reward = recent_avg
-                if save_models:
+                if save_models and save_best_model:
                     agent.episode = i_episode
                     agent.avg_reward = recent_avg
-                    fname = str(Path("models") / f"dqn_{model_prefix}-best.pth")
+                    fname = str(Path("models") / f"{model_prefix}-best.pth")
                     agent.save(fname)
                     best_model_file = fname
 
@@ -319,16 +329,35 @@ def train(
     n = min(len(episode_durations), 100)
     final_avg = sum(episode_durations[-n:]) / n if n > 0 else 0.0
 
+    # Calculate convergence episode (first episode where it hits >= 475 and never drops below)
+    convergence_threshold = 475.0
+    convergence_episode = None
+    if len(episode_durations) >= 100:
+        for i in range(len(episode_durations) - 1, 98, -1):
+            avg = sum(episode_durations[i-99:i+1]) / 100.0
+            if avg < convergence_threshold:
+                if i < len(episode_durations) - 1:
+                    convergence_episode = i + 1
+                break
+        else:
+            # If it never dropped below, it converged at episode 99
+            if sum(episode_durations[0:100]) / 100.0 >= convergence_threshold:
+                convergence_episode = 99
+
     if save_models:
         agent.episode = num_episodes - 1
         agent.avg_reward = final_avg
-        fname = str(Path("models") / f"dqn_{model_prefix}-final.pth")
+        fname = str(Path("models") / f"{model_prefix}-final.pth")
         agent.save(fname)
+        final_model_file = fname
 
     return {
         "best_avg_reward": best_avg_reward,
         "final_avg_reward": final_avg,
         "episode_durations": episode_durations,
+        "episode_losses": episode_losses,
+        "convergence_episode": convergence_episode,
         "total_episodes": num_episodes,
         "best_model_file": best_model_file,
+        "final_model_file": final_model_file,
     }

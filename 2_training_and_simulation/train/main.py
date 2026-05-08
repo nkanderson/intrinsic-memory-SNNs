@@ -236,9 +236,15 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--save-final",
+        "--save-best",
         action="store_true",
-        help="Save final model checkpoint at end of training (default: disabled)",
+        help="Save the 'best' model checkpoint based on peak rolling average (default: disabled)",
+    )
+
+    parser.add_argument(
+        "--no-save-final",
+        action="store_true",
+        help="Do NOT save the final converged model checkpoint at the end of training",
     )
 
     args = parser.parse_args()
@@ -331,7 +337,8 @@ if __name__ == "__main__":
     max_episode_steps = args.max_episode_steps
     save_plot_image = args.save_plot_image
     metrics_csv_arg = args.metrics_csv
-    save_final = args.save_final
+    save_final = not args.no_save_final
+    save_best = args.save_best
 
     # Create surrogate gradient function
     spike_grad = surrogate.fast_sigmoid(slope=surrogate_gradient_slope)
@@ -366,7 +373,7 @@ if __name__ == "__main__":
     models_dir.mkdir(exist_ok=True)
 
     # Generate model filenames based on config name
-    best_model_filename = str(models_dir / f"{config_name}.pth")
+    best_model_filename = str(models_dir / f"{config_name}-best.pth")
     final_model_filename = str(models_dir / f"{config_name}-final.pth")
 
     # Metrics logging path (CSV)
@@ -593,6 +600,7 @@ if __name__ == "__main__":
                 "episode_steps",
                 "episode_reward",
                 "epsilon",
+                "avg_loss",
                 "running_avg_100",
                 "generalization_avg",
                 "generalization_seeds",
@@ -615,6 +623,9 @@ if __name__ == "__main__":
         state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(
             0
         )  # [1, obs]
+        
+        episode_loss_sum = 0.0
+        episode_loss_count = 0
 
         for t in count():
             action = select_action(
@@ -639,7 +650,10 @@ if __name__ == "__main__":
             state = next_state
 
             # optimization step (on the policy network)
-            agent.optimize(batch_size=batch_size, gamma=gamma)
+            loss = agent.optimize(batch_size=batch_size, gamma=gamma)
+            if loss is not None:
+                episode_loss_sum += loss
+                episode_loss_count += 1
 
             # Soft update target network: θ' <- τ θ + (1 − τ) θ'
             with torch.no_grad():
@@ -673,6 +687,7 @@ if __name__ == "__main__":
                 eps_threshold = eps_end + (eps_start - eps_end) * math.exp(
                     -1.0 * steps_done / eps_decay
                 )
+                avg_loss = episode_loss_sum / episode_loss_count if episode_loss_count > 0 else 0.0
                 episode_durations.append(t + 1)
                 if human_render:
                     plot_durations(
@@ -686,12 +701,13 @@ if __name__ == "__main__":
                     recent_avg = sum(episode_durations[-100:]) / 100
                     if recent_avg > best_avg_reward:
                         best_avg_reward = recent_avg
-                        # Update agent's episode and avg_reward before saving
-                        agent.episode = i_episode
-                        agent.avg_reward = recent_avg
-                        agent.save(best_model_filename)
-                        print(f"New best model saved! Avg reward: {recent_avg:.2f}")
-                        saved_best_running_model = True
+                        if save_best:
+                            # Update agent's episode and avg_reward before saving
+                            agent.episode = i_episode
+                            agent.avg_reward = recent_avg
+                            agent.save(best_model_filename)
+                            print(f"New best model saved! Avg reward: {recent_avg:.2f}")
+                            saved_best_running_model = True
 
                 # Optional fixed-seed evaluation for generalization-based model selection
                 saved_best_generalization_model = False
@@ -738,6 +754,7 @@ if __name__ == "__main__":
                             "episode_steps",
                             "episode_reward",
                             "epsilon",
+                            "avg_loss",
                             "running_avg_100",
                             "generalization_avg",
                             "generalization_seeds",
@@ -754,6 +771,7 @@ if __name__ == "__main__":
                             "episode_steps": episode_steps,
                             "episode_reward": episode_reward,
                             "epsilon": eps_threshold,
+                            "avg_loss": avg_loss,
                             "running_avg_100": recent_avg,
                             "generalization_avg": last_generalization_avg,
                             "generalization_seeds": (
@@ -786,9 +804,9 @@ if __name__ == "__main__":
         agent.episode = start_episode + num_episodes - 1
         agent.avg_reward = final_avg
         final_model_file = agent.save(final_model_filename)
-        print(f"Final model saved to: {final_model_file}")
+        print(f"Final model saved to: {final_model_file} (avg reward: {final_avg:.2f})")
 
-    if best_avg_reward > 0:
+    if best_avg_reward > 0 and save_best:
         print(
             f"Best model saved to: {best_model_filename} (avg reward: {best_avg_reward:.2f})"
         )

@@ -195,7 +195,11 @@ def get_device(hw_acceleration: bool) -> str:
 
 
 def create_objective(
-    search_space: dict, device: str, num_episodes_override: int = None
+    search_space: dict, 
+    device: str, 
+    num_episodes_override: int = None,
+    size_penalty: float = 0.0,
+    history_penalty: float = 0.0,
 ):
     """
     Create an Optuna objective function (closure) for the given search space.
@@ -240,29 +244,31 @@ def create_objective(
 
         best_avg = result["best_avg_reward"]
         final_avg = result["final_avg_reward"]
+        convergence_episode = result.get("convergence_episode")
+        
+        if convergence_episode is not None:
+            trial.set_user_attr("convergence_episode", convergence_episode)
+
         print(
             f"Trial {trial.number} done: best_avg={best_avg:.1f}, final_avg={final_avg:.1f}"
         )
+        if convergence_episode is not None:
+            print(f"  -> Converged at episode: {convergence_episode}")
+
+        # Size penalty to gently push towards smaller networks
+        penalty = size_penalty * (h1 + h2) if isinstance(h1, int) and isinstance(h2, int) else 0.0
+        
+        # History length penalty to gently push towards smaller history buffers
+        hist = params.get("history_length", 0)
+        neuron_type = params.get("neuron_type", "")
+        if neuron_type in ["fractional", "bitshift"] and isinstance(hist, int):
+            penalty += history_penalty * hist
 
         # Objective: final_avg_reward (trailing 100-episode mean at end of
-        # training). Selects for *sustained* performance, so a trial that
-        # briefly spikes to 500 and then forgets back to 10 scores 10 here
-        # — penalizing catastrophic forgetting rather than rewarding peak
-        # attainment.
-        #
-        # Why not best_avg_reward (the legacy objective)? It is the running
-        # max of the rolling mean — monotonically non-decreasing, so a
-        # spike-and-collapse trial scores identically to reach-and-hold.
-        # That hides exactly the stability signal we're now trying to find.
-        #
-        # Alternatives (swap the return below):
-        #   return best_avg                          # legacy: peak rolling avg
-        #   return 0.5 * best_avg + 0.5 * final_avg  # blend peak + sustained
-        #   return min(best_avg, final_avg)          # penalize both
-        #       "never reached high" AND "reached high but collapsed"
-        # The blend is gentler on trials that need more episodes to stabilize;
-        # min() is the strictest but rewards both fast learning AND retention.
-        return final_avg
+        # training) minus the size penalty. Selects for *sustained* performance, 
+        # so a trial that briefly spikes to 500 and then forgets back to 10 scores 10 here
+        # — penalizing catastrophic forgetting rather than rewarding peak attainment.
+        return final_avg - penalty
 
     return objective
 
@@ -484,6 +490,18 @@ Examples:
     )
     parser.set_defaults(hw_acceleration=True)
     parser.add_argument(
+        "--size-penalty",
+        type=float,
+        default=0.05,
+        help="Scalar penalty applied per hidden neuron to push Optuna towards smaller networks (e.g. 0.05)",
+    )
+    parser.add_argument(
+        "--history-penalty",
+        type=float,
+        default=0.01,
+        help="Scalar penalty applied per history step to push Optuna towards shorter history lengths (e.g. 0.01)",
+    )
+    parser.add_argument(
         "--export-best",
         action="store_true",
         help="Export the best trial's config as a standard YAML and exit "
@@ -596,6 +614,8 @@ Examples:
         search_space=search_space,
         device=device,
         num_episodes_override=args.num_episodes,
+        size_penalty=args.size_penalty,
+        history_penalty=args.history_penalty,
     )
 
     study.optimize(objective, n_trials=args.n_trials)
