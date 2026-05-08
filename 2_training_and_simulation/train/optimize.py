@@ -83,6 +83,23 @@ def sample_params(trial, search_space: dict) -> dict:
         for param_name, spec in section.items():
             ptype = spec["type"]
 
+            # --- Dynamic Constraints ---
+            if param_name == "hidden2_size" and "hidden1_size" in params:
+                h1 = params["hidden1_size"]
+                if ptype == "categorical":
+                    valid_choices = [c for c in spec.get("choices", []) if c <= h1]
+                    if valid_choices:
+                        spec = spec.copy()
+                        spec["choices"] = valid_choices
+            
+            if param_name == "history_length" and params.get("neuron_type") == "bitshift" and params.get("shift_func") == "simple":
+                if ptype == "categorical":
+                    valid_choices = [c for c in spec.get("choices", []) if c <= 20]
+                    if valid_choices:
+                        spec = spec.copy()
+                        spec["choices"] = valid_choices
+            # ---------------------------
+
             if ptype == "fixed":
                 params[param_name] = spec["value"]
             elif ptype == "int":
@@ -104,31 +121,6 @@ def sample_params(trial, search_space: dict) -> dict:
                 raise ValueError(
                     f"Unknown search space type '{ptype}' for param '{param_name}'"
                 )
-
-    return params
-
-
-def apply_constraints(params: dict) -> dict:
-    """
-    Apply inter-parameter constraints after sampling.
-
-    For example, bitshift 'simple' shift_func needs small history_length
-    to avoid numerical instability.
-
-    Args:
-        params: Flat dict of sampled hyperparameters
-
-    Returns:
-        Modified params dict with constraints applied
-    """
-    # Bitshift constraint: 'simple' shift_func needs history_length <= 20
-    if params.get("neuron_type") == "bitshift" and params.get("shift_func") == "simple":
-        if params.get("history_length", 0) > 20:
-            params["history_length"] = 16
-
-    # Ensure hidden2_size <= hidden1_size (typical funnel architecture)
-    if params.get("hidden2_size", 0) > params.get("hidden1_size", 0):
-        params["hidden2_size"] = params["hidden1_size"]
 
     return params
 
@@ -218,7 +210,6 @@ def create_objective(
     def objective(trial):
         # Sample hyperparameters
         params = sample_params(trial, search_space)
-        params = apply_constraints(params)
 
         # Override num_episodes if requested
         if num_episodes_override is not None:
