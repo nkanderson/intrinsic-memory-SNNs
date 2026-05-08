@@ -73,6 +73,16 @@ else ifeq ($(TEST),bitshift_lif_mode3)
     VERILOG_SOURCES = $(COMMON_NEURON_DIR)/bitshift_lif.sv
     TOPLEVEL = bitshift_lif
     MODULE = test_bitshift_lif
+else ifeq ($(TEST),subthreshold_frac)
+    VERILOG_SOURCES = $(COMMON_NEURON_DIR)/fractional_lif.sv
+    TOPLEVEL = fractional_lif
+    MODULE = test_subthreshold_dynamics
+    export TEST_MODEL_NAME = fractional_lif
+else ifeq ($(TEST),subthreshold_bitshift)
+    VERILOG_SOURCES = $(COMMON_NEURON_DIR)/bitshift_lif.sv
+    TOPLEVEL = bitshift_lif
+    MODULE = test_subthreshold_dynamics
+    export TEST_MODEL_NAME = bitshift_lif
 else ifeq ($(TEST),linear_layer)
     VERILOG_SOURCES = $(SV_DIR)/linear_layer.sv
     TOPLEVEL = linear_layer
@@ -271,7 +281,7 @@ else ifeq ($(TEST),cp_integration_frac)
     TOPLEVEL = neural_network_fractional
     MODULE = test_cartpole_integration
 else
-    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'golden_vectors_lif-64-16', 'golden_vectors_lif-32-16', 'golden_vectors_fractional-16-4-32', 'golden_vectors_fractional-32-4-16', 'golden_vectors_bitshift-custom_slow_decay', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
+    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'subthreshold_frac', 'subthreshold_bitshift', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'golden_vectors_lif-64-16', 'golden_vectors_lif-32-16', 'golden_vectors_fractional-16-4-32', 'golden_vectors_fractional-32-4-16', 'golden_vectors_bitshift-custom_slow_decay', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
 endif
 
 # Simulator - use Icarus for all tests (event-driven, correct timing)
@@ -345,6 +355,21 @@ ifeq ($(SIM),icarus)
     endif
     ifeq ($(TEST),bitshift_lif_mode3)
         COMPILE_ARGS += -Pbitshift_lif.HISTORY_LENGTH=64
+        COMPILE_ARGS += -Pbitshift_lif.SHIFT_WIDTH=8 -Pbitshift_lif.SHIFT_MODE=3
+        COMPILE_ARGS += -Pbitshift_lif.CUSTOM_DECAY_RATE=3
+        COMPILE_ARGS += -Pbitshift_lif.INV_DENOM=58982
+    endif
+    ifeq ($(TEST),subthreshold_frac)
+        # Match python plot_python_subthreshold.py: H=256, alpha=0.5
+        COMPILE_ARGS += -Pfractional_lif.HISTORY_LENGTH=256
+        COMPILE_ARGS += -Pfractional_lif.COEFF_WIDTH=16 -Pfractional_lif.COEFF_FRAC_BITS=15
+        COMPILE_ARGS += -Pfractional_lif.INV_DENOM=58982
+        # Use the 256-history coefficients mem file which has 255 entries
+        COMPILE_ARGS += -Pfractional_lif.GL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-256/gl_coefficients.mem\"
+    endif
+    ifeq ($(TEST),subthreshold_bitshift)
+        # Match python plot_python_subthreshold.py: H=256, custom slow decay
+        COMPILE_ARGS += -Pbitshift_lif.HISTORY_LENGTH=256
         COMPILE_ARGS += -Pbitshift_lif.SHIFT_WIDTH=8 -Pbitshift_lif.SHIFT_MODE=3
         COMPILE_ARGS += -Pbitshift_lif.CUSTOM_DECAY_RATE=3
         COMPILE_ARGS += -Pbitshift_lif.INV_DENOM=58982

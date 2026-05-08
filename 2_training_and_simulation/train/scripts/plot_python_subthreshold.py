@@ -152,10 +152,6 @@ def plot_subthreshold_dynamics(
                 zorder=6,
             )
 
-        ax.set_title(
-            "FractionalLIF Discharge Dynamics (Log-Log Scale)",
-            fontsize=AXIS_LABEL_FONTSIZE,
-        )
         ax.set_xlabel("Time Step (Since Discharge Start)", fontsize=AXIS_LABEL_FONTSIZE)
 
     else:
@@ -196,10 +192,6 @@ def plot_subthreshold_dynamics(
             steps_charge, color="gray", linestyle="--", alpha=0.7, label="Current off"
         )
 
-        ax.set_title(
-            "FractionalLIF Sub-threshold Dynamics (Charge and Discharge)",
-            fontsize=AXIS_LABEL_FONTSIZE,
-        )
         ax.set_xlabel("Time Step", fontsize=AXIS_LABEL_FONTSIZE)
 
     ax.set_ylabel("Membrane Potential", fontsize=AXIS_LABEL_FONTSIZE)

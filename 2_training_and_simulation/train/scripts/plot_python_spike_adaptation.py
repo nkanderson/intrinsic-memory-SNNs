@@ -157,9 +157,6 @@ def plot_spike_adaptation(output_file, show_plot=False, include_bitshift=False):
         if len(isis) > 0 and max(isis) <= 10:
             ax.set_yticks(range(0, max(isis) + 2, 2))
 
-    axes[0].set_title(
-        "FractionalLIF Spike Frequency Adaptation", fontsize=AXIS_LABEL_FONTSIZE
-    )
     axes[-1].set_xlabel("Spike Index", fontsize=AXIS_LABEL_FONTSIZE)
 
     plt.tight_layout()
