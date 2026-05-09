@@ -6,6 +6,7 @@ efficient in hardware) can approximate the GL coefficients used in fractional-
 order derivatives.
 """
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -203,11 +204,57 @@ def custom_slow_decay_sequence(history_length: int) -> list[float]:
 # incrementing bit shift, as compared to a more complex custom sequence.
 
 
+def get_fixedpoint_floors() -> tuple[float, float]:
+    """
+    Get the minimum representable values for fixed-point formats.
+
+    Returns:
+        Tuple of (floor_uq0_16, floor_uq0_32) representing the minimum non-zero
+        values that can be represented in uQ0.16 and uQ0.32 formats.
+    """
+    floor_uq0_16 = 1.0 / (2**16)  # 1/65536
+    floor_uq0_32 = 1.0 / (2**32)  # 1/4294967296
+    return floor_uq0_16, floor_uq0_32
+
+
+def format_fixedpoint_indicator(
+    value: float, floor_uq0_16: float, floor_uq0_32: float
+) -> str:
+    """
+    Generate indicator string for fixed-point representability.
+
+    Args:
+        value: The coefficient value to check
+        floor_uq0_16: Floor value for uQ0.16 format
+        floor_uq0_32: Floor value for uQ0.32 format
+
+    Returns:
+        String indicator: "✓" if representable in uQ0.16, "~" if only in uQ0.32, "✗" if below uQ0.32
+    """
+    if value >= floor_uq0_16:
+        return "✓"
+    elif value >= floor_uq0_32:
+        return "~"
+    else:
+        return "✗"
+
+
 def main():
     """Compare GL coefficients with bit-shift approximations."""
+    parser = argparse.ArgumentParser(
+        description="Compare Grunwald-Letnikov binomial coefficients with bit-shift approximations."
+    )
+    parser.add_argument(
+        "--hist",
+        type=int,
+        default=128,
+        help="History length (number of coefficients to compute). Default: 128",
+    )
+    args = parser.parse_args()
+
     # Example usage
     alpha = 0.5
-    history_length = 32
+    history_length = args.hist
 
     print(f"Comparing GL coefficients (alpha={alpha}) with bit-shift approximations")
     print(f"History length: {history_length}\n")
@@ -220,15 +267,22 @@ def main():
     # custom_vals = custom_sequence(history_length, 4)
     custom_slow_decay_vals = custom_slow_decay_sequence(history_length)
 
+    # Calculate fixed-point floors
+    floor_uq0_16, floor_uq0_32 = get_fixedpoint_floors()
+    print(f"Fixed-point representation floors:")
+    print(f"  uQ0.16: {floor_uq0_16:.15e} (1/2^16)")
+    print(f"  uQ0.32: {floor_uq0_32:.15e} (1/2^32)")
+    print(f"  Indicator: ✓ (uQ0.16), ~ (uQ0.32 only), ✗ (below uQ0.32)\n")
+
     # Regular bit-shift comparison
-    print("=" * 85)
+    print("=" * 100)
     print("REGULAR BIT-SHIFT COMPARISON (2^0, 2^-1, 2^-2, ...)")
-    print("=" * 85)
+    print("=" * 100)
     print(
         f"{'Index':<6} {'|GL Coeff|':<20} {'Bit-Shift':<20} {'Difference':<20} "
-        f"{'Rel Error %':<15}"
+        f"{'Rel Error %':<15} {'FP':<4}"
     )
-    print("-" * 85)
+    print("-" * 100)
 
     for k in range(history_length):
         gl_mag = abs(gl_coeffs[k])
@@ -236,22 +290,25 @@ def main():
         diff = gl_mag - bitshift_val
         # Calculate relative error as percentage
         rel_error = (diff / gl_mag * 100) if gl_mag != 0 else 0
+        fp_indicator = format_fixedpoint_indicator(
+            bitshift_val, floor_uq0_16, floor_uq0_32
+        )
         print(
             f"{k:<6} {gl_mag:<20.10f} {bitshift_val:<20.10f} {diff:<20.10f} "
-            f"{rel_error:<15.2f}"
+            f"{rel_error:<15.2f} {fp_indicator:<4}"
         )
 
     # Slow-decay bit-shift comparison
-    print("\n" + "=" * 85)
+    print("\n" + "=" * 100)
     print(
         "SLOW-DECAY BIT-SHIFT COMPARISON (2^0, 2^-1, 2^-1, 2^-2, 2^-2, 2^-3, 2^-3, ...)"
     )
-    print("=" * 85)
+    print("=" * 100)
     print(
         f"{'Index':<6} {'|GL Coeff|':<20} {'Slow-Decay':<20} {'Difference':<20} "
-        f"{'Rel Error %':<15}"
+        f"{'Rel Error %':<15} {'FP':<4}"
     )
-    print("-" * 85)
+    print("-" * 100)
 
     for k in range(history_length):
         gl_mag = abs(gl_coeffs[k])
@@ -259,20 +316,23 @@ def main():
         diff = gl_mag - slow_decay_val
         # Calculate relative error as percentage
         rel_error = (diff / gl_mag * 100) if gl_mag != 0 else 0
+        fp_indicator = format_fixedpoint_indicator(
+            slow_decay_val, floor_uq0_16, floor_uq0_32
+        )
         print(
             f"{k:<6} {gl_mag:<20.10f} {slow_decay_val:<20.10f} {diff:<20.10f} "
-            f"{rel_error:<15.2f}"
+            f"{rel_error:<15.2f} {fp_indicator:<4}"
         )
 
     # Custom bit-shift comparison
-    print("\n" + "=" * 85)
+    print("\n" + "=" * 100)
     print("CUSTOM BIT-SHIFT COMPARISON (2^0, 2^-1, 2^-3, 2^-4, 2^-5×3, 2^-6×3, ...)")
-    print("=" * 85)
+    print("=" * 100)
     print(
         f"{'Index':<6} {'|GL Coeff|':<20} {'Custom':<20} {'Difference':<20} "
-        f"{'Rel Error %':<15}"
+        f"{'Rel Error %':<15} {'FP':<4}"
     )
-    print("-" * 85)
+    print("-" * 100)
 
     for k in range(history_length):
         gl_mag = abs(gl_coeffs[k])
@@ -280,23 +340,26 @@ def main():
         diff = gl_mag - custom_val
         # Calculate relative error as percentage
         rel_error = (diff / gl_mag * 100) if gl_mag != 0 else 0
+        fp_indicator = format_fixedpoint_indicator(
+            custom_val, floor_uq0_16, floor_uq0_32
+        )
         print(
             f"{k:<6} {gl_mag:<20.10f} {custom_val:<20.10f} {diff:<20.10f} "
-            f"{rel_error:<15.2f}"
+            f"{rel_error:<15.2f} {fp_indicator:<4}"
         )
 
     # Custom slow-decay bit-shift comparison
-    print("\n" + "=" * 85)
+    print("\n" + "=" * 100)
     print(
         "CUSTOM SLOW-DECAY COMPARISON "
         "(2^0, 2^-1, 2^-3, 2^-4, 2^-5×3, 2^-6×4, 2^-7×5, ...)"
     )
-    print("=" * 85)
+    print("=" * 100)
     print(
         f"{'Index':<6} {'|GL Coeff|':<20} {'Custom Slow':<20} {'Difference':<20} "
-        f"{'Rel Error %':<15}"
+        f"{'Rel Error %':<15} {'FP':<4}"
     )
-    print("-" * 85)
+    print("-" * 100)
 
     for k in range(history_length):
         gl_mag = abs(gl_coeffs[k])
@@ -304,9 +367,12 @@ def main():
         diff = gl_mag - custom_slow_val
         # Calculate relative error as percentage
         rel_error = (diff / gl_mag * 100) if gl_mag != 0 else 0
+        fp_indicator = format_fixedpoint_indicator(
+            custom_slow_val, floor_uq0_16, floor_uq0_32
+        )
         print(
             f"{k:<6} {gl_mag:<20.10f} {custom_slow_val:<20.10f} {diff:<20.10f} "
-            f"{rel_error:<15.2f}"
+            f"{rel_error:<15.2f} {fp_indicator:<4}"
         )
 
 
