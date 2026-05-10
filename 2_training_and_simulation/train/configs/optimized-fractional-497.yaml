@@ -1,0 +1,22 @@
+# Manually copied for preliminary testing from Optuna study results.
+# Study: fractional
+# Best trial: 45 (value: 497.56)
+# Copied from trial at: 2026-05-10 07:44:28,405
+#
+# To train with this config:
+#   python main.py --config configs/optimized-fractional-497.yaml
+
+training:
+  batch_size: 64
+  gamma: 0.9576146698169447
+  eps_start: 0.9373615816371781
+  eps_end: 0.01369127786336762
+  eps_decay: 2473
+  tau: 0.007577943079298002
+  lr: 0.00014156185781599845
+snn:
+  num_steps: 30
+  hidden1_size: 32
+  hidden2_size: 16
+  lam: 0.12126529651080634
+  history_length: 4
