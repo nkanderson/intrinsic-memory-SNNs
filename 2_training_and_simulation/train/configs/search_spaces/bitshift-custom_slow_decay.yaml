@@ -53,10 +53,10 @@ snn:
     value: bitshift
   hidden1_size:
     type: categorical
-    choices: [ 8, 16, 32 ]
+    choices: [ 8, 16, 32, 64 ]
   hidden2_size:
     type: categorical
-    choices: [ 4, 8, 16 ]
+    choices: [ 4, 8, 16, 32 ]
 
   # BitshiftLIF specific parameters
   shift_func:
@@ -68,7 +68,7 @@ snn:
     high: 0.3
   history_length:
     type: categorical
-    choices: [ 4, 8, 16, 32 ]
+    choices: [ 4, 8, 16, 32, 64, 128 ]
   dt:
     type: fixed
     value: 1.0
