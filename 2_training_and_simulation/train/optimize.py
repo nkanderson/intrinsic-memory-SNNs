@@ -226,36 +226,42 @@ def create_objective(
 
         best_avg = result["best_avg_reward"]
         final_avg = result["final_avg_reward"]
+        tail_iqm_avg = result.get("tail_iqm_avg_reward", 0.0)
         convergence_episode = result.get("convergence_episode")
 
         # Store unpenalized metrics so downstream tools (e.g., candidate
-        # selection) can filter trials by raw final_avg_reward, independent
-        # of size/history penalties baked into the objective value.
+        # selection) can filter trials independently of the size/history
+        # penalties baked into the objective value.
         trial.set_user_attr("final_avg_reward", float(final_avg))
         trial.set_user_attr("best_avg_reward", float(best_avg))
+        trial.set_user_attr("tail_iqm_avg_reward", float(tail_iqm_avg))
         if convergence_episode is not None:
             trial.set_user_attr("convergence_episode", convergence_episode)
 
         print(
-            f"Trial {trial.number} done: best_avg={best_avg:.1f}, final_avg={final_avg:.1f}"
+            f"Trial {trial.number} done: best_avg={best_avg:.1f}, "
+            f"final_avg={final_avg:.1f}, tail_iqm={tail_iqm_avg:.1f}"
         )
         if convergence_episode is not None:
             print(f"  -> Converged at episode: {convergence_episode}")
 
         # Size penalty to gently push towards smaller networks
         penalty = size_penalty * (h1 + h2) if isinstance(h1, int) and isinstance(h2, int) else 0.0
-        
+
         # History length penalty to gently push towards smaller history buffers
         hist = params.get("history_length", 0)
         neuron_type = params.get("neuron_type", "")
         if neuron_type in ["fractional", "bitshift"] and isinstance(hist, int):
             penalty += history_penalty * hist
 
-        # Objective: final_avg_reward (trailing 100-episode mean at end of
-        # training) minus the size penalty. Selects for *sustained* performance, 
-        # so a trial that briefly spikes to 500 and then forgets back to 10 scores 10 here
-        # — penalizing catastrophic forgetting rather than rewarding peak attainment.
-        return final_avg - penalty
+        # Objective: tail_iqm_avg_reward — Interquartile Mean of the
+        # trailing-100 averages over the last 25% of training. Selects for
+        # *sustained* convergence robust to outliers: a trial that lucks
+        # into a high last-100 window scores no better than its IQM
+        # (the spike lands in the dropped top 25%), while persistent
+        # instability in the tail drives the score down. See train_fn.py
+        # for the alternatives considered and the rationale for IQM.
+        return tail_iqm_avg - penalty
 
     return objective
 

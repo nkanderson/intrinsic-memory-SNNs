@@ -56,36 +56,46 @@ def storage_filename_stem(storage_uri: str) -> str:
     return Path(after_scheme).stem
 
 
+def _filter_metric(trial, metric: str):
+    """Return the metric to filter/rank on, falling back as needed.
+
+    'tail_iqm'  -> tail_iqm_avg_reward (preferred — IQM over the tail,
+                   robust to single lucky/unlucky windows)
+    'final_avg' -> final_avg_reward (legacy compatibility)
+    'objective' -> trial.value (penalized objective)
+    """
+    if metric == "tail_iqm":
+        return trial.user_attrs.get("tail_iqm_avg_reward")
+    if metric == "final_avg":
+        return trial.user_attrs.get("final_avg_reward")
+    if metric == "objective":
+        return trial.value
+    raise ValueError(f"Unknown metric: {metric}")
+
+
 def filter_and_rank(study, threshold: float, rank_by: str):
-    """Return COMPLETE trials with final_avg_reward >= threshold, sorted desc."""
+    """Return COMPLETE trials with rank_by metric >= threshold, sorted desc."""
     complete = study.get_trials(
         deepcopy=False, states=(optuna.trial.TrialState.COMPLETE,)
     )
     eligible = []
     skipped_no_attr = 0
     for t in complete:
-        final_avg = t.user_attrs.get("final_avg_reward")
-        if final_avg is None:
+        value = _filter_metric(t, rank_by)
+        if value is None:
             skipped_no_attr += 1
             continue
-        if final_avg < threshold:
+        if value < threshold:
             continue
         eligible.append(t)
 
     if skipped_no_attr:
         print(
             f"  (note: skipped {skipped_no_attr} COMPLETE trials missing the "
-            f"'final_avg_reward' user_attr — these are pre-instrumentation trials)"
+            f"required metric — these are pre-instrumentation trials)"
         )
 
-    if rank_by == "final_avg":
-        key = lambda t: t.user_attrs["final_avg_reward"]
-    elif rank_by == "objective":
-        key = lambda t: t.value if t.value is not None else float("-inf")
-    else:
-        raise ValueError(f"Unknown rank-by: {rank_by}")
-
-    eligible.sort(key=key, reverse=True)
+    eligible.sort(key=lambda t: _filter_metric(t, rank_by), reverse=True)
     return eligible
 
 
@@ -140,15 +150,21 @@ def main():
     )
     parser.add_argument(
         "--threshold", type=float, default=475.0,
-        help="Minimum final_avg_reward (default: 475 — CartPole-v1 solved criterion).",
+        help="Minimum value of the --rank-by metric (default: 475 — "
+             "CartPole-v1 solved criterion).",
     )
     parser.add_argument(
         "--top-n", type=int, default=3,
         help="Number of top trials to export (default: 3).",
     )
     parser.add_argument(
-        "--rank-by", choices=["final_avg", "objective"], default="final_avg",
-        help="Sort key. 'final_avg' ignores penalties; 'objective' uses trial.value.",
+        "--rank-by", choices=["tail_iqm", "final_avg", "objective"],
+        default="tail_iqm",
+        help="Metric to filter and rank by. 'tail_iqm' (default, recommended) "
+             "uses tail_iqm_avg_reward — the Interquartile Mean of "
+             "trailing-100 averages over the final 25%% of training. "
+             "'final_avg' is the legacy metric (last 100 episodes only). "
+             "'objective' uses trial.value with penalties.",
     )
     parser.add_argument(
         "--output-dir", type=str, default="configs",
@@ -205,15 +221,20 @@ def main():
         return
 
     print(f"\nMatched {len(eligible)} trials. Top {min(args.top_n, len(eligible))}:")
-    print(f"{'rank':>4}  {'trial':>5}  {'objective':>10}  {'final_avg':>10}  {'best_avg':>9}  {'conv_ep':>8}")
+    print(
+        f"{'rank':>4}  {'trial':>5}  {'objective':>10}  "
+        f"{'tail_iqm':>9}  {'final_avg':>10}  {'best_avg':>9}  {'conv_ep':>8}"
+    )
     for i, t in enumerate(eligible[: args.top_n], start=1):
         final_avg = t.user_attrs.get("final_avg_reward")
         best_avg = t.user_attrs.get("best_avg_reward")
+        tail_iqm = t.user_attrs.get("tail_iqm_avg_reward")
         conv = t.user_attrs.get("convergence_episode")
         conv_str = f"{conv}" if conv is not None else "-"
         print(
             f"{i:>4}  {t.number:>5}  {t.value:>10.2f}  "
-            f"{final_avg:>10.2f}  "
+            f"{(tail_iqm if tail_iqm is not None else 0):>9.2f}  "
+            f"{(final_avg if final_avg is not None else 0):>10.2f}  "
             f"{(best_avg if best_avg is not None else 0):>9.2f}  "
             f"{conv_str:>8}"
         )

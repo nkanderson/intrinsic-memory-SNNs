@@ -116,6 +116,9 @@ def train(
         Dictionary with training metrics:
             - best_avg_reward: Best 100-episode rolling average reward
             - final_avg_reward: Final 100-episode average reward
+            - tail_iqm_avg_reward: Interquartile Mean of trailing-100
+              averages over the last 25% of training — robustness check on
+              sustained convergence (drops extremes, means the middle 50%)
             - episode_durations: List of all episode durations
             - total_episodes: Number of episodes completed
     """
@@ -345,6 +348,37 @@ def train(
     n = min(len(episode_durations), 100)
     final_avg = sum(episode_durations[-n:]) / n if n > 0 else 0.0
 
+    # Tail-IQM metric: Interquartile Mean of the trailing-100 averages over
+    # the last quarter of training. Drops the bottom 25% and top 25% of the
+    # tail windows and means the middle 50% — robust to "lucky last 100"
+    # spikes (those land in the dropped top 25%) and to single noise blips
+    # (those land in the dropped bottom 25%), while persistent instability
+    # in the tail still drives the score down.
+    #
+    # Why IQM rather than other tail aggregators we considered:
+    #   - mean of last 100 (previous objective): vulnerable to a single
+    #     lucky 100-episode window at the very end of training.
+    #   - min of tail trailing-100s: strict but brittle — one outlier dip
+    #     dominates the score even if the trial is otherwise stable.
+    #   - mean over the last 25%: cancels dips against spikes, so a
+    #     trial that briefly collapses and recovers scores the same as a
+    #     genuinely stable one.
+    #   - IQM: drops both extremes, keeps the bulk of the tail. Standard
+    #     robust-statistics treatment (cf. Tukey 1962, Huber 1964;
+    #     popularized for RL eval by Agarwal et al. NeurIPS 2021).
+    TAIL_FRACTION = 0.25
+    tail_iqm_avg = 0.0
+    if len(episode_durations) >= 100:
+        tail_start = max(99, int((1.0 - TAIL_FRACTION) * len(episode_durations)))
+        tail_windows = sorted(
+            sum(episode_durations[i - 99 : i + 1]) / 100.0
+            for i in range(tail_start, len(episode_durations))
+        )
+        # Drop bottom 25% and top 25%; mean the middle 50%.
+        drop = len(tail_windows) // 4
+        middle = tail_windows[drop : len(tail_windows) - drop] or tail_windows
+        tail_iqm_avg = sum(middle) / len(middle)
+
     # Calculate convergence episode (first episode where it hits >= 475 and never drops below)
     convergence_threshold = 475.0
     convergence_episode = None
@@ -370,6 +404,7 @@ def train(
     return {
         "best_avg_reward": best_avg_reward,
         "final_avg_reward": final_avg,
+        "tail_iqm_avg_reward": tail_iqm_avg,
         "episode_durations": episode_durations,
         "episode_losses": episode_losses,
         "convergence_episode": convergence_episode,
