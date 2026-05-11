@@ -5,6 +5,7 @@ import os
 import yaml
 from pathlib import Path
 import gymnasium as gym
+import numpy as np
 import torch
 import torch.optim as optim
 from snntorch import surrogate
@@ -247,6 +248,21 @@ if __name__ == "__main__":
         help="Do NOT save the final converged model checkpoint at the end of training",
     )
 
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Seed for Python/numpy/torch and the env's first reset (default: unseeded)",
+    )
+
+    parser.add_argument(
+        "--enable-gen-eval",
+        action="store_true",
+        help="Enable fixed-seed generalization evaluation during training (saves -gen.pth). "
+             "Off by default — the trailing 100-ep average is the better signal for "
+             "stabilized models.",
+    )
+
     args = parser.parse_args()
 
     # Determine config file to use
@@ -339,6 +355,21 @@ if __name__ == "__main__":
     metrics_csv_arg = args.metrics_csv
     save_final = not args.no_save_final
     save_best = args.save_best
+    seed = args.seed
+
+    # Generalization eval is opt-in. Without --enable-gen-eval, force off
+    # regardless of config-set eval_every_episodes. Trailing 100-ep avg is
+    # the better signal for stabilized models.
+    if not args.enable_gen_eval:
+        eval_every_episodes = 0
+
+    # Seed Python/numpy/torch RNGs for reproducibility (env is seeded on first reset).
+    if seed is not None:
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
 
     # Create surrogate gradient function
     spike_grad = surrogate.fast_sigmoid(slope=surrogate_gradient_slope)
@@ -619,7 +650,10 @@ if __name__ == "__main__":
     # Section 4: Main training loop
     #
     for i_episode in range(start_episode, start_episode + num_episodes):
-        state, info = env.reset()
+        # Seed the env's RNG once on the first reset; subsequent resets
+        # advance that seeded RNG so trajectories vary but are reproducible.
+        reset_seed = seed if (seed is not None and i_episode == start_episode) else None
+        state, info = env.reset(seed=reset_seed)
         state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(
             0
         )  # [1, obs]

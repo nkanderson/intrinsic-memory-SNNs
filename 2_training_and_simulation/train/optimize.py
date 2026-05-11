@@ -227,7 +227,12 @@ def create_objective(
         best_avg = result["best_avg_reward"]
         final_avg = result["final_avg_reward"]
         convergence_episode = result.get("convergence_episode")
-        
+
+        # Store unpenalized metrics so downstream tools (e.g., candidate
+        # selection) can filter trials by raw final_avg_reward, independent
+        # of size/history penalties baked into the objective value.
+        trial.set_user_attr("final_avg_reward", float(final_avg))
+        trial.set_user_attr("best_avg_reward", float(best_avg))
         if convergence_episode is not None:
             trial.set_user_attr("convergence_episode", convergence_episode)
 

@@ -18,6 +18,7 @@ from itertools import count
 from pathlib import Path
 
 import gymnasium as gym
+import numpy as np
 import torch
 import torch.optim as optim
 from snntorch import surrogate
@@ -88,6 +89,7 @@ def train(
     save_best_model: bool = False,
     model_prefix: str = "optuna",
     optuna_trial=None,
+    seed: int | None = None,
 ) -> dict:
     """
     Run a full SNN-DQN training session on CartPole and return metrics.
@@ -106,6 +108,9 @@ def train(
         optuna_trial: If provided, an optuna.Trial object for pruning support.
             Reports intermediate values (100-episode avg reward) for Optuna's
             pruner to decide whether to stop unpromising trials early.
+        seed: If provided, seeds Python's random, numpy, torch, and the
+            environment for reproducibility. Only the first env.reset is
+            seeded so trajectories still vary across episodes within a run.
 
     Returns:
         Dictionary with training metrics:
@@ -115,6 +120,14 @@ def train(
             - total_episodes: Number of episodes completed
     """
     device = torch.device(device)
+
+    # ── Seed RNGs for reproducibility (when requested) ──
+    if seed is not None:
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
 
     # ── Extract hyperparameters from flat config ──
     batch_size = config["batch_size"]
@@ -224,7 +237,10 @@ def train(
         models_dir.mkdir(exist_ok=True)
 
     for i_episode in range(num_episodes):
-        state, _info = env.reset()
+        # Seed the env's RNG once on the first reset; subsequent resets
+        # advance that seeded RNG so trajectories vary but are reproducible.
+        reset_seed = seed if (seed is not None and i_episode == 0) else None
+        state, _info = env.reset(seed=reset_seed)
         state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
         episode_loss_sum = 0.0
         episode_loss_count = 0
