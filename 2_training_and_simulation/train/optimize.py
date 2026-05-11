@@ -170,8 +170,8 @@ def get_device(hw_acceleration: bool) -> str:
 
 
 def create_objective(
-    search_space: dict, 
-    device: str, 
+    search_space: dict,
+    device: str,
     num_episodes_override: int = None,
     size_penalty: float = 0.0,
     history_penalty: float = 0.0,
@@ -198,9 +198,14 @@ def create_objective(
         # To enforce constraints without corrupting the dashboard or crashing, we prune invalid trials.
         if params.get("hidden2_size", 0) > params.get("hidden1_size", 0):
             raise optuna.TrialPruned("Constraint violated: hidden2_size > hidden1_size")
-        if params.get("neuron_type") == "bitshift" and params.get("shift_func") == "simple":
+        if (
+            params.get("neuron_type") == "bitshift"
+            and params.get("shift_func") == "simple"
+        ):
             if params.get("history_length", 0) > 20:
-                raise optuna.TrialPruned("Constraint violated: simple shift_func needs history_length <= 20")
+                raise optuna.TrialPruned(
+                    "Constraint violated: simple shift_func needs history_length <= 20"
+                )
 
         # Override num_episodes if requested
         if num_episodes_override is not None:
@@ -246,7 +251,11 @@ def create_objective(
             print(f"  -> Converged at episode: {convergence_episode}")
 
         # Size penalty to gently push towards smaller networks
-        penalty = size_penalty * (h1 + h2) if isinstance(h1, int) and isinstance(h2, int) else 0.0
+        penalty = (
+            size_penalty * (h1 + h2)
+            if isinstance(h1, int) and isinstance(h2, int)
+            else 0.0
+        )
 
         # History length penalty to gently push towards smaller history buffers
         hist = params.get("history_length", 0)
@@ -578,7 +587,7 @@ Examples:
     # ── Configure sampler ──
     # Following Optuna recommendation to use TPE sampler since there are fewer than 1000 trials
     # and the parameters are not correlated in a simple way.
-    sampler = optuna.samplers.TPESampler(seed=args.seed)
+    sampler = optuna.samplers.TPESampler(seed=args.seed, n_startup_trials=15)
 
     # ── Create or load study ──
     study = optuna.create_study(
