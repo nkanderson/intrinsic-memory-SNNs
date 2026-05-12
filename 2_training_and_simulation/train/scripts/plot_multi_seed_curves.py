@@ -16,6 +16,10 @@ summary CSV (<config_name>-summary.csv), and produces:
   4. final_bars                Bar chart: mean final_avg_reward (and
                                best_avg_reward) across seeds, error bar = std.
   5. loss_curves               Mean ± std avg_loss per episode.
+  6. performance_profile       Dolan-Moré curve: fraction of seeds scoring
+                               at or above each threshold. Following
+                               Agarwal et al. (2021), characterizes the full
+                               distribution of run scores per config.
 
 Usage:
     # Single config — produces plots 1, 4, 5 (cross-config + strip need 2+)
@@ -46,7 +50,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-SUCCESS_THRESHOLD = 475.0  # CartPole-v1 solved criterion
+# Reporting threshold for plots: the standard CartPole-v1 solved criterion
+# (mean reward >= 475 over 100 consecutive episodes). This is the value
+# the field compares against — not the Optuna selection metric. The Optuna
+# stage used tail-IQM over the last 25% of training as the objective to
+# discourage selecting configs whose apparent success was localized to a
+# single late window. Multi-seed retraining and the plots produced here
+# report against the standard 475 threshold instead.
+SUCCESS_THRESHOLD = 475.0
 
 
 def load_per_seed_csvs(metrics_dir: Path, config_name: str):
@@ -213,6 +224,42 @@ def plot_final_bars(configs, summary_by_cfg, output_dir: Path):
     return out
 
 
+def plot_performance_profile(configs, summary_by_cfg, output_dir: Path):
+    """Empirical performance profile (a Dolan-Moré curve) per configuration.
+
+    x: score threshold τ ∈ [0, 500]
+    y: fraction of seeds achieving final_avg_reward ≥ τ
+
+    Per Agarwal et al. (2021), this characterizes the full distribution of
+    run scores rather than collapsing it to a single aggregate; configurations
+    whose curves stay flat longer (rightward shift) are uniformly better
+    across the seed distribution. The vertical dashed line at τ = 475 marks
+    the CartPole-v1 solved threshold; the y-value at that line is the
+    'fraction of seeds that solved the task' for each configuration.
+    """
+    fig, ax = plt.subplots(figsize=(8, 5))
+    thresholds = np.linspace(0, 500, 501)
+    for cfg in configs:
+        rows = summary_by_cfg[cfg]
+        scores = np.array([r["final_avg_reward"] for r in rows])
+        # fraction of seeds with score >= τ, for each τ
+        fractions = [(scores >= t).mean() for t in thresholds]
+        ax.plot(thresholds, fractions, linewidth=2.0, label=cfg)
+    ax.axvline(SUCCESS_THRESHOLD, color="red", linestyle="--", linewidth=1.0,
+               label=f"solved ({SUCCESS_THRESHOLD:.0f})")
+    ax.set_xlabel("Score threshold τ (final 100-ep avg reward)")
+    ax.set_ylabel("Fraction of seeds with score ≥ τ")
+    ax.set_title("Performance profile across seeds")
+    ax.set_ylim(-0.02, 1.02)
+    ax.legend(loc="lower left", fontsize=8)
+    ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+    out = output_dir / "performance_profile.png"
+    fig.savefig(out, dpi=150)
+    plt.close(fig)
+    return out
+
+
 def plot_loss_curves(config_name, episodes, loss_mat, output_dir: Path):
     if np.isnan(loss_mat).all():
         return None
@@ -279,6 +326,11 @@ def main():
         print(f"  wrote {out}")
 
     out = plot_final_bars(configs, summary_by_cfg, output_dir)
+    print(f"  wrote {out}")
+
+    # Performance profile (per Agarwal et al., 2021): shows the full
+    # distribution of seed scores per config rather than collapsing to mean.
+    out = plot_performance_profile(configs, summary_by_cfg, output_dir)
     print(f"  wrote {out}")
 
 
