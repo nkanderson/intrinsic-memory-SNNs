@@ -194,7 +194,7 @@ def fractional_step(
 
     finalize_spike = 1 if finalize_membrane >= cfg.threshold else 0
 
-    history[history_ptr] = wrap_signed(membrane, MEMBRANE_WIDTH)
+    history[history_ptr] = wrap_signed(finalize_membrane, MEMBRANE_WIDTH)
     history_ptr = 0 if history_ptr == history_length - 1 else history_ptr + 1
     return finalize_membrane, finalize_spike, history, history_ptr
 
@@ -274,7 +274,7 @@ def bitshift_step(
 
     finalize_spike = 1 if finalize_membrane >= cfg.threshold else 0
 
-    history[history_ptr] = wrap_signed(membrane, MEMBRANE_WIDTH)
+    history[history_ptr] = wrap_signed(finalize_membrane, MEMBRANE_WIDTH)
     history_ptr = 0 if history_ptr == history_length - 1 else history_ptr + 1
     return finalize_membrane, finalize_spike, history, history_ptr
 
