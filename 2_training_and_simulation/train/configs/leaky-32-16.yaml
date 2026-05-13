@@ -1,0 +1,20 @@
+# Study: leaky-iqm
+# Trial 4, value 395.7459424920128
+
+training:
+  batch_size: 256
+  gamma: 0.9818164044058306
+  eps_start: 0.9691138510842754
+  eps_end: 0.06964270580503398
+  eps_decay: 2932
+  tau: 0.0021474175742882597
+  lr: 0.00046130750056777245
+  num_episodes: 2500
+
+snn:
+  num_steps: 30
+  beta: 0.8291978871031236
+  surrogate_gradient_slope: 25
+  neuron_type: leaky
+  hidden1_size: 32
+  hidden2_size: 16

@@ -1,0 +1,23 @@
+# Study: bitshift-custom-slow-iqm
+# Trial: 14 (value: 441.2230670926518)
+
+training:
+  batch_size: 128
+  gamma: 0.967844046128941
+  eps_start: 0.9960940420443969
+  eps_end: 0.047189613726445284
+  eps_decay: 2676
+  tau: 0.0025471476133868617
+  lr: 0.00013747682155841668
+  num_episodes: 2500
+snn:
+  num_steps: 30
+  beta: 0.9
+  surrogate_gradient_slope: 25
+  neuron_type: bitshift
+  shift_func: custom_slow_decay # Shift function type: 'simple', 'slow_decay', 'custom', or 'custom_slow_decay'
+  hidden1_size: 64
+  hidden2_size: 4
+  lam: 0.15342687132464788
+  history_length: 64
+  dt: 1.0
