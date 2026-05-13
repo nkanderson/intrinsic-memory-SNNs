@@ -12,6 +12,7 @@ Usage:
     print(result["best_avg_reward"])
 """
 
+import csv
 import math
 import random
 from itertools import count
@@ -90,6 +91,7 @@ def train(
     model_prefix: str = "optuna",
     optuna_trial=None,
     seed: int | None = None,
+    metrics_csv_path: str | Path | None = None,
 ) -> dict:
     """
     Run a full SNN-DQN training session on CartPole and return metrics.
@@ -111,6 +113,11 @@ def train(
         seed: If provided, seeds Python's random, numpy, torch, and the
             environment for reproducibility. Only the first env.reset is
             seeded so trajectories still vary across episodes within a run.
+        metrics_csv_path: If provided, the per-episode metrics
+            (episode, episode_steps, running_avg_100, avg_loss) are
+            streamed to this CSV in append mode after each episode
+            completes. Enables live progress monitoring via tail / wc -l
+            and keeps data durable against mid-run subprocess kills.
 
     Returns:
         Dictionary with training metrics:
@@ -239,6 +246,17 @@ def train(
         models_dir = Path("models")
         models_dir.mkdir(exist_ok=True)
 
+    # If streaming per-episode metrics, write the header once now.
+    # Subsequent rows are appended (one per finished episode) so the file
+    # is durable against subprocess kills mid-run.
+    if metrics_csv_path is not None:
+        metrics_csv_path = Path(metrics_csv_path)
+        metrics_csv_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(metrics_csv_path, "w", newline="") as _f:
+            csv.writer(_f).writerow(
+                ["episode", "episode_steps", "running_avg_100", "avg_loss"]
+            )
+
     for i_episode in range(num_episodes):
         # Seed the env's RNG once on the first reset; subsequent resets
         # advance that seeded RNG so trajectories vary but are reproducible.
@@ -306,6 +324,14 @@ def train(
                 episode_durations.append(t + 1)
                 avg_loss = episode_loss_sum / episode_loss_count if episode_loss_count > 0 else 0.0
                 episode_losses.append(avg_loss)
+                # Stream this episode's row to disk if requested.
+                if metrics_csv_path is not None:
+                    _window = episode_durations[-min(len(episode_durations), 100):]
+                    _running_avg = sum(_window) / len(_window)
+                    with open(metrics_csv_path, "a", newline="") as _f:
+                        csv.writer(_f).writerow(
+                            [i_episode, t + 1, f"{_running_avg:.4f}", f"{avg_loss}"]
+                        )
                 break
 
         # ── Track best rolling average ──

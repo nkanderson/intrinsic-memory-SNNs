@@ -149,6 +149,10 @@ def run_one_seed(seed: int, cmd: list[str], worker_dir: Path,
     env["OPENBLAS_NUM_THREADS"] = str(threads_per_worker)
     # PyTorch intra-op limit — belt and suspenders on top of OMP.
     env["PYTORCH_NUM_THREADS"] = str(threads_per_worker)
+    # Unbuffer Python stdout/stderr so the per-seed log file shows progress
+    # live rather than waiting for the block buffer (~4-8 KB) to fill or the
+    # process to exit. Without this the log appears empty for hours.
+    env["PYTHONUNBUFFERED"] = "1"
 
     start = time.monotonic()
     with open(log_path, "w") as log:

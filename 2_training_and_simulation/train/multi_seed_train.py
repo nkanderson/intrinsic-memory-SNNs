@@ -245,8 +245,12 @@ def main():
     for i in range(args.num_seeds):
         seed = args.base_seed + i
         prefix = f"{config_name}-seed{seed}"
+        per_seed_csv = output_dir / f"{prefix}.csv"
         print(f"\n{'=' * 60}\nSeed {seed} ({i + 1}/{args.num_seeds})\n{'=' * 60}")
 
+        # train_fn.train() streams per-episode rows to per_seed_csv in append
+        # mode as each episode completes. This gives live progress visibility
+        # (tail -f / wc -l on the CSV) and keeps data durable against kills.
         result = train(
             config=flat,
             device=device,
@@ -255,11 +259,10 @@ def main():
             save_best_model=args.save_best,
             model_prefix=prefix,
             seed=seed,
+            metrics_csv_path=per_seed_csv,
         )
 
-        per_seed_csv = output_dir / f"{prefix}.csv"
-        write_per_episode_csv(per_seed_csv, result)
-        print(f"  wrote per-episode CSV: {per_seed_csv}")
+        print(f"  per-episode CSV streamed to: {per_seed_csv}")
 
         summary_rows.append({
             "seed": seed,
