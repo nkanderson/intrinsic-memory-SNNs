@@ -1,0 +1,360 @@
+Multi-seed training for: fractional-64-8-8
+  device       : cpu
+  num_seeds    : 1
+  base_seed    : 43
+  num_episodes : 2500
+  output_dir   : metrics/multi-seed/_workers/fractional-64-8-8/seed43
+
+============================================================
+Seed 43 (1/1)
+============================================================
+  Episode 50/2500  avg(100): 17.2
+Model saved to models/fractional-64-8-8-seed43-best.pth
+  Episode 100/2500  avg(100): 15.3
+Model saved to models/fractional-64-8-8-seed43-best.pth
+  Episode 150/2500  avg(100): 14.3
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+  Episode 200/2500  avg(100): 24.4
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+  Episode 250/2500  avg(100): 100.3
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+  Episode 300/2500  avg(100): 151.3
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+  Episode 350/2500  avg(100): 134.1
+  Episode 400/2500  avg(100): 118.5
+  Episode 450/2500  avg(100): 114.5
+  Episode 500/2500  avg(100): 145.1
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+  Episode 550/2500  avg(100): 234.4
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+  Episode 600/2500  avg(100): 252.0
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+  Episode 650/2500  avg(100): 320.3
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+  Episode 700/2500  avg(100): 466.7
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+  Episode 750/2500  avg(100): 454.4
+  Episode 800/2500  avg(100): 442.7
+  Episode 850/2500  avg(100): 417.4
+  Episode 900/2500  avg(100): 339.2
+  Episode 950/2500  avg(100): 399.7
+  Episode 1000/2500  avg(100): 324.0
+  Episode 1050/2500  avg(100): 135.3
+  Episode 1100/2500  avg(100): 302.6
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+  Episode 1150/2500  avg(100): 498.6
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+Model saved to models/fractional-64-8-8-seed43-best.pth
+  Episode 1200/2500  avg(100): 500.0
+  Episode 1250/2500  avg(100): 500.0
+  Episode 1300/2500  avg(100): 500.0
+  Episode 1350/2500  avg(100): 500.0
+  Episode 1400/2500  avg(100): 467.1
+  Episode 1450/2500  avg(100): 357.9
+  Episode 1500/2500  avg(100): 324.7
+  Episode 1550/2500  avg(100): 372.2
+  Episode 1600/2500  avg(100): 399.3
+  Episode 1650/2500  avg(100): 456.0
+  Episode 1700/2500  avg(100): 495.1
+  Episode 1750/2500  avg(100): 467.2
+  Episode 1800/2500  avg(100): 424.1
+  Episode 1850/2500  avg(100): 427.7
+  Episode 1900/2500  avg(100): 406.0
+  Episode 1950/2500  avg(100): 415.9
+  Episode 2000/2500  avg(100): 437.7
+  Episode 2050/2500  avg(100): 418.6
+  Episode 2100/2500  avg(100): 300.9
+  Episode 2150/2500  avg(100): 291.7
+  Episode 2200/2500  avg(100): 431.1
+  Episode 2250/2500  avg(100): 436.5
+  Episode 2300/2500  avg(100): 405.0
+  Episode 2350/2500  avg(100): 368.1
+  Episode 2400/2500  avg(100): 389.1
+  Episode 2450/2500  avg(100): 433.2
+  Episode 2500/2500  avg(100): 364.7
+Model saved to models/fractional-64-8-8-seed43-final.pth
+  per-episode CSV streamed to: metrics/multi-seed/_workers/fractional-64-8-8/seed43/fractional-64-8-8-seed43.csv
+
+Summary CSV: metrics/multi-seed/_workers/fractional-64-8-8/seed43/fractional-64-8-8-summary.csv
+
+Results across 1 seeds:
+  solved (final_avg >= 475) : 0/1 seeds
+  final_avg_reward  : 364.68 ± 0.00  (primary metric: CartPole-v1 standard)
+  best_avg_reward   : 500.00 ± 0.00
+  tail_iqm_reward   : 405.25 ± 0.00  (diagnostic: matches Optuna selection metric)
+  convergence_ep    : never reached threshold in any seed
+
+Robust reporting (final_avg_reward across seeds, 95% bootstrap CI):
+  IQM   : 364.68  [95% CI: 364.68, 364.68]
+  Mean  : 364.68  [95% CI: 364.68, 364.68]
+  (note: with N < 10, bootstrap CIs and IQM are necessarily wide; per Colas et al. 2018 consider increasing --num-seeds.)

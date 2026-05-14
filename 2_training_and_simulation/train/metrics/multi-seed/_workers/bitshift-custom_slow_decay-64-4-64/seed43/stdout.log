@@ -1,0 +1,440 @@
+Multi-seed training for: bitshift-custom_slow_decay-64-4-64
+  device       : cpu
+  num_seeds    : 1
+  base_seed    : 43
+  num_episodes : 2500
+  output_dir   : metrics/multi-seed/_workers/bitshift-custom_slow_decay-64-4-64/seed43
+
+============================================================
+Seed 43 (1/1)
+============================================================
+  Episode 50/2500  avg(100): 21.6
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+  Episode 100/2500  avg(100): 18.5
+  Episode 150/2500  avg(100): 13.7
+  Episode 200/2500  avg(100): 13.2
+  Episode 250/2500  avg(100): 15.5
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+  Episode 300/2500  avg(100): 18.5
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+  Episode 350/2500  avg(100): 25.2
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+  Episode 400/2500  avg(100): 85.8
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+  Episode 450/2500  avg(100): 153.0
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+  Episode 500/2500  avg(100): 163.4
+  Episode 550/2500  avg(100): 161.2
+  Episode 600/2500  avg(100): 150.7
+  Episode 650/2500  avg(100): 141.9
+  Episode 700/2500  avg(100): 155.9
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+  Episode 750/2500  avg(100): 182.9
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+  Episode 800/2500  avg(100): 202.9
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+  Episode 850/2500  avg(100): 211.4
+  Episode 900/2500  avg(100): 204.6
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+  Episode 950/2500  avg(100): 252.6
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+  Episode 1000/2500  avg(100): 396.2
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+  Episode 1050/2500  avg(100): 491.6
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
+  Episode 1100/2500  avg(100): 490.4
+  Episode 1150/2500  avg(100): 444.4
+  Episode 1200/2500  avg(100): 367.7
+  Episode 1250/2500  avg(100): 243.9
+  Episode 1300/2500  avg(100): 147.7
+  Episode 1350/2500  avg(100): 236.1
+  Episode 1400/2500  avg(100): 176.4
+  Episode 1450/2500  avg(100): 54.4
+  Episode 1500/2500  avg(100): 60.0
+  Episode 1550/2500  avg(100): 38.6
+  Episode 1600/2500  avg(100): 146.4
+  Episode 1650/2500  avg(100): 246.0
+  Episode 1700/2500  avg(100): 359.6
+  Episode 1750/2500  avg(100): 381.6
+  Episode 1800/2500  avg(100): 290.1
+  Episode 1850/2500  avg(100): 231.0
+  Episode 1900/2500  avg(100): 179.8
+  Episode 1950/2500  avg(100): 155.7
+  Episode 2000/2500  avg(100): 191.8
+  Episode 2050/2500  avg(100): 227.2
+  Episode 2100/2500  avg(100): 305.2
+  Episode 2150/2500  avg(100): 348.7
+  Episode 2200/2500  avg(100): 260.4
+  Episode 2250/2500  avg(100): 175.4
+  Episode 2300/2500  avg(100): 134.9

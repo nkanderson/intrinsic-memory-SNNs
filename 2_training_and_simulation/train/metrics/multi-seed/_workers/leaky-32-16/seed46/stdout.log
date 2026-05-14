@@ -1,0 +1,312 @@
+Multi-seed training for: leaky-32-16
+  device       : cpu
+  num_seeds    : 1
+  base_seed    : 46
+  num_episodes : 2500
+  output_dir   : metrics/multi-seed/_workers/leaky-32-16/seed46
+
+============================================================
+Seed 46 (1/1)
+============================================================
+  Episode 50/2500  avg(100): 18.6
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 100/2500  avg(100): 17.6
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 150/2500  avg(100): 30.8
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 200/2500  avg(100): 119.4
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 250/2500  avg(100): 167.3
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 300/2500  avg(100): 117.6
+  Episode 350/2500  avg(100): 109.1
+  Episode 400/2500  avg(100): 139.3
+  Episode 450/2500  avg(100): 116.7
+  Episode 500/2500  avg(100): 78.5
+  Episode 550/2500  avg(100): 116.5
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 600/2500  avg(100): 204.6
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 650/2500  avg(100): 228.9
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 700/2500  avg(100): 239.1
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 750/2500  avg(100): 319.9
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 800/2500  avg(100): 370.6
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 850/2500  avg(100): 399.4
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 900/2500  avg(100): 372.6
+  Episode 950/2500  avg(100): 383.0
+  Episode 1000/2500  avg(100): 364.5
+  Episode 1050/2500  avg(100): 368.6
+  Episode 1100/2500  avg(100): 281.1
+  Episode 1150/2500  avg(100): 161.3
+  Episode 1200/2500  avg(100): 309.4
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 1250/2500  avg(100): 416.0
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 1300/2500  avg(100): 428.2
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 1350/2500  avg(100): 454.8
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 1400/2500  avg(100): 464.6
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 1450/2500  avg(100): 466.0
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 1500/2500  avg(100): 449.1
+  Episode 1550/2500  avg(100): 413.3
+  Episode 1600/2500  avg(100): 442.8
+  Episode 1650/2500  avg(100): 416.8
+  Episode 1700/2500  avg(100): 314.1
+  Episode 1750/2500  avg(100): 370.9
+  Episode 1800/2500  avg(100): 420.6
+  Episode 1850/2500  avg(100): 248.0
+  Episode 1900/2500  avg(100): 117.5
+  Episode 1950/2500  avg(100): 102.7
+  Episode 2000/2500  avg(100): 102.7
+  Episode 2050/2500  avg(100): 144.2
+  Episode 2100/2500  avg(100): 300.7
+  Episode 2150/2500  avg(100): 434.1
+  Episode 2200/2500  avg(100): 420.0
+  Episode 2250/2500  avg(100): 417.5
+  Episode 2300/2500  avg(100): 348.8
+  Episode 2350/2500  avg(100): 378.1
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+Model saved to models/leaky-32-16-seed46-best.pth
+  Episode 2400/2500  avg(100): 500.0
+  Episode 2450/2500  avg(100): 464.8
+  Episode 2500/2500  avg(100): 387.8
+Model saved to models/leaky-32-16-seed46-final.pth
+  per-episode CSV streamed to: metrics/multi-seed/_workers/leaky-32-16/seed46/leaky-32-16-seed46.csv
+
+Summary CSV: metrics/multi-seed/_workers/leaky-32-16/seed46/leaky-32-16-summary.csv
+
+Results across 1 seeds:
+  solved (final_avg >= 475) : 0/1 seeds
+  final_avg_reward  : 387.78 ± 0.00  (primary metric: CartPole-v1 standard)
+  best_avg_reward   : 500.00 ± 0.00
+  tail_iqm_reward   : 343.67 ± 0.00  (diagnostic: matches Optuna selection metric)
+  convergence_ep    : never reached threshold in any seed
+
+Robust reporting (final_avg_reward across seeds, 95% bootstrap CI):
+  IQM   : 387.78  [95% CI: 387.78, 387.78]
+  Mean  : 387.78  [95% CI: 387.78, 387.78]
+  (note: with N < 10, bootstrap CIs and IQM are necessarily wide; per Colas et al. 2018 consider increasing --num-seeds.)

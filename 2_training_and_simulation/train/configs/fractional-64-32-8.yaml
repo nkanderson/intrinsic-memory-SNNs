@@ -1,0 +1,28 @@
+# Configuration for SNN-DQN on CartPole-v1
+# Comes from preliminary Optuna results on fractional neuron search space.
+# Trial number 26 from fractional-iqm study.
+# [I 2026-05-13 14:03:24,457] Trial 26 finished with value: 444.73303514377 and parameters: {'batch_size': 128, 'gamma': 0.9594280042167038, 'eps_start': 0.9372179930978338, 'eps_end': 0.056178978804002716, 'eps_decay': 1440, 'tau': 0.004796912320646551, 'lr': 0.00020400652890776566, 'num_steps': 30, 'hidden1_size': 64, 'hidden2_size': 32, 'lam': 0.14017441271027026, 'history_length': 8}. Best is trial 26 with value: 444.73303514377.
+
+training:
+  batch_size: 128 # Transitions sampled from replay buffer
+  gamma: 0.9594280042167038 # Discount factor for future rewards
+  eps_start: 0.9372179930978338 # Starting exploration rate
+  eps_end: 0.056178978804002716 # Minimum exploration rate
+  eps_decay: 1440 # Epsilon decay rate (higher = slower decay, longer exploration)
+  tau: 0.004796912320646551 # Target network soft update rate
+  lr: 0.00020400652890776566 # AdamW learning rate
+  num_episodes: 2500 # Total training episodes
+
+snn:
+  num_steps: 30 # SNN simulation timesteps per environment step
+  beta: 0.9 # LIF neuron membrane decay rate (NOTE: not used for fractional neurons, see lam instead)
+  surrogate_gradient_slope: 25 # Slope for fast_sigmoid surrogate gradient
+  neuron_type: fractional # Neuron type: 'leaky', 'leakysv', or 'fractional'
+  hidden1_size: 64 # Neurons in first hidden layer
+  hidden2_size: 32 # Neurons in second hidden layer
+
+  # Fractional-order LIF specific parameters (used only when neuron_type: fractional)
+  alpha: 0.5 # Fractional order for derivative (0 < alpha <= 1)
+  lam: 0.14017441271027026 # Leakage parameter
+  history_length: 8 # Number of past values for GL approximation
+  dt: 1.0 # Discrete timestep for GL approximation
