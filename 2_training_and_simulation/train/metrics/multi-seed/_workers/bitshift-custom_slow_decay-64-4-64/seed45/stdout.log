@@ -531,3 +531,24 @@ Model saved to models/bitshift-custom_slow_decay-64-4-64-seed45-best.pth
 Model saved to models/bitshift-custom_slow_decay-64-4-64-seed45-best.pth
 Model saved to models/bitshift-custom_slow_decay-64-4-64-seed45-best.pth
 Model saved to models/bitshift-custom_slow_decay-64-4-64-seed45-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed45-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed45-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed45-best.pth
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed45-best.pth
+  Episode 2500/2500  avg(100): 456.1
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed45-final.pth
+  per-episode CSV streamed to: metrics/multi-seed/_workers/bitshift-custom_slow_decay-64-4-64/seed45/bitshift-custom_slow_decay-64-4-64-seed45.csv
+
+Summary CSV: metrics/multi-seed/_workers/bitshift-custom_slow_decay-64-4-64/seed45/bitshift-custom_slow_decay-64-4-64-summary.csv
+
+Results across 1 seeds:
+  solved (final_avg >= 475) : 0/1 seeds
+  final_avg_reward  : 456.14 ± 0.00  (primary metric: CartPole-v1 standard)
+  best_avg_reward   : 456.14 ± 0.00
+  tail_iqm_reward   : 260.46 ± 0.00  (diagnostic: matches Optuna selection metric)
+  convergence_ep    : never reached threshold in any seed
+
+Robust reporting (final_avg_reward across seeds, 95% bootstrap CI):
+  IQM   : 456.14  [95% CI: 456.14, 456.14]
+  Mean  : 456.14  [95% CI: 456.14, 456.14]
+  (note: with N < 10, bootstrap CIs and IQM are necessarily wide; per Colas et al. 2018 consider increasing --num-seeds.)

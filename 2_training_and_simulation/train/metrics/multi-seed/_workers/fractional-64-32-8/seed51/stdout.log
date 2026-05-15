@@ -335,3 +335,31 @@ Model saved to models/fractional-64-32-8-seed51-best.pth
   Episode 1800/2500  avg(100): 404.4
   Episode 1850/2500  avg(100): 364.9
   Episode 1900/2500  avg(100): 380.9
+  Episode 1950/2500  avg(100): 367.9
+  Episode 2000/2500  avg(100): 276.5
+  Episode 2050/2500  avg(100): 300.2
+  Episode 2100/2500  avg(100): 411.6
+  Episode 2150/2500  avg(100): 464.5
+  Episode 2200/2500  avg(100): 383.0
+  Episode 2250/2500  avg(100): 334.0
+  Episode 2300/2500  avg(100): 408.9
+  Episode 2350/2500  avg(100): 453.2
+  Episode 2400/2500  avg(100): 301.5
+  Episode 2450/2500  avg(100): 143.2
+  Episode 2500/2500  avg(100): 185.6
+Model saved to models/fractional-64-32-8-seed51-final.pth
+  per-episode CSV streamed to: metrics/multi-seed/_workers/fractional-64-32-8/seed51/fractional-64-32-8-seed51.csv
+
+Summary CSV: metrics/multi-seed/_workers/fractional-64-32-8/seed51/fractional-64-32-8-summary.csv
+
+Results across 1 seeds:
+  solved (final_avg >= 475) : 0/1 seeds
+  final_avg_reward  : 185.56 ± 0.00  (primary metric: CartPole-v1 standard)
+  best_avg_reward   : 497.83 ± 0.00
+  tail_iqm_reward   : 357.86 ± 0.00  (diagnostic: matches Optuna selection metric)
+  convergence_ep    : never reached threshold in any seed
+
+Robust reporting (final_avg_reward across seeds, 95% bootstrap CI):
+  IQM   : 185.56  [95% CI: 185.56, 185.56]
+  Mean  : 185.56  [95% CI: 185.56, 185.56]
+  (note: with N < 10, bootstrap CIs and IQM are necessarily wide; per Colas et al. 2018 consider increasing --num-seeds.)

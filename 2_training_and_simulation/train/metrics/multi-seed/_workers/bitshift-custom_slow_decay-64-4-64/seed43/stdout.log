@@ -438,3 +438,23 @@ Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-best.pth
   Episode 2200/2500  avg(100): 260.4
   Episode 2250/2500  avg(100): 175.4
   Episode 2300/2500  avg(100): 134.9
+  Episode 2350/2500  avg(100): 126.5
+  Episode 2400/2500  avg(100): 131.6
+  Episode 2450/2500  avg(100): 127.7
+  Episode 2500/2500  avg(100): 275.5
+Model saved to models/bitshift-custom_slow_decay-64-4-64-seed43-final.pth
+  per-episode CSV streamed to: metrics/multi-seed/_workers/bitshift-custom_slow_decay-64-4-64/seed43/bitshift-custom_slow_decay-64-4-64-seed43.csv
+
+Summary CSV: metrics/multi-seed/_workers/bitshift-custom_slow_decay-64-4-64/seed43/bitshift-custom_slow_decay-64-4-64-summary.csv
+
+Results across 1 seeds:
+  solved (final_avg >= 475) : 0/1 seeds
+  final_avg_reward  : 275.53 ± 0.00  (primary metric: CartPole-v1 standard)
+  best_avg_reward   : 497.95 ± 0.00
+  tail_iqm_reward   : 182.03 ± 0.00  (diagnostic: matches Optuna selection metric)
+  convergence_ep    : never reached threshold in any seed
+
+Robust reporting (final_avg_reward across seeds, 95% bootstrap CI):
+  IQM   : 275.53  [95% CI: 275.53, 275.53]
+  Mean  : 275.53  [95% CI: 275.53, 275.53]
+  (note: with N < 10, bootstrap CIs and IQM are necessarily wide; per Colas et al. 2018 consider increasing --num-seeds.)

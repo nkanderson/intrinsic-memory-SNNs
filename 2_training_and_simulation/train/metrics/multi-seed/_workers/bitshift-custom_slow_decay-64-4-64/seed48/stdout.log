@@ -382,3 +382,7 @@ Model saved to models/bitshift-custom_slow_decay-64-4-64-seed48-best.pth
   Episode 1600/2500  avg(100): 408.0
   Episode 1650/2500  avg(100): 327.2
   Episode 1700/2500  avg(100): 260.6
+  Episode 1750/2500  avg(100): 294.6
+  Episode 1800/2500  avg(100): 389.2
+  Episode 1850/2500  avg(100): 334.5
+  Episode 1900/2500  avg(100): 393.6
