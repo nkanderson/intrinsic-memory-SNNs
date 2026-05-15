@@ -212,7 +212,10 @@ def train(
     # Initialize target network from policy network for fresh start
     target_net.load_state_dict(policy_net.state_dict())
     # Create optimizer
-    optimizer = optim.AdamW(policy_net.parameters(), lr=lr, amsgrad=True)
+    # Setting weight_decay=0, which may be more standard for DQN based on Mnih et al.
+    optimizer = optim.AdamW(
+        policy_net.parameters(), lr=lr, amsgrad=True, weight_decay=0
+    )
 
     # Create fresh agent instance
     agent = DQNAgent(
@@ -322,11 +325,15 @@ def train(
 
             if done:
                 episode_durations.append(t + 1)
-                avg_loss = episode_loss_sum / episode_loss_count if episode_loss_count > 0 else 0.0
+                avg_loss = (
+                    episode_loss_sum / episode_loss_count
+                    if episode_loss_count > 0
+                    else 0.0
+                )
                 episode_losses.append(avg_loss)
                 # Stream this episode's row to disk if requested.
                 if metrics_csv_path is not None:
-                    _window = episode_durations[-min(len(episode_durations), 100):]
+                    _window = episode_durations[-min(len(episode_durations), 100) :]
                     _running_avg = sum(_window) / len(_window)
                     with open(metrics_csv_path, "a", newline="") as _f:
                         csv.writer(_f).writerow(
@@ -410,7 +417,7 @@ def train(
     convergence_episode = None
     if len(episode_durations) >= 100:
         for i in range(len(episode_durations) - 1, 98, -1):
-            avg = sum(episode_durations[i-99:i+1]) / 100.0
+            avg = sum(episode_durations[i - 99 : i + 1]) / 100.0
             if avg < convergence_threshold:
                 if i < len(episode_durations) - 1:
                     convergence_episode = i + 1

@@ -259,8 +259,8 @@ if __name__ == "__main__":
         "--enable-gen-eval",
         action="store_true",
         help="Enable fixed-seed generalization evaluation during training (saves -gen.pth). "
-             "Off by default — the trailing 100-ep average is the better signal for "
-             "stabilized models.",
+        "Off by default — the trailing 100-ep average is the better signal for "
+        "stabilized models.",
     )
 
     args = parser.parse_args()
@@ -507,7 +507,9 @@ if __name__ == "__main__":
             dt=net_dt,
             shift_func=net_shift_func,
         ).to(device)
-        optimizer = optim.AdamW(policy_net.parameters(), lr=lr, amsgrad=True)
+        optimizer = optim.AdamW(
+            policy_net.parameters(), lr=lr, amsgrad=True, weight_decay=0
+        )
 
         # Load agent with optional config overrides (hybrid approach)
         agent = DQNAgent.load(
@@ -657,7 +659,7 @@ if __name__ == "__main__":
         state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(
             0
         )  # [1, obs]
-        
+
         episode_loss_sum = 0.0
         episode_loss_count = 0
 
@@ -721,7 +723,11 @@ if __name__ == "__main__":
                 eps_threshold = eps_end + (eps_start - eps_end) * math.exp(
                     -1.0 * steps_done / eps_decay
                 )
-                avg_loss = episode_loss_sum / episode_loss_count if episode_loss_count > 0 else 0.0
+                avg_loss = (
+                    episode_loss_sum / episode_loss_count
+                    if episode_loss_count > 0
+                    else 0.0
+                )
                 episode_durations.append(t + 1)
                 if human_render:
                     plot_durations(
