@@ -1,10 +1,16 @@
-# Search space for FractionalLIF neuron type
-# Includes fractional-order specific parameters (alpha, lam, history_length, dt)
+# Search space for Leaky (snnTorch standard) neuron type
+# Each parameter defines a range or set of values for Optuna to explore.
+#
+# Supported types:
+#   fixed:       single value (not tuned)
+#   int:         integer range [low, high]
+#   float:       float range [low, high], optional log scale
+#   categorical: list of discrete choices
 
 training:
   batch_size:
     type: categorical
-    choices: [64, 128, 256]
+    choices: [ 64, 128, 256 ]
   gamma:
     type: float
     low: 0.95
@@ -32,39 +38,25 @@ training:
     log: true
   num_episodes:
     type: fixed
-    value: 1500
+    value: 2500
 
 snn:
   num_steps:
     type: categorical
-    choices: [10, 20, 30]
+    choices: [ 10, 20, 30 ]
   beta:
-    type: fixed
-    value: 0.9 # Not used by fractional dynamics, kept for compatibility
+    type: float
+    low: 0.7
+    high: 0.99
   surrogate_gradient_slope:
     type: fixed
     value: 25
   neuron_type:
     type: fixed
-    value: fractional
+    value: leaky
   hidden1_size:
     type: categorical
-    choices: [8, 16, 32, 64]
+    choices: [ 8, 16, 32, 64 ]
   hidden2_size:
     type: categorical
-    choices: [4, 8, 16, 32]
-
-  # Fractional-order specific parameters
-  alpha:
-    type: fixed
-    value: 0.5
-  lam:
-    type: float
-    low: 0.05
-    high: 0.3
-  history_length:
-    type: categorical
-    choices: [4, 8, 16, 32, 64, 128]
-  dt:
-    type: fixed
-    value: 1.0
+    choices: [ 4, 8, 16, 32 ]

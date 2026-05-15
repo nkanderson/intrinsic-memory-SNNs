@@ -8,7 +8,7 @@
 training:
   batch_size:
     type: categorical
-    choices: [ 64, 128, 256 ]
+    choices: [64, 128, 256]
   gamma:
     type: float
     low: 0.95
@@ -36,12 +36,12 @@ training:
     log: true
   num_episodes:
     type: fixed
-    value: 2500
+    value: 1500
 
 snn:
   num_steps:
     type: categorical
-    choices: [ 10, 20, 30 ]
+    choices: [10, 20, 30]
   beta:
     type: fixed
     value: 0.9 # Not used by bitshift dynamics, kept for compatibility
@@ -53,10 +53,10 @@ snn:
     value: bitshift
   hidden1_size:
     type: categorical
-    choices: [ 8, 16, 32, 64 ]
+    choices: [8, 16, 32, 64]
   hidden2_size:
     type: categorical
-    choices: [ 4, 8, 16, 32 ]
+    choices: [4, 8, 16, 32]
 
   # BitshiftLIF specific parameters
   shift_func:
@@ -68,7 +68,7 @@ snn:
     high: 0.3
   history_length:
     type: categorical
-    choices: [ 4, 8, 16, 32, 64, 128 ]
+    choices: [4, 8, 16, 32, 64, 128]
   dt:
     type: fixed
     value: 1.0

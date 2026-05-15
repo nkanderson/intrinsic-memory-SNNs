@@ -587,7 +587,7 @@ Examples:
     # ── Configure sampler ──
     # Following Optuna recommendation to use TPE sampler since there are fewer than 1000 trials
     # and the parameters are not correlated in a simple way.
-    sampler = optuna.samplers.TPESampler(seed=args.seed, n_startup_trials=15)
+    sampler = optuna.samplers.TPESampler(seed=args.seed, n_startup_trials=25)
 
     # ── Create or load study ──
     study = optuna.create_study(

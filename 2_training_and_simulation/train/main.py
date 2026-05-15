@@ -586,7 +586,9 @@ if __name__ == "__main__":
         ).to(device)
 
         # Create optimizer
-        optimizer = optim.AdamW(policy_net.parameters(), lr=lr, amsgrad=True)
+        optimizer = optim.AdamW(
+            policy_net.parameters(), lr=lr, amsgrad=True, weight_decay=0
+        )
         # Initialize target network from policy network for fresh start
         target_net.load_state_dict(policy_net.state_dict())
 
