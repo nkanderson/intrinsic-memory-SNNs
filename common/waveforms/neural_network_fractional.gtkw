@@ -1,0 +1,94 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Sat May 16 22:08:38 2026
+[*]
+[dumpfile] "/Users/nik/Documents/Teuscher-Lab/intrinsic-memory-SNNs/common/waveforms/neural_network_fractional.fst"
+[dumpfile_mtime] "Sat May 16 21:43:47 2026"
+[dumpfile_size] 19307520
+[savefile] "/Users/nik/Documents/Teuscher-Lab/intrinsic-memory-SNNs/common/waveforms/neural_network_fractional.gtkw"
+[timestart] 17700200
+[size] 1344 833
+[pos] -1 85
+*-16.000000 17820000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] neural_network_fractional.
+[sst_width] 253
+[signals_width] 336
+[sst_expanded] 1
+[sst_vpaned_height] 240
+@420
+neural_network_fractional.BETA
+neural_network_fractional.COEFF_FRAC_BITS
+neural_network_fractional.COEFF_WIDTH
+neural_network_fractional.DATA_WIDTH
+neural_network_fractional.FC1_BIAS_FILE
+neural_network_fractional.FC1_WEIGHTS_FILE
+neural_network_fractional.FC2_BIAS_FILE
+neural_network_fractional.FC2_OUTPUT_WIDTH
+neural_network_fractional.FC2_WEIGHTS_FILE
+neural_network_fractional.FC_OUT_BIAS_FILE
+neural_network_fractional.FC_OUT_WEIGHTS_FILE
+neural_network_fractional.FRAC_BITS
+neural_network_fractional.GL_COEFF_FILE
+neural_network_fractional.HISTORY_LENGTH
+neural_network_fractional.HL1_SIZE
+neural_network_fractional.HL2_SIZE
+neural_network_fractional.INV_DENOM
+neural_network_fractional.MEMBRANE_WIDTH
+neural_network_fractional.NUM_ACTIONS
+neural_network_fractional.NUM_INPUTS
+neural_network_fractional.NUM_TIMESTEPS
+neural_network_fractional.Q_BATCH_SIZE
+neural_network_fractional.THRESHOLD
+neural_network_fractional.TIMESTEP_WIDTH
+@28
+neural_network_fractional.clk
+@22
+neural_network_fractional.current_timestep[3:0]
+@28
+neural_network_fractional.reset
+neural_network_fractional.done
+neural_network_fractional.start
+@29
+neural_network_fractional.selected_action
+@28
+neural_network_fractional.fc1_done
+@40000420
+[fpshift_count] 13
+neural_network_fractional.fc1_output_current[15:0]
+[fpshift_count] 13
+neural_network_fractional.fc2_output_current[23:0]
+@24
+neural_network_fractional.fc1_output_idx[4:0]
+@28
+neural_network_fractional.hl1_spike_vector[31:0]
+neural_network_fractional.fc1_output_valid
+neural_network_fractional.fc1_start
+neural_network_fractional.hl1_clear
+neural_network_fractional.hl1_enable
+neural_network_fractional.fc2_done
+neural_network_fractional.fc2_done_seen
+@24
+neural_network_fractional.fc2_output_idx[1:0]
+@28
+neural_network_fractional.fc2_output_valid
+neural_network_fractional.fc2_start
+neural_network_fractional.hl2_any_busy
+neural_network_fractional.hl2_clear
+@24
+neural_network_fractional.hl2_process_idx[1:0]
+@28
+neural_network_fractional.hl2_process_valid
+neural_network_fractional.ts_state[1:0]
+@22
+neural_network_fractional.membrane_write_timestep[3:0]
+neural_network_fractional.membrane_write_timestep_delayed[3:0]
+@28
+neural_network_fractional.q_done
+@22
+neural_network_fractional.q_read_timestep[3:0]
+@28
+neural_network_fractional.q_selected_action
+neural_network_fractional.q_start
+neural_network_fractional.state[2:0]
+[pattern_trace] 1
+[pattern_trace] 0
