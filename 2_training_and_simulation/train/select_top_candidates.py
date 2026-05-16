@@ -42,17 +42,31 @@ import yaml
 
 from optimize import params_to_config_yaml
 
+DEFAULT_NUM_EPISODES = 1500
+DEFAULT_SURROGATE_SLOPE = 25
+DEFAULT_BETA = 0.9
+DEFAULT_ALPHA = 0.5
+DEFAULT_DT = 1.0
+
+NEURON_TYPE_MAP = {
+    "bitshift-custom_slow_decay": "bitshift",
+}
+
+SHIFT_FUNC_BY_NEURON_TYPE = {
+    "bitshift-custom_slow_decay": "custom_slow_decay",
+}
+
 
 def storage_uri_for(neuron_type: str) -> str:
-    """Default: the in-flight -v2 SQLite file."""
-    return f"sqlite:///optuna_studies/{neuron_type}-v2.db"
+    """Default: the in-flight -v3 SQLite file."""
+    return f"sqlite:///optuna_studies/{neuron_type}-v3.db"
 
 
 def storage_filename_stem(storage_uri: str) -> str:
-    """Extract 'leaky-v2' from 'sqlite:///optuna_studies/leaky-v2.db'.
+    """Extract 'leaky-v3' from 'sqlite:///optuna_studies/leaky-v3.db'.
 
-    The exported config filename is derived from this so that v2 studies
-    produce optimized-leaky-v2-topN.yaml (avoiding overwrite of older
+    The exported config filename is derived from this so that v3 studies
+    produce optimized-leaky-v3-topN.yaml (avoiding overwrite of older
     optimized-leaky-topN.yaml configs).
     """
     after_scheme = (
@@ -104,8 +118,43 @@ def filter_and_rank(study, threshold: float, rank_by: str):
     return eligible
 
 
-def export_trial_config(trial, output_path: Path, study_name: str, rank: int):
+def apply_required_defaults(config: dict, neuron_type: str) -> None:
+    training = config.setdefault("training", {})
+    snn = config.setdefault("snn", {})
+
+    if "num_episodes" not in training:
+        training["num_episodes"] = DEFAULT_NUM_EPISODES
+
+    if "surrogate_gradient_slope" not in snn:
+        snn["surrogate_gradient_slope"] = DEFAULT_SURROGATE_SLOPE
+
+    if "neuron_type" not in snn:
+        snn["neuron_type"] = NEURON_TYPE_MAP.get(neuron_type, neuron_type)
+
+    if "beta" not in snn and snn["neuron_type"] in ("fractional", "bitshift"):
+        snn["beta"] = DEFAULT_BETA
+
+    if "alpha" not in snn and snn["neuron_type"] in ("fractional", "bitshift"):
+        snn["alpha"] = DEFAULT_ALPHA
+
+    if "dt" not in snn and snn["neuron_type"] in ("fractional", "bitshift"):
+        snn["dt"] = DEFAULT_DT
+
+    if snn["neuron_type"] == "bitshift" and "shift_func" not in snn:
+        default_shift = SHIFT_FUNC_BY_NEURON_TYPE.get(neuron_type)
+        if default_shift is not None:
+            snn["shift_func"] = default_shift
+
+
+def export_trial_config(
+    trial,
+    output_path: Path,
+    study_name: str,
+    rank: int,
+    neuron_type: str,
+):
     config = params_to_config_yaml(trial.params)
+    apply_required_defaults(config, neuron_type)
     final_avg = trial.user_attrs.get("final_avg_reward")
     best_avg = trial.user_attrs.get("best_avg_reward")
     conv_ep = trial.user_attrs.get("convergence_episode")
@@ -157,7 +206,7 @@ def main():
         "--storage",
         type=str,
         default=None,
-        help="SQLite URI. Defaults to sqlite:///optuna_studies/<neuron-type>-v2.db.",
+        help="SQLite URI. Defaults to sqlite:///optuna_studies/<neuron-type>-v3.db.",
     )
     parser.add_argument(
         "--threshold",
@@ -185,8 +234,12 @@ def main():
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="configs",
-        help="Where to write optimized-<stem>-topN.yaml configs (default: configs/).",
+        default=None,
+        help=(
+            "Override output directory. By default, configs are written to "
+            "configs/optimized-<label>/ where <label> is --study-name if provided, "
+            "otherwise the storage DB name (e.g., leaky-v3)."
+        ),
     )
     parser.add_argument(
         "--dry-run",
@@ -225,10 +278,16 @@ def main():
                 print(f"  - {n}")
             return
 
+    output_label = args.study_name if args.study_name else stem
+    if args.output_dir is None:
+        output_dir = Path("configs") / f"optimized-{output_label}"
+    else:
+        output_dir = Path(args.output_dir)
+
     print(f"Loading Optuna study:")
     print(f"  study_name : {study_name}")
     print(f"  storage    : {storage}")
-    print(f"  threshold  : final_avg_reward >= {args.threshold}")
+    print(f"  threshold  : {args.rank_by} >= {args.threshold}")
     print(f"  rank_by    : {args.rank_by}")
     print(f"  top_n      : {args.top_n}")
 
@@ -262,11 +321,11 @@ def main():
         print("\n(dry-run: no configs written)")
         return
 
-    output_dir = Path(args.output_dir)
+    print(f"  output_dir : {output_dir}")
     print()
     for rank, trial in enumerate(eligible[: args.top_n], start=1):
-        out_path = output_dir / f"optimized-{stem}-top{rank}.yaml"
-        export_trial_config(trial, out_path, study_name, rank)
+        out_path = output_dir / f"optimized-{output_label}-top{rank}.yaml"
+        export_trial_config(trial, out_path, study_name, rank, args.neuron_type)
         print(f"  wrote: {out_path}")
 
 
