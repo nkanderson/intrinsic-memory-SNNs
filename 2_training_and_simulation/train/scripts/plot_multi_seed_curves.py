@@ -49,7 +49,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 # Reporting threshold for plots: the standard CartPole-v1 solved criterion
 # (mean reward >= 475 over 100 consecutive episodes). This is the value
 # the field compares against — not the Optuna selection metric. The Optuna
@@ -60,19 +59,33 @@ import numpy as np
 SUCCESS_THRESHOLD = 475.0
 
 
+def _config_dir(metrics_dir: Path, config_name: str) -> Path:
+    """Resolve the per-config subdirectory under metrics_dir, falling back
+    to the metrics_dir itself for backward compatibility with the old
+    flat layout (where files lived directly in metrics/multi-seed/).
+    """
+    nested = metrics_dir / config_name
+    if nested.is_dir() and any(nested.glob(f"{config_name}-seed*.csv")):
+        return nested
+    return metrics_dir
+
+
 def load_per_seed_csvs(metrics_dir: Path, config_name: str):
     """Return (seeds, episodes, running_avg_100_matrix, avg_loss_matrix).
 
     The matrices are shape (num_seeds, num_episodes). Rows are padded with
     NaN if seeds have different episode counts (shouldn't happen in
     practice but keeps the plotting robust).
+
+    Looks under metrics_dir/<config_name>/ first (the nested layout
+    written by multi_seed_train.py); falls back to metrics_dir/ for older
+    runs that used the flat layout.
     """
+    config_dir = _config_dir(metrics_dir, config_name)
     pattern = f"{config_name}-seed*.csv"
-    files = sorted(metrics_dir.glob(pattern))
+    files = sorted(config_dir.glob(pattern))
     if not files:
-        raise FileNotFoundError(
-            f"No per-seed CSVs found at {metrics_dir / pattern}"
-        )
+        raise FileNotFoundError(f"No per-seed CSVs found at {config_dir / pattern}")
 
     seeds = []
     runs_running = []
@@ -102,37 +115,52 @@ def load_per_seed_csvs(metrics_dir: Path, config_name: str):
 
 
 def load_summary(metrics_dir: Path, config_name: str) -> list[dict]:
-    path = metrics_dir / f"{config_name}-summary.csv"
+    config_dir = _config_dir(metrics_dir, config_name)
+    path = config_dir / f"{config_name}-summary.csv"
     rows = []
     with open(path) as f:
         for row in csv.DictReader(f):
-            rows.append({
-                "seed": int(row["seed"]),
-                "best_avg_reward": float(row["best_avg_reward"]),
-                "final_avg_reward": float(row["final_avg_reward"]),
-                "convergence_episode": (
-                    int(row["convergence_episode"])
-                    if row["convergence_episode"] not in ("", "None")
-                    else None
-                ),
-            })
+            rows.append(
+                {
+                    "seed": int(row["seed"]),
+                    "best_avg_reward": float(row["best_avg_reward"]),
+                    "final_avg_reward": float(row["final_avg_reward"]),
+                    "convergence_episode": (
+                        int(row["convergence_episode"])
+                        if row["convergence_episode"] not in ("", "None")
+                        else None
+                    ),
+                }
+            )
     return rows
 
 
 def plot_learning_curve(
     config_name: str,
-    seeds, episodes, running_mat,
+    seeds,
+    episodes,
+    running_mat,
     output_dir: Path,
 ):
     fig, ax = plt.subplots(figsize=(8, 5))
     for i, seed in enumerate(seeds):
-        ax.plot(episodes, running_mat[i], alpha=0.3, linewidth=0.8, label=f"seed {seed}")
+        ax.plot(
+            episodes, running_mat[i], alpha=0.3, linewidth=0.8, label=f"seed {seed}"
+        )
 
     mean = np.nanmean(running_mat, axis=0)
     std = np.nanstd(running_mat, axis=0)
     ax.plot(episodes, mean, color="black", linewidth=2.0, label="mean")
-    ax.fill_between(episodes, mean - std, mean + std, color="black", alpha=0.15, label="± 1 std")
-    ax.axhline(SUCCESS_THRESHOLD, color="red", linestyle="--", linewidth=1.0, label=f"solved ({SUCCESS_THRESHOLD:.0f})")
+    ax.fill_between(
+        episodes, mean - std, mean + std, color="black", alpha=0.15, label="± 1 std"
+    )
+    ax.axhline(
+        SUCCESS_THRESHOLD,
+        color="red",
+        linestyle="--",
+        linewidth=1.0,
+        label=f"solved ({SUCCESS_THRESHOLD:.0f})",
+    )
 
     ax.set_xlabel("Episode")
     ax.set_ylabel("Trailing 100-ep avg reward")
@@ -154,9 +182,17 @@ def plot_cross_config(configs, episodes_by_cfg, mat_by_cfg, output_dir: Path):
         mat = mat_by_cfg[cfg]
         mean = np.nanmean(mat, axis=0)
         std = np.nanstd(mat, axis=0)
-        line, = ax.plot(episodes, mean, linewidth=2.0, label=cfg)
-        ax.fill_between(episodes, mean - std, mean + std, color=line.get_color(), alpha=0.15)
-    ax.axhline(SUCCESS_THRESHOLD, color="red", linestyle="--", linewidth=1.0, label=f"solved ({SUCCESS_THRESHOLD:.0f})")
+        (line,) = ax.plot(episodes, mean, linewidth=2.0, label=cfg)
+        ax.fill_between(
+            episodes, mean - std, mean + std, color=line.get_color(), alpha=0.15
+        )
+    ax.axhline(
+        SUCCESS_THRESHOLD,
+        color="red",
+        linestyle="--",
+        linewidth=1.0,
+        label=f"solved ({SUCCESS_THRESHOLD:.0f})",
+    )
     ax.set_xlabel("Episode")
     ax.set_ylabel("Trailing 100-ep avg reward")
     ax.set_title("Cross-config comparison (mean ± std across seeds)")
@@ -174,16 +210,28 @@ def plot_convergence_strip(configs, summary_by_cfg, output_dir: Path):
     rng = np.random.default_rng(0)
     for x, cfg in enumerate(configs):
         rows = summary_by_cfg[cfg]
-        ys = [r["convergence_episode"] for r in rows if r["convergence_episode"] is not None]
+        ys = [
+            r["convergence_episode"]
+            for r in rows
+            if r["convergence_episode"] is not None
+        ]
         # jitter for visibility
         xs = x + rng.uniform(-0.08, 0.08, size=len(ys))
         ax.scatter(xs, ys, alpha=0.8, s=50)
         n_conv = len(ys)
         n_total = len(rows)
-        ax.text(x, ax.get_ylim()[0] if ys else 0, f"{n_conv}/{n_total}", ha="center", fontsize=8)
+        ax.text(
+            x,
+            ax.get_ylim()[0] if ys else 0,
+            f"{n_conv}/{n_total}",
+            ha="center",
+            fontsize=8,
+        )
     ax.set_xticks(range(len(configs)))
     ax.set_xticklabels(configs, rotation=20, ha="right", fontsize=8)
-    ax.set_ylabel("Convergence episode (first ep with trailing avg ≥ 475, never drops below)")
+    ax.set_ylabel(
+        "Convergence episode (first ep with trailing avg ≥ 475, never drops below)"
+    )
     ax.set_title("Convergence-episode distribution by config")
     ax.grid(True, alpha=0.3, axis="y")
     fig.tight_layout()
@@ -208,8 +256,17 @@ def plot_final_bars(configs, summary_by_cfg, output_dir: Path):
         best_means.append(bests.mean())
         best_stds.append(bests.std(ddof=1) if len(bests) > 1 else 0.0)
 
-    ax.bar(xs - width / 2, final_means, width, yerr=final_stds, capsize=4, label="final_avg")
-    ax.bar(xs + width / 2, best_means, width, yerr=best_stds, capsize=4, label="best_avg")
+    ax.bar(
+        xs - width / 2,
+        final_means,
+        width,
+        yerr=final_stds,
+        capsize=4,
+        label="final_avg",
+    )
+    ax.bar(
+        xs + width / 2, best_means, width, yerr=best_stds, capsize=4, label="best_avg"
+    )
     ax.axhline(SUCCESS_THRESHOLD, color="red", linestyle="--", linewidth=1.0)
     ax.set_xticks(xs)
     ax.set_xticklabels(configs, rotation=20, ha="right", fontsize=8)
@@ -245,8 +302,13 @@ def plot_performance_profile(configs, summary_by_cfg, output_dir: Path):
         # fraction of seeds with score >= τ, for each τ
         fractions = [(scores >= t).mean() for t in thresholds]
         ax.plot(thresholds, fractions, linewidth=2.0, label=cfg)
-    ax.axvline(SUCCESS_THRESHOLD, color="red", linestyle="--", linewidth=1.0,
-               label=f"solved ({SUCCESS_THRESHOLD:.0f})")
+    ax.axvline(
+        SUCCESS_THRESHOLD,
+        color="red",
+        linestyle="--",
+        linewidth=1.0,
+        label=f"solved ({SUCCESS_THRESHOLD:.0f})",
+    )
     ax.set_xlabel("Score threshold τ (final 100-ep avg reward)")
     ax.set_ylabel("Fraction of seeds with score ≥ τ")
     ax.set_title("Performance profile across seeds")
@@ -267,7 +329,9 @@ def plot_loss_curves(config_name, episodes, loss_mat, output_dir: Path):
     mean = np.nanmean(loss_mat, axis=0)
     std = np.nanstd(loss_mat, axis=0)
     ax.plot(episodes, mean, color="C0", linewidth=2.0, label="mean")
-    ax.fill_between(episodes, mean - std, mean + std, color="C0", alpha=0.2, label="± 1 std")
+    ax.fill_between(
+        episodes, mean - std, mean + std, color="C0", alpha=0.2, label="± 1 std"
+    )
     ax.set_xlabel("Episode")
     ax.set_ylabel("Avg DQN loss per episode")
     ax.set_title(f"Loss curve — {config_name}")
@@ -285,15 +349,21 @@ def main():
         description="Plot multi-seed training curves and summaries."
     )
     parser.add_argument(
-        "--config-name", action="append", required=True,
+        "--config-name",
+        action="append",
+        required=True,
         help="Config name (CSV stem). Repeatable for cross-config plots.",
     )
     parser.add_argument(
-        "--metrics-dir", type=str, default="metrics/multi-seed",
+        "--metrics-dir",
+        type=str,
+        default="metrics/multi-seed",
         help="Directory containing the per-seed and summary CSVs.",
     )
     parser.add_argument(
-        "--output-dir", type=str, default="images/multi-seed",
+        "--output-dir",
+        type=str,
+        default="images/multi-seed",
         help="Directory to write plots into.",
     )
     args = parser.parse_args()

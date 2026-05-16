@@ -84,6 +84,7 @@ from train_fn import train
 
 def get_device(hw_acceleration: bool) -> str:
     import torch
+
     if hw_acceleration and torch.cuda.is_available():
         return "cuda"
     if hw_acceleration and torch.backends.mps.is_available():
@@ -108,14 +109,16 @@ def write_per_episode_csv(path: Path, result: dict) -> None:
     n = len(durations)
     with open(path, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow([
-            "episode",
-            "episode_steps",
-            "running_avg_100",
-            "avg_loss",
-        ])
+        writer.writerow(
+            [
+                "episode",
+                "episode_steps",
+                "running_avg_100",
+                "avg_loss",
+            ]
+        )
         for i in range(n):
-            window = durations[max(0, i - 99): i + 1]
+            window = durations[max(0, i - 99) : i + 1]
             running = sum(window) / len(window)
             loss = losses[i] if i < len(losses) else ""
             writer.writerow([i, durations[i], f"{running:.4f}", loss])
@@ -182,41 +185,68 @@ def main():
         description="Train the same config across multiple RNG seeds."
     )
     parser.add_argument(
-        "--config", "-c", type=str, required=True,
+        "--config",
+        "-c",
+        type=str,
+        required=True,
         help="Path to YAML config (nested training/snn sections).",
     )
     parser.add_argument(
-        "--num-seeds", type=int, default=10,
+        "--num-seeds",
+        type=int,
+        default=10,
         help="Number of seeds to run (default: 10). Colas et al. (2018) show "
-             "N <= 5 is under-powered for typical deep RL comparisons; N = 10 "
-             "is a compute-feasible improvement, still below their 80%%-power "
-             "recommendation for medium effects. Raise to 20+ for stronger "
-             "statistical claims.",
+        "N <= 5 is under-powered for typical deep RL comparisons; N = 10 "
+        "is a compute-feasible improvement, still below their 80%%-power "
+        "recommendation for medium effects. Raise to 20+ for stronger "
+        "statistical claims.",
     )
     parser.add_argument(
-        "--base-seed", type=int, default=42,
+        "--base-seed",
+        type=int,
+        default=42,
         help="First seed; subsequent seeds are base+1, base+2, ... (default: 42).",
     )
     parser.add_argument(
-        "--num-episodes", type=int, default=None,
+        "--num-episodes",
+        type=int,
+        default=None,
         help="Override num_episodes from config (useful for smoke tests).",
     )
     parser.add_argument(
-        "--save-best", action="store_true",
+        "--save-best",
+        action="store_true",
         help="Also save a -seedN-best.pth checkpoint per seed.",
     )
     parser.add_argument(
-        "--no-save-final", action="store_true",
+        "--no-save-final",
+        action="store_true",
         help="Do NOT save -seedN-final.pth checkpoints.",
     )
     parser.add_argument(
-        "--no-hw-acceleration", dest="hw_acceleration", action="store_false",
+        "--no-hw-acceleration",
+        dest="hw_acceleration",
+        action="store_false",
         help="Force CPU (disable CUDA/MPS).",
     )
     parser.set_defaults(hw_acceleration=True)
     parser.add_argument(
-        "--output-dir", type=str, default="metrics/multi-seed",
-        help="Directory for per-seed and summary CSVs.",
+        "--output-dir",
+        type=str,
+        default="metrics/multi-seed",
+        help="Base directory for per-seed and summary CSVs. By default a "
+        "config-named subdirectory is created inside (e.g., "
+        "metrics/multi-seed/<config>/). Pass --no-config-subdir to "
+        "disable, which is what the parallel wrapper does for worker "
+        "subprocesses.",
+    )
+    parser.add_argument(
+        "--no-config-subdir",
+        action="store_true",
+        help="Write CSVs and the summary directly to --output-dir without "
+        "creating a <config_name>/ subdirectory. Also disables the "
+        "config-name subdirectory under models/. Intended for use by "
+        "the parallel wrapper, which manages its own per-worker layout.",
     )
     args = parser.parse_args()
 
@@ -228,7 +258,15 @@ def main():
     if args.num_episodes is not None:
         flat["num_episodes"] = args.num_episodes
 
-    output_dir = Path(args.output_dir)
+    # By default, nest outputs under <output_dir>/<config_name>/ so that
+    # CSVs for different configs never collide. The parallel wrapper
+    # opts out of this nesting (--no-config-subdir) since it manages its
+    # own per-worker subdirectory structure.
+    base_output_dir = Path(args.output_dir)
+    if args.no_config_subdir:
+        output_dir = base_output_dir
+    else:
+        output_dir = base_output_dir / config_name
     output_dir.mkdir(parents=True, exist_ok=True)
 
     device = get_device(args.hw_acceleration)
@@ -244,8 +282,14 @@ def main():
     summary_rows = []
     for i in range(args.num_seeds):
         seed = args.base_seed + i
-        prefix = f"{config_name}-seed{seed}"
-        per_seed_csv = output_dir / f"{prefix}.csv"
+        # When the config subdir is active, also nest model files under
+        # models/<config_name>/ by prefixing model_prefix with the config
+        # name. train_fn.train() creates the parent directory lazily.
+        if args.no_config_subdir:
+            prefix = f"{config_name}-seed{seed}"
+        else:
+            prefix = f"{config_name}/{config_name}-seed{seed}"
+        per_seed_csv = output_dir / f"{config_name}-seed{seed}.csv"
         print(f"\n{'=' * 60}\nSeed {seed} ({i + 1}/{args.num_seeds})\n{'=' * 60}")
 
         # train_fn.train() streams per-episode rows to per_seed_csv in append
@@ -264,14 +308,16 @@ def main():
 
         print(f"  per-episode CSV streamed to: {per_seed_csv}")
 
-        summary_rows.append({
-            "seed": seed,
-            "best_avg_reward": result["best_avg_reward"],
-            "final_avg_reward": result["final_avg_reward"],
-            "tail_iqm_avg_reward": result.get("tail_iqm_avg_reward"),
-            "convergence_episode": result.get("convergence_episode"),
-            "total_episodes": result["total_episodes"],
-        })
+        summary_rows.append(
+            {
+                "seed": seed,
+                "best_avg_reward": result["best_avg_reward"],
+                "final_avg_reward": result["final_avg_reward"],
+                "tail_iqm_avg_reward": result.get("tail_iqm_avg_reward"),
+                "convergence_episode": result.get("convergence_episode"),
+                "total_episodes": result["total_episodes"],
+            }
+        )
 
     summary_csv = output_dir / f"{config_name}-summary.csv"
     write_summary_csv(summary_csv, summary_rows)
@@ -288,7 +334,9 @@ def main():
     final_mean, final_std, _ = _stats([r["final_avg_reward"] for r in summary_rows])
     best_mean, best_std, _ = _stats([r["best_avg_reward"] for r in summary_rows])
     iqm_mean, iqm_std, _ = _stats([r["tail_iqm_avg_reward"] for r in summary_rows])
-    conv_mean, conv_std, conv_n = _stats([r["convergence_episode"] for r in summary_rows])
+    conv_mean, conv_std, conv_n = _stats(
+        [r["convergence_episode"] for r in summary_rows]
+    )
 
     # Primary CartPole-v1 success criterion: mean reward >= 475 over the
     # final 100 episodes. We report it as a count over seeds (K of N solved)
@@ -297,13 +345,15 @@ def main():
     solved_count = sum(1 for r in summary_rows if r["final_avg_reward"] >= 475.0)
 
     print(f"\nResults across {len(summary_rows)} seeds:")
+    print(f"  solved (final_avg >= 475) : {solved_count}/{len(summary_rows)} seeds")
     print(
-        f"  solved (final_avg >= 475) : {solved_count}/{len(summary_rows)} seeds"
+        f"  final_avg_reward  : {final_mean:.2f} ± {final_std:.2f}  (primary metric: CartPole-v1 standard)"
     )
-    print(f"  final_avg_reward  : {final_mean:.2f} ± {final_std:.2f}  (primary metric: CartPole-v1 standard)")
     print(f"  best_avg_reward   : {best_mean:.2f} ± {best_std:.2f}")
     if iqm_mean is not None:
-        print(f"  tail_iqm_reward   : {iqm_mean:.2f} ± {iqm_std:.2f}  (diagnostic: matches Optuna selection metric)")
+        print(
+            f"  tail_iqm_reward   : {iqm_mean:.2f} ± {iqm_std:.2f}  (diagnostic: matches Optuna selection metric)"
+        )
     if conv_n == 0:
         print(f"  convergence_ep    : never reached threshold in any seed")
     else:
@@ -317,7 +367,9 @@ def main():
     # IQM and bootstrap CI are the more robust statistics at small N.
     finals = [r["final_avg_reward"] for r in summary_rows]
     iqm_point, iqm_lo, iqm_hi = bootstrap_ci(finals, statistic=_iqm)
-    mean_point, mean_lo, mean_hi = bootstrap_ci(finals, statistic=lambda v: sum(v) / len(v))
+    mean_point, mean_lo, mean_hi = bootstrap_ci(
+        finals, statistic=lambda v: sum(v) / len(v)
+    )
     print("\nRobust reporting (final_avg_reward across seeds, 95% bootstrap CI):")
     if iqm_point is not None:
         print(f"  IQM   : {iqm_point:.2f}  [95% CI: {iqm_lo:.2f}, {iqm_hi:.2f}]")

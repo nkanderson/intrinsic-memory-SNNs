@@ -118,7 +118,12 @@ def parse_args():
 
 
 def build_subprocess_cmd(args, seed: int, worker_dir: Path) -> list[str]:
-    """Construct the multi_seed_train.py invocation for a single seed."""
+    """Construct the multi_seed_train.py invocation for a single seed.
+
+    We pass --no-config-subdir so the worker writes its CSVs directly into
+    worker_dir rather than creating an extra <config_name>/ subdirectory
+    inside it; the wrapper is already managing the per-worker structure.
+    """
     cmd = [
         sys.executable,
         str(Path(__file__).parent / "multi_seed_train.py"),
@@ -126,6 +131,7 @@ def build_subprocess_cmd(args, seed: int, worker_dir: Path) -> list[str]:
         "--num-seeds", "1",
         "--base-seed", str(seed),
         "--output-dir", str(worker_dir),
+        "--no-config-subdir",
     ]
     if args.num_episodes is not None:
         cmd += ["--num-episodes", str(args.num_episodes)]
@@ -287,9 +293,15 @@ def main():
     max_parallel = args.max_parallel or min(args.num_seeds, 10)
     max_parallel = max(1, min(max_parallel, args.num_seeds))
 
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    worker_root = output_dir / "_workers" / config_stem
+    # All outputs for this config now live under <output_dir>/<config_stem>/
+    # so that runs for different configs don't share a flat namespace.
+    # Worker subdirs are nested inside the same config directory under
+    # _workers/ so everything related to one config is co-located.
+    base_output_dir = Path(args.output_dir)
+    base_output_dir.mkdir(parents=True, exist_ok=True)
+    config_output_dir = base_output_dir / config_stem
+    config_output_dir.mkdir(parents=True, exist_ok=True)
+    worker_root = config_output_dir / "_workers"
     worker_root.mkdir(parents=True, exist_ok=True)
 
     print(f"Parallel multi-seed run for: {config_stem}")
@@ -298,7 +310,7 @@ def main():
     print(f"  max_parallel      : {max_parallel}")
     print(f"  threads_per_worker: {args.threads_per_worker}")
     print(f"  hw_acceleration   : {'enabled' if args.enable_hw_acceleration else 'disabled (CPU)'}")
-    print(f"  output_dir        : {output_dir}")
+    print(f"  config_output_dir : {config_output_dir}")
     print(f"  worker_dirs       : {worker_root}/seed<N>/  (logs preserved here)")
     print()
 
@@ -357,7 +369,7 @@ def main():
             failed_seeds.append(seed)
             continue
         summary_rows.append(row)
-        move_per_seed_csv(result["worker_dir"], output_dir, config_stem, seed)
+        move_per_seed_csv(result["worker_dir"], config_output_dir, config_stem, seed)
 
     if failed_seeds:
         print(f"\nFAILED seeds ({len(failed_seeds)}): {failed_seeds}")
@@ -368,7 +380,7 @@ def main():
             sys.exit(1)
         print(f"Aggregating the {len(summary_rows)} successful seeds anyway.")
 
-    combined_path = write_combined_summary(output_dir, config_stem, summary_rows)
+    combined_path = write_combined_summary(config_output_dir, config_stem, summary_rows)
     print(f"\nCombined summary CSV: {combined_path}")
     print_aggregate_stats(summary_rows)
 

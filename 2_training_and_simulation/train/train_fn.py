@@ -247,7 +247,11 @@ def train(
 
     if save_models:
         models_dir = Path("models")
+        # Use parents=True so model_prefix may contain a subdirectory
+        # (e.g., "<config_name>/<config_name>-seed42") and the nested
+        # directory is created lazily here.
         models_dir.mkdir(exist_ok=True)
+        (models_dir / Path(model_prefix).parent).mkdir(parents=True, exist_ok=True)
 
     # If streaming per-episode metrics, write the header once now.
     # Subsequent rows are appended (one per finished episode) so the file
