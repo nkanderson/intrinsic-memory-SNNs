@@ -1,33 +1,45 @@
 """
-Select the top-N Optuna trials whose unpenalized final_avg_reward meets a
-threshold (default: 475 — the CartPole-v1 "solved" criterion) and export
-each as a standard nested-YAML config usable by main.py / multi_seed_train.py.
+Select the top-N Optuna trials that demonstrably converged stably, and
+export each as a standard nested-YAML config usable by main.py /
+multi_seed_train.py.
 
-Why threshold-based top-N (not just study.best_trial)? The single best trial
-might have gotten lucky on its random seed. Retraining the top-N with
-multiple seeds each (via multi_seed_train.py) and selecting the config with
-the best mean ± std is more robust.
+Why top-N (not just study.best_trial)? The single best trial might have
+gotten lucky on its random seed. Retraining the top-N with multiple seeds
+each (via multi_seed_train.py) is more robust.
 
-TODO: Add a "smallest" ranking option to see which candidates meet the threshold with
-the smallest neural network size.
+Selection structure (two-tier):
 
-Filters:
-  - state == COMPLETE (skips PRUNED / FAILED)
-  - user_attrs["final_avg_reward"] >= --threshold
+  Gate (hard filter — a trial must pass ALL of these):
+    - state == COMPLETE                                  (skips PRUNED / FAILED)
+    - convergence_episode is not None                    (reached and held >=475)
+    - convergence_episode <= num_episodes - K            (sustained for >= K ep)
 
-Sort key:
-  - --rank-by final_avg  (default; ignores size/history penalties)
-  - --rank-by objective  (uses trial.value, which has penalties applied)
+  Rank survivors by --rank-by (default tail_iqm):
+    - tail_iqm  -> tail_iqm_avg_reward (IQM of trailing-100 averages over
+                   the last 25% of training; outlier-robust per Agarwal
+                   et al. 2021)
+    - final_avg -> final_avg_reward
+    - objective -> trial.value (penalized objective)
+
+The convergence gate (Bellemare et al. 2013 / Machado et al. 2018 ALE
+convention, strengthened with a K-episode stability buffer) does the
+'did it converge?' work; the rank metric measures 'how well did it sit
+once converged?'. A separate metric floor is intentionally not used: it
+would mechanically penalize clean late-converging trials whose tail-IQM
+is dragged down by the still-learning prefix.
 
 Usage:
-    # In-flight v2 study (defaults: --storage matches <neuron-type>-v2.db,
+    # In-flight v3 study (defaults: --storage matches <neuron-type>-v3.db,
     # --study-name matches <neuron-type>):
-    python select_top_candidates.py --neuron-type leaky --threshold 475 --top-n 3
+    python select_top_candidates.py --neuron-type leaky --top-n 3
+
+    # Stricter stability requirement (must converge 500 ep before end):
+    python select_top_candidates.py --neuron-type leaky \\
+        --min-sustained-episodes 500 --top-n 3
 
     # Older finished study (override storage):
     python select_top_candidates.py --neuron-type leaky \\
-        --storage sqlite:///optuna_studies/leaky.db \\
-        --threshold 475 --top-n 3
+        --storage sqlite:///optuna_studies/leaky.db --top-n 3
 
     # Dry run — print the matching trials but do not write configs:
     python select_top_candidates.py --neuron-type leaky --top-n 3 --dry-run
@@ -75,12 +87,12 @@ def storage_filename_stem(storage_uri: str) -> str:
     return Path(after_scheme).stem
 
 
-def _filter_metric(trial, metric: str):
-    """Return the metric to filter/rank on, falling back as needed.
+def _rank_metric(trial, metric: str):
+    """Return the metric to rank survivors by.
 
     'tail_iqm'  -> tail_iqm_avg_reward (preferred — IQM over the tail,
                    robust to single lucky/unlucky windows)
-    'final_avg' -> final_avg_reward (legacy compatibility)
+    'final_avg' -> final_avg_reward
     'objective' -> trial.value (penalized objective)
     """
     if metric == "tail_iqm":
@@ -92,29 +104,59 @@ def _filter_metric(trial, metric: str):
     raise ValueError(f"Unknown metric: {metric}")
 
 
-def filter_and_rank(study, threshold: float, rank_by: str):
-    """Return COMPLETE trials with rank_by metric >= threshold, sorted desc."""
+def filter_and_rank(
+    study,
+    rank_by: str,
+    min_sustained_episodes: int,
+    num_episodes_fallback: int,
+):
+    """Apply the convergence gate and return survivors sorted by rank_by.
+
+    Gate: COMPLETE AND convergence_episode is not None
+          AND convergence_episode <= num_episodes - min_sustained_episodes
+
+    num_episodes is read from trial.user_attrs["total_episodes"] for trials
+    instrumented by current optimize.py. Older trials (before that
+    instrumentation) don't carry it — for those, num_episodes_fallback is
+    used. 'num_episodes' is a 'fixed' search-space value and so isn't in
+    trial.params.
+    """
     complete = study.get_trials(
         deepcopy=False, states=(optuna.trial.TrialState.COMPLETE,)
     )
     eligible = []
-    skipped_no_attr = 0
+    skipped_no_metric = 0
+    rejected_no_conv = 0
+    rejected_unsustained = 0
+
     for t in complete:
-        value = _filter_metric(t, rank_by)
-        if value is None:
-            skipped_no_attr += 1
+        conv_ep = t.user_attrs.get("convergence_episode")
+        if conv_ep is None:
+            rejected_no_conv += 1
             continue
-        if value < threshold:
+
+        num_eps = t.user_attrs.get("total_episodes") or num_episodes_fallback
+        if conv_ep > num_eps - min_sustained_episodes:
+            rejected_unsustained += 1
             continue
+
+        rank_value = _rank_metric(t, rank_by)
+        if rank_value is None:
+            skipped_no_metric += 1
+            continue
+
         eligible.append(t)
 
-    if skipped_no_attr:
-        print(
-            f"  (note: skipped {skipped_no_attr} COMPLETE trials missing the "
-            f"required metric — these are pre-instrumentation trials)"
-        )
+    print(
+        f"  gate summary: {len(complete)} COMPLETE -> "
+        f"{rejected_no_conv} no convergence, "
+        f"{rejected_unsustained} converged but sustained < "
+        f"{min_sustained_episodes} ep, "
+        f"{skipped_no_metric} missing rank metric, "
+        f"{len(eligible)} survived"
+    )
 
-    eligible.sort(key=lambda t: _filter_metric(t, rank_by), reverse=True)
+    eligible.sort(key=lambda t: _rank_metric(t, rank_by), reverse=True)
     return eligible
 
 
@@ -209,11 +251,23 @@ def main():
         help="SQLite URI. Defaults to sqlite:///optuna_studies/<neuron-type>-v3.db.",
     )
     parser.add_argument(
-        "--threshold",
-        type=float,
-        default=475.0,
-        help="Minimum value of the --rank-by metric (default: 475 — "
-        "CartPole-v1 solved criterion).",
+        "--min-sustained-episodes",
+        type=int,
+        default=200,
+        help="K: a trial must have convergence_episode <= num_episodes - K "
+        "to pass the stability gate (default: 200 — about 13%% of a 1500-ep "
+        "run). The CartPole convergence rule already requires the trailing-"
+        "100 avg to never drop below 475 after convergence, so K episodes "
+        "of demonstrated stability above threshold are guaranteed.",
+    )
+    parser.add_argument(
+        "--num-episodes-fallback",
+        type=int,
+        default=1500,
+        help="Fallback num_episodes for older trials lacking the "
+        "'total_episodes' user_attr (default: 1500). Trials run after the "
+        "total_episodes instrumentation read it from user_attrs. Pass 2500 "
+        "(or whatever the v2-era setting was) when re-analyzing older DBs.",
     )
     parser.add_argument(
         "--top-n",
@@ -225,11 +279,11 @@ def main():
         "--rank-by",
         choices=["tail_iqm", "final_avg", "objective"],
         default="tail_iqm",
-        help="Metric to filter and rank by. 'tail_iqm' (default, recommended) "
-        "uses tail_iqm_avg_reward — the Interquartile Mean of "
+        help="Metric to rank gate-passing trials by. 'tail_iqm' (default, "
+        "recommended) uses tail_iqm_avg_reward — the Interquartile Mean of "
         "trailing-100 averages over the final 25%% of training. "
-        "'final_avg' is the legacy metric (last 100 episodes only). "
-        "'objective' uses trial.value with penalties.",
+        "'final_avg' is the trailing-100 avg at the last episode. "
+        "'objective' uses trial.value with size/history penalties.",
     )
     parser.add_argument(
         "--output-dir",
@@ -285,17 +339,25 @@ def main():
         output_dir = Path(args.output_dir)
 
     print(f"Loading Optuna study:")
-    print(f"  study_name : {study_name}")
-    print(f"  storage    : {storage}")
-    print(f"  threshold  : {args.rank_by} >= {args.threshold}")
-    print(f"  rank_by    : {args.rank_by}")
-    print(f"  top_n      : {args.top_n}")
+    print(f"  study_name             : {study_name}")
+    print(f"  storage                : {storage}")
+    print(f"  rank_by                : {args.rank_by}")
+    print(f"  min_sustained_episodes : {args.min_sustained_episodes}")
+    print(f"  top_n                  : {args.top_n}")
 
     study = optuna.load_study(study_name=study_name, storage=storage)
-    eligible = filter_and_rank(study, args.threshold, args.rank_by)
+    eligible = filter_and_rank(
+        study,
+        rank_by=args.rank_by,
+        min_sustained_episodes=args.min_sustained_episodes,
+        num_episodes_fallback=args.num_episodes_fallback,
+    )
 
     if not eligible:
-        print(f"\nNo COMPLETE trials with final_avg_reward >= {args.threshold}.")
+        print(
+            "\nNo trials survived the convergence gate "
+            f"(min_sustained_episodes={args.min_sustained_episodes})."
+        )
         return
 
     print(f"\nMatched {len(eligible)} trials. Top {min(args.top_n, len(eligible))}:")

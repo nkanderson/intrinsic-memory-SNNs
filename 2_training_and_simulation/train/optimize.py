@@ -240,6 +240,12 @@ def create_objective(
         trial.set_user_attr("final_avg_reward", float(final_avg))
         trial.set_user_attr("best_avg_reward", float(best_avg))
         trial.set_user_attr("tail_iqm_avg_reward", float(tail_iqm_avg))
+        # num_episodes is a 'fixed' search-space value and so isn't stored
+        # in trial.params; record it here so downstream selection scripts
+        # can compute the convergence-stability buffer per trial.
+        total_eps = result.get("total_episodes")
+        if total_eps is not None:
+            trial.set_user_attr("total_episodes", int(total_eps))
         if convergence_episode is not None:
             trial.set_user_attr("convergence_episode", convergence_episode)
 
