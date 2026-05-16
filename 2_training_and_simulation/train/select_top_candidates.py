@@ -8,6 +8,9 @@ might have gotten lucky on its random seed. Retraining the top-N with
 multiple seeds each (via multi_seed_train.py) and selecting the config with
 the best mean ± std is more robust.
 
+TODO: Add a "smallest" ranking option to see which candidates meet the threshold with
+the smallest neural network size.
+
 Filters:
   - state == COMPLETE (skips PRUNED / FAILED)
   - user_attrs["final_avg_reward"] >= --threshold
@@ -52,7 +55,9 @@ def storage_filename_stem(storage_uri: str) -> str:
     produce optimized-leaky-v2-topN.yaml (avoiding overwrite of older
     optimized-leaky-topN.yaml configs).
     """
-    after_scheme = storage_uri.split("///", 1)[-1] if "///" in storage_uri else storage_uri
+    after_scheme = (
+        storage_uri.split("///", 1)[-1] if "///" in storage_uri else storage_uri
+    )
     return Path(after_scheme).stem
 
 
@@ -134,44 +139,58 @@ def main():
         description="Filter Optuna trials by threshold and export top-N configs."
     )
     parser.add_argument(
-        "--neuron-type", type=str, required=True,
+        "--neuron-type",
+        type=str,
+        required=True,
         choices=["leaky", "fractional", "bitshift", "bitshift-custom_slow_decay"],
         help="Neuron type. Drives default --storage and --study-name.",
     )
     parser.add_argument(
-        "--study-name", type=str, default=None,
+        "--study-name",
+        type=str,
+        default=None,
         help="Optuna study name inside the SQLite DB. If omitted and the DB "
-             "contains exactly one study, it is auto-selected; otherwise the "
-             "available study names are listed and the script exits.",
+        "contains exactly one study, it is auto-selected; otherwise the "
+        "available study names are listed and the script exits.",
     )
     parser.add_argument(
-        "--storage", type=str, default=None,
+        "--storage",
+        type=str,
+        default=None,
         help="SQLite URI. Defaults to sqlite:///optuna_studies/<neuron-type>-v2.db.",
     )
     parser.add_argument(
-        "--threshold", type=float, default=475.0,
+        "--threshold",
+        type=float,
+        default=475.0,
         help="Minimum value of the --rank-by metric (default: 475 — "
-             "CartPole-v1 solved criterion).",
+        "CartPole-v1 solved criterion).",
     )
     parser.add_argument(
-        "--top-n", type=int, default=3,
+        "--top-n",
+        type=int,
+        default=3,
         help="Number of top trials to export (default: 3).",
     )
     parser.add_argument(
-        "--rank-by", choices=["tail_iqm", "final_avg", "objective"],
+        "--rank-by",
+        choices=["tail_iqm", "final_avg", "objective"],
         default="tail_iqm",
         help="Metric to filter and rank by. 'tail_iqm' (default, recommended) "
-             "uses tail_iqm_avg_reward — the Interquartile Mean of "
-             "trailing-100 averages over the final 25%% of training. "
-             "'final_avg' is the legacy metric (last 100 episodes only). "
-             "'objective' uses trial.value with penalties.",
+        "uses tail_iqm_avg_reward — the Interquartile Mean of "
+        "trailing-100 averages over the final 25%% of training. "
+        "'final_avg' is the legacy metric (last 100 episodes only). "
+        "'objective' uses trial.value with penalties.",
     )
     parser.add_argument(
-        "--output-dir", type=str, default="configs",
+        "--output-dir",
+        type=str,
+        default="configs",
         help="Where to write optimized-<stem>-topN.yaml configs (default: configs/).",
     )
     parser.add_argument(
-        "--dry-run", action="store_true",
+        "--dry-run",
+        action="store_true",
         help="Print matching trials but do not write any config files.",
     )
     args = parser.parse_args()

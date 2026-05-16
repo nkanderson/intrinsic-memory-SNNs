@@ -213,6 +213,173 @@ Bottom panel — generalization:
 | Best-gen line | `best_generalization_avg` | Raw. |
 | Save-event marks | `saved_best_*_model` | Raw (boolean flags). |
 
+## Visualizing multi-seed retraining
+
+After hyperparameter optimization, each candidate configuration is retrained
+across multiple random seeds with
+[`multi_seed_train.py`](train/multi_seed_train.py) (or
+[`run_multi_seed_parallel.py`](train/run_multi_seed_parallel.py) for parallel
+execution across seeds). Both scripts write per-seed CSVs and an aggregate
+summary CSV to `metrics/multi-seed/<config_name>/` by default, plus per-seed
+model checkpoints to `models/<config_name>/`.
+
+[`scripts/plot_multi_seed_curves.py`](train/scripts/plot_multi_seed_curves.py)
+consumes those CSVs and produces six figures intended for paper-quality
+reporting against the standard CartPole-v1 success criterion (mean reward ≥
+475 over the final 100 episodes). All plots use the Okabe–Ito colorblind-safe
+palette and report per-config success counts (K/N seeds reaching the
+threshold) prominently. The aggregate central line is the **interquartile
+mean (IQM)** across seeds, following Agarwal et al. (2021); single-value
+statistics (e.g., the bar heights in `final_bars`) use the IQM with **95%
+bootstrap confidence intervals**; per-episode time-series bands use the
+**IQR (25th–75th percentile)** across seeds.
+
+```bash
+# From train/. Single config, default png output.
+python scripts/plot_multi_seed_curves.py \
+    --config-name fractional-64-8-8 \
+    --metrics-dir metrics/multi-seed \
+    --output-dir images/multi-seed/
+
+# Cross-config comparison (repeat --config-name; produces all 6 figures).
+python scripts/plot_multi_seed_curves.py \
+    --config-name fractional-64-8-8 \
+    --config-name fractional-64-32-8 \
+    --config-name leaky-32-16 \
+    --metrics-dir metrics/multi-seed \
+    --output-dir images/multi-seed/
+
+# Same as above but produce the stacked variant of the cross-config
+# learning curve (one row per config, shared x-axis and y-limits).
+python scripts/plot_multi_seed_curves.py \
+    --config-name fractional-64-8-8 \
+    --config-name fractional-64-32-8 \
+    --config-name leaky-32-16 \
+    --metrics-dir metrics/multi-seed \
+    --output-dir images/multi-seed/ \
+    --stacked
+
+# SVG output for paper figures.
+python scripts/plot_multi_seed_curves.py \
+    --config-name fractional-64-8-8 \
+    --metrics-dir metrics/multi-seed \
+    --output-dir images/multi-seed/ \
+    --format svg
+```
+
+Useful flags:
+- `--config-name NAME` — repeatable. Each one is loaded from
+  `metrics-dir/NAME/` (the nested layout written by `multi_seed_train.py`)
+  with a fallback to `metrics-dir/` (older flat layout).
+- `--metrics-dir DIR` — root directory containing the per-config
+  subdirectories. Default `metrics/multi-seed`.
+- `--output-dir DIR` — where plot files are written. Default
+  `images/multi-seed`.
+- `--format {png,svg,pdf}` / `-f` — output format. PNG (default) is at 150
+  dpi; SVG/PDF are vector and preferred for paper figures.
+- `--stacked` — replaces the overlaid cross-config learning curve with a
+  one-row-per-config stacked layout (shared x-axis, shared y-limits,
+  per-config color, faint per-seed lines + IQM line + IQR band in each
+  panel). Only affects the cross-config figure; other plots are unchanged.
+  Mirrors the stacked variant in `visualize_training_metrics.py`.
+
+### Reading the plots
+
+Six figures are produced. Plots that depend on at least two configs
+(`cross_config-learning_curves`, `convergence_strip`) are only written when
+two or more `--config-name` values are supplied.
+
+- `{config}-learning_curve.{ext}` — per-config learning curve.
+  - Light gray lines: each individual seed's `running_avg_100` (the
+    trailing 100-episode mean of episode rewards).
+  - Bold blue line: per-episode **IQM** across seeds (mean of the middle
+    50% after sorting at each episode).
+  - Light blue band: per-episode **IQR** (25th–75th percentile across
+    seeds).
+  - Vermillion dashed line: 475 success threshold.
+  - Annotation top-left: `solved: K/N seeds` (count of seeds whose
+    `final_avg_reward` ≥ 475).
+
+- `cross_config-learning_curves.{ext}` — overlay of per-config IQM lines
+  with their IQR bands. Each config gets a distinct Okabe–Ito color and
+  the legend includes its `[solved K/N]` count. Useful for direct
+  side-by-side comparison of two or more configurations' learning
+  trajectories and converged-phase stability.
+
+- `cross_config-learning_curves_stacked.{ext}` *(only with `--stacked`)* —
+  one row per config, shared x-axis and shared y-limits (so vertical
+  comparison is honest even when one config never approaches 500). Each
+  panel shows the same content as a single-config learning curve (faint
+  per-seed lines, IQM line, IQR band, 475 reference line) in that config's
+  Okabe–Ito color, with the config name and K/N annotated in the upper
+  left. A single shared legend lives in the bottom panel. Preferred over
+  the overlaid variant when bands across configs would mutually obscure.
+
+- `convergence_strip.{ext}` — one column per config. Each converged seed
+  contributes a dot at *(config, convergence_episode)* with horizontal
+  jitter for visibility, where `convergence_episode` is the first
+  episode at which the trailing 100-ep average reached 475 and never
+  subsequently dropped below. A short horizontal bar marks the median
+  convergence episode per config. The K/N count for each column is
+  annotated near the bottom of the data area. Configs where no seeds
+  converged appear as an empty column with the K/N annotation visible.
+
+- `final_bars.{ext}` — bar chart per config:
+  - Blue bars: `final_avg_reward` IQM across seeds with asymmetric
+    error bars showing the 95% bootstrap CI.
+  - Green bars: `best_avg_reward` IQM (peak 100-ep average reached
+    during training) with the same CI treatment.
+  - Vermillion dashed line: 475 threshold.
+  - Text above each pair: `K/N solved` count for that config.
+  - y-axis capped at 520 so bars are interpretable on the CartPole-v1
+    scale.
+
+- `performance_profile.{ext}` — empirical performance profile
+  (Dolan–Moré curve) per config, following Agarwal et al. (2021). For
+  each score threshold τ ∈ [0, 500] (x-axis), the y-axis shows the
+  fraction of seeds with `final_avg_reward` ≥ τ. Curves that stay flat
+  longer (further right) represent configurations whose seed
+  distributions are uniformly better. The y-value at the vermillion
+  dashed line (τ = 475) is the success rate K/N for each config; the
+  K/N count also appears in the legend.
+
+- `{config}-loss_curve.{ext}` — per-config DQN loss trajectory. Same
+  IQM-line + IQR-band treatment as the learning curves, plotted on
+  `avg_loss` per episode. Useful for diagnosing optimization
+  instability separately from reward trajectory.
+
+### What is raw vs. derived
+
+| Shown on plot | Source column(s) | Derivation |
+|---|---|---|
+| Per-seed lines (learning curve) | `running_avg_100` | Raw per-episode column from `train_fn.train`. |
+| IQM central line | `running_avg_100` (or `avg_loss`) | Mean of middle 50% across seeds per episode. |
+| IQR band | `running_avg_100` (or `avg_loss`) | 25th–75th percentile across seeds per episode. |
+| Bar height (final_bars) | `final_avg_reward`, `best_avg_reward` | IQM across seeds (single value per config). |
+| Bar error bars (final_bars) | same | Percentile bootstrap 95% CI for IQM, 10,000 resamples. |
+| K/N "solved" count | `final_avg_reward` | Count of seeds where final_avg ≥ 475. |
+| Convergence dots | `convergence_episode` | Raw per-seed column from summary CSV. |
+| Convergence median bar | `convergence_episode` | Median over the converged subset of seeds. |
+| Performance profile y | `final_avg_reward` | Fraction of seeds with score ≥ τ, evaluated at each τ on [0, 500]. |
+
+### Methodology notes
+
+The reporting framing across these plots intentionally separates:
+
+- The **success metric** for individual reporting, which follows the
+  standard CartPole-v1 criterion `final_avg_reward ≥ 475` over the final
+  100 episodes. K/N counts on each plot reflect this metric directly.
+- The **aggregate central tendency**, reported as the IQM rather than
+  the mean. Per Agarwal et al. (2021, NeurIPS), the IQM is more robust
+  to outlier seeds than the mean and more informative than the median
+  at small N (it uses 50% of the data rather than a single point).
+- The **uncertainty quantification**, reported via 95% percentile
+  bootstrap CIs on the IQM for single-value statistics, and per-episode
+  IQR bands for time-series plots. With N = 10 seeds the bootstrap CIs
+  are intentionally wide; Colas et al. (2018) note that N ≤ 5 is
+  under-powered for typical deep-RL effect sizes, so wider intervals
+  are an honest reflection of the sample size.
+
 ## Fractional Dynamics Verification
 
 To ensure the correctness of the Python `FractionalLIF` model, we provide a suite of automated unit tests and visualization scripts in `train/scripts/`.
