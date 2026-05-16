@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 550" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <marker id="arrowS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#888"/>
+    </marker>
+    <pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="6" stroke="#bbb" stroke-width="3"/>
+    </pattern>
+    <style>
+      .label   { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size:12px; fill:#111; }
+      .sig     { stroke:#1d4ed8; stroke-width:1.8; fill:none; }
+      .bus     { stroke:#15803d; stroke-width:1.6; fill:#dcfce7; }
+      .busInv  { stroke:#888; stroke-width:1.2; fill:url(#hatch); }
+      .busTxt  { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size:11px; fill:#111; }
+      .grid    { stroke:#e5e7eb; stroke-width:1; stroke-dasharray:2 3; }
+      .cyc     { font-size:10px; fill:#555; }
+      .note    { font-size:11px; fill:#7c2d12; font-style:italic; }
+      .ann     { font-size:11px; fill:#555; }
+      .brk     { stroke:#999; stroke-width:1.4; fill:none; }
+    </style>
+  </defs>
+
+  <!-- ====== Cycle markers at top ====== -->
+  <text x="185" y="28" text-anchor="middle" class="cyc">0</text>
+  <text x="235" y="28" text-anchor="middle" class="cyc">1</text>
+  <text x="285" y="28" text-anchor="middle" class="cyc">2</text>
+  <text x="335" y="28" text-anchor="middle" class="cyc">3</text>
+  <text x="385" y="28" text-anchor="middle" class="cyc">4</text>
+  <text x="435" y="28" text-anchor="middle" class="cyc">5</text>
+  <text x="500" y="28" text-anchor="middle" class="cyc">// …</text>
+  <text x="610" y="28" text-anchor="middle" class="cyc">N–1</text>
+  <text x="660" y="28" text-anchor="middle" class="cyc">N</text>
+  <text x="710" y="28" text-anchor="middle" class="cyc">N+1</text>
+  <text x="760" y="28" text-anchor="middle" class="cyc">N+2</text>
+
+  <!-- Light vertical gridlines at cycle boundaries -->
+  <g class="grid">
+    <line x1="160" y1="38" x2="160" y2="295"/>
+    <line x1="210" y1="38" x2="210" y2="295"/>
+    <line x1="260" y1="38" x2="260" y2="295"/>
+    <line x1="310" y1="38" x2="310" y2="295"/>
+    <line x1="360" y1="38" x2="360" y2="295"/>
+    <line x1="410" y1="38" x2="410" y2="295"/>
+    <line x1="460" y1="38" x2="460" y2="295"/>
+    <line x1="585" y1="38" x2="585" y2="295"/>
+    <line x1="635" y1="38" x2="635" y2="295"/>
+    <line x1="685" y1="38" x2="685" y2="295"/>
+    <line x1="735" y1="38" x2="735" y2="295"/>
+    <line x1="785" y1="38" x2="785" y2="295"/>
+  </g>
+
+  <!-- Compressed-time break (two slanted lines spanning all signal rows) -->
+  <line class="brk" x1="498" y1="40" x2="510" y2="295"/>
+  <line class="brk" x1="514" y1="40" x2="526" y2="295"/>
+
+  <!-- =========================== clk =========================== -->
+  <text x="140" y="68" text-anchor="end" class="label">clk</text>
+  <!-- 6 cycles before break, then 5 after; high for first half of each cycle, low for second -->
+  <path class="sig" d="
+    M160,75 L160,55 L185,55 L185,75 L210,75 L210,55 L235,55 L235,75 L260,75 L260,55 L285,55 L285,75 L310,75 L310,55 L335,55 L335,75 L360,75 L360,55 L385,55 L385,75 L410,75 L410,55 L435,55 L435,75 L460,75
+    M540,75 L540,55 L585,55 L585,75 L610,75 L610,55 L635,55 L635,75 L660,75 L660,55 L685,55 L685,75 L710,75 L710,55 L735,55 L735,75 L760,75 L760,55 L785,55 L785,75 L810,75
+  "/>
+
+  <!-- =========================== start (input) =========================== -->
+  <text x="140" y="113" text-anchor="end" class="label">start</text>
+  <!-- LOW until cycle 3, HIGH one cycle, LOW after; LOW the whole second segment -->
+  <path class="sig" d="
+    M160,120 L310,120 L310,100 L360,100 L360,120 L460,120
+    M540,120 L810,120
+  "/>
+  <text x="335" y="93" text-anchor="middle" class="note">1-cycle pulse</text>
+  <path d="M335,96 L335,118" stroke="#7c2d12" stroke-width="1" marker-end="url(#arrowS)" fill="none"/>
+
+  <!-- =========================== observations[3:0] (bus, input) =========================== -->
+  <text x="140" y="160" text-anchor="end" class="label">observations[3:0]</text>
+  <!-- Don't-care before cycle 3 (hatched), valid from cycle 3 onward through break and beyond -->
+  <rect class="busInv" x="160" y="143" width="150" height="25"/>
+  <!-- Valid bus from x=310 to x=460 -->
+  <polygon class="bus" points="310,155 318,143 460,143 460,168 318,168"/>
+  <text x="385" y="161" text-anchor="middle" class="busTxt">latched obs</text>
+  <!-- After break, latched value still held internally; external pins are don't-care again -->
+  <rect class="busInv" x="540" y="143" width="270" height="25"/>
+
+  <!-- =========================== done (output) =========================== -->
+  <text x="140" y="208" text-anchor="end" class="label">done</text>
+  <path class="sig" d="
+    M160,215 L460,215
+    M540,215 L685,215 L685,195 L810,195
+  "/>
+  <text x="685" y="186" text-anchor="middle" class="note">asserts when inference complete</text>
+  <path d="M695,189 L700,193" stroke="#7c2d12" stroke-width="1" marker-end="url(#arrowS)" fill="none"/>
+
+  <!-- =========================== selected_action (bus, output) =========================== -->
+  <text x="140" y="258" text-anchor="end" class="label">selected_action</text>
+  <!-- Invalid until done asserts -->
+  <rect class="busInv" x="160" y="240" width="300" height="25"/>
+  <rect class="busInv" x="540" y="240" width="145" height="25"/>
+  <!-- Valid value from cycle N+1 onward -->
+  <polygon class="bus" points="685,253 693,240 810,240 810,265 693,265"/>
+  <text x="745" y="258" text-anchor="middle" class="busTxt">action ∈ {0, 1}</text>
+
+  <!-- =========================== Annotations =========================== -->
+  <!-- Inference latency span across the break -->
+  <path d="M310,290 L460,290" stroke="#444" stroke-width="1" marker-start="url(#arrow)"/>
+  <path d="M540,290 L685,290" stroke="#444" stroke-width="1" marker-end="url(#arrow)"/>
+  <text x="500" y="285" text-anchor="middle" class="ann">≈ N cycles inference latency</text>
+
+  <!-- Footer key -->
+  <g transform="translate(40,320)">
+    <rect class="bus"    x="0"   y="0" width="14" height="14"/>
+    <text x="20" y="11" class="ann">bus: valid value</text>
+    <rect class="busInv" x="160" y="0" width="14" height="14"/>
+    <text x="180" y="11" class="ann">bus: don't-care / not driven</text>
+    <line x1="360" y1="7" x2="385" y2="7" class="sig"/>
+    <text x="392" y="11" class="ann">single-bit signal</text>
+    <line x1="530" y1="0" x2="538" y2="14" class="brk"/>
+    <line x1="540" y1="0" x2="548" y2="14" class="brk"/>
+    <text x="556" y="11" class="ann">compressed-time break</text>
+  </g>
+
+  <!-- Notes block: inference latency factors -->
+  <g>
+    <rect x="40" y="355" width="980" height="180" rx="6" fill="#f9fafb" stroke="#d1d5db" stroke-width="1"/>
+    <text x="55" y="375" font-weight="600" fill="#111" font-size="12">Inference latency depends on (defaults shown in parentheses):</text>
+    <text x="55" y="395" class="ann">•  <tspan font-family="SFMono-Regular, Menlo, Consolas, monospace">NUM_TIMESTEPS</tspan> (30) — the inner loop runs this many times; everything inside it scales linearly.</text>
+    <text x="55" y="412" class="ann">•  Linear layers stream one output per cycle: <tspan font-family="SFMono-Regular, Menlo, Consolas, monospace">linear_layer</tspan> latency = 1 + NUM_OUTPUTS cycles.</text>
+    <text x="70" y="429" class="ann">  fc1 (4 → 64): ~65 cycles, runs once.   fc2 (64 → 16): ~17 cycles, runs each timestep.</text>
+    <text x="55" y="446" class="ann">•  Neuron processing per timestep: baseline LIF = 1 cycle.</text>
+    <text x="70" y="463" class="ann">  fractional LIF ≈ <tspan font-family="SFMono-Regular, Menlo, Consolas, monospace">HISTORY_LENGTH</tspan> + 5 cycles (per-cycle MAC over history + pipeline stages).</text>
+    <text x="70" y="480" class="ann">  bitshift LIF ≈ <tspan font-family="SFMono-Regular, Menlo, Consolas, monospace">HISTORY_LENGTH</tspan> + 5 cycles (per-cycle shift-and-add; same FSM structure as fractional, multipliers replaced by bit shifts).</text>
+    <text x="55" y="497" class="ann">•  q_accumulator finalization: NUM_TIMESTEPS × (HL2_SIZE / <tspan font-family="SFMono-Regular, Menlo, Consolas, monospace">Q_BATCH_SIZE</tspan>) + 2 cycles  →  30 × (16/4) + 2 = 122 cycles with defaults.</text>
+    <text x="55" y="520" class="ann" font-style="italic">Latency is set by these architectural parameters; it does not depend on the input observation values.</text>
+  </g>
+</svg>

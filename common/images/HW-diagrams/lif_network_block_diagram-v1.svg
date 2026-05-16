@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 640" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <style>
+      .linear  { fill:#fef3c7; stroke:#a16207; stroke-width:1.6; }
+      .neuron  { fill:#dcfce7; stroke:#15803d; stroke-width:1.6; }
+      .mem     { fill:#fef9c3; stroke:#b45309; stroke-width:1.6; }
+      .qacc    { fill:#fce7f3; stroke:#be185d; stroke-width:1.6; }
+      .wire    { stroke:#333; stroke-width:1.5; fill:none; }
+      .name    { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size:12px; fill:#111; }
+      .sub     { font-size:11px; fill:#555; }
+      .loopbox { fill:none; stroke:#7c3aed; stroke-width:1.4; stroke-dasharray:6 4; }
+      .looplbl { font-size:12px; fill:#7c3aed; font-style:italic; }
+    </style>
+  </defs>
+
+  <!-- ============== Per-timestep loop enclosures (top + bottom rows) ============== -->
+  <rect class="loopbox" x="410" y="160" width="410" height="170" rx="10"/>
+  <rect class="loopbox" x="570" y="385" width="440" height="170" rx="10"/>
+  <text x="1010" y="375" text-anchor="end" class="looplbl">for t = 0 .. 29   (NUM_TIMESTEPS)</text>
+
+  <!-- ============== TOP ROW (L → R): obs → fc1 → HL1 → fc2 ============== -->
+
+  <!-- observations -->
+  <g>
+    <text x="20" y="218" class="name">observations[0]</text>
+    <text x="20" y="240" class="name">observations[1]</text>
+    <text x="20" y="262" class="name">observations[2]</text>
+    <text x="20" y="284" class="name">observations[3]</text>
+    <!-- bundle into single arrow into fc1 -->
+    <path class="wire" d="M140,213 L172,213 L172,250 L185,250"/>
+    <path class="wire" d="M140,235 L172,235"/>
+    <path class="wire" d="M140,257 L172,257"/>
+    <path class="wire" d="M140,279 L172,279 L172,250"/>
+    <path class="wire" d="M185,250 L210,250" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- fc1 -->
+  <g>
+    <rect class="linear" x="210" y="210" width="130" height="80" rx="6"/>
+    <text x="275" y="234" text-anchor="middle" font-weight="600">fc1</text>
+    <text x="275" y="253" text-anchor="middle" class="sub">linear_layer</text>
+    <text x="275" y="271" text-anchor="middle" class="name">4 → 64</text>
+  </g>
+  <text x="275" y="305" text-anchor="middle" class="sub">(runs once per inference)</text>
+
+  <!-- fc1 → HL1 -->
+  <path class="wire" d="M340,250 L420,250" marker-end="url(#arrow)"/>
+  <text x="380" y="242" text-anchor="middle" class="sub">currents</text>
+
+  <!-- HL1 -->
+  <g>
+    <rect class="neuron" x="420" y="180" width="180" height="140" rx="6"/>
+    <text x="510" y="206" text-anchor="middle" font-weight="600">Hidden Layer 1</text>
+    <text x="510" y="225" text-anchor="middle" class="sub">64 × LIF (parallel)</text>
+    <g stroke="#15803d" fill="#bbf7d0">
+      <circle cx="463" cy="265" r="10"/>
+      <circle cx="491" cy="265" r="10"/>
+      <circle cx="519" cy="265" r="10"/>
+      <circle cx="547" cy="265" r="10"/>
+    </g>
+    <text x="510" y="300" text-anchor="middle" class="sub">spike_out per neuron</text>
+  </g>
+
+  <!-- HL1 → fc2 -->
+  <path class="wire" d="M600,250 L680,250" marker-end="url(#arrow)"/>
+  <text x="640" y="242" text-anchor="middle" class="sub">spikes[64]</text>
+
+  <!-- fc2 -->
+  <g>
+    <rect class="linear" x="680" y="210" width="130" height="80" rx="6"/>
+    <text x="745" y="234" text-anchor="middle" font-weight="600">fc2</text>
+    <text x="745" y="253" text-anchor="middle" class="sub">linear_layer</text>
+    <text x="745" y="271" text-anchor="middle" class="name">64 → 16</text>
+  </g>
+
+  <!-- ============== Wrap from top-row end to bottom-row start (right side) ============== -->
+  <path class="wire" d="M810,250 L1040,250 L1040,475 L1000,475" marker-end="url(#arrow)"/>
+  <text x="1050" y="345" text-anchor="end" class="sub">currents (per t)</text>
+
+  <!-- ============== BOTTOM ROW (R → L): HL2 → mem_buffer → q_accumulator → action ============== -->
+
+  <!-- HL2 -->
+  <g>
+    <rect class="neuron" x="820" y="405" width="180" height="140" rx="6"/>
+    <text x="910" y="431" text-anchor="middle" font-weight="600">Hidden Layer 2</text>
+    <text x="910" y="450" text-anchor="middle" class="sub">16 × LIF (parallel)</text>
+    <g stroke="#15803d" fill="#bbf7d0">
+      <circle cx="863" cy="490" r="10"/>
+      <circle cx="891" cy="490" r="10"/>
+      <circle cx="919" cy="490" r="10"/>
+      <circle cx="947" cy="490" r="10"/>
+    </g>
+    <text x="910" y="525" text-anchor="middle" class="sub">membrane_out per neuron</text>
+  </g>
+
+  <!-- HL2 → mem_buffer -->
+  <path class="wire" d="M820,475 L750,475" marker-end="url(#arrow)"/>
+  <text x="785" y="467" text-anchor="middle" class="sub">mem[16]</text>
+
+  <!-- Membrane buffer -->
+  <g>
+    <rect class="mem" x="580" y="405" width="170" height="140" rx="6"/>
+    <text x="665" y="431" text-anchor="middle" font-weight="600">Membrane Buffer</text>
+    <text x="665" y="450" text-anchor="middle" class="sub">16 × neuron_membrane_buffer</text>
+    <text x="665" y="466" text-anchor="middle" class="sub">(30-deep each)</text>
+    <g stroke="#b45309" fill="#fde68a">
+      <rect x="600" y="485" width="130" height="14"/>
+      <rect x="600" y="500" width="130" height="14"/>
+      <rect x="600" y="515" width="130" height="14"/>
+    </g>
+  </g>
+
+  <!-- mem_buffer → q_accumulator -->
+  <path class="wire" d="M580,475 L510,475" marker-end="url(#arrow)"/>
+  <text x="545" y="467" text-anchor="middle" class="sub">mem[t]</text>
+
+  <!-- q_accumulator -->
+  <g>
+    <rect class="qacc" x="340" y="405" width="170" height="140" rx="6"/>
+    <text x="425" y="431" text-anchor="middle" font-weight="600">q_accumulator</text>
+    <text x="425" y="451" text-anchor="middle" class="sub">fc_out: 16 → 2</text>
+    <text x="425" y="469" text-anchor="middle" class="sub">Σ over t = 0..29</text>
+    <text x="425" y="487" text-anchor="middle" class="sub">argmax → action</text>
+    <text x="425" y="525" text-anchor="middle" class="sub">(runs after final t)</text>
+  </g>
+
+  <!-- q_accumulator → selected_action (leaves out the left) -->
+  <path class="wire" d="M340,475 L200,475" marker-end="url(#arrow)"/>
+  <text x="195" y="468" text-anchor="end" class="name">selected_action</text>
+  <text x="195" y="486" text-anchor="end" class="sub">(1 of 2)</text>
+
+  <!-- ============== Legend ============== -->
+  <g transform="translate(40,590)">
+    <rect class="linear" x="0"   y="0" width="16" height="14"/>
+    <text x="22" y="12" class="sub">linear_layer (FC)</text>
+    <rect class="neuron" x="150" y="0" width="16" height="14"/>
+    <text x="172" y="12" class="sub">LIF neuron layer</text>
+    <rect class="mem"    x="300" y="0" width="16" height="14"/>
+    <text x="322" y="12" class="sub">membrane buffer</text>
+    <rect class="qacc"   x="450" y="0" width="16" height="14"/>
+    <text x="472" y="12" class="sub">Q-value accumulator</text>
+    <line x1="620" y1="7" x2="660" y2="7" stroke="#7c3aed" stroke-width="1.4" stroke-dasharray="6 4"/>
+    <text x="668" y="12" class="sub">per-timestep loop</text>
+  </g>
+</svg>

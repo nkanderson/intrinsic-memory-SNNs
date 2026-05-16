@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <style>
+      .io       { fill:#dbeafe; stroke:#1d4ed8; stroke-width:1.4; }
+      .reg      { fill:#ede9fe; stroke:#6d28d9; stroke-width:1.4; }
+      .mem      { fill:#fef9c3; stroke:#b45309; stroke-width:1.4; }
+      .data     { fill:#dcfce7; stroke:#15803d; stroke-width:1.4; }
+      .compute  { fill:#ffedd5; stroke:#c2410c; stroke-width:1.8; }
+      .wire     { stroke:#333; stroke-width:1.4; fill:none; }
+      .wireFb   { stroke:#7c2d12; stroke-width:1.4; fill:none; stroke-dasharray:6 4; }
+      .mono     { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size:11px; fill:#111; }
+      .sub      { font-size:11px; fill:#555; }
+      .note     { font-size:11px; fill:#7c2d12; font-style:italic; }
+    </style>
+  </defs>
+
+  <!-- ============ Header / formula ============ -->
+  <text x="500" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#111">
+    Bitshift LIF — history-term datapath (state ST_ACCUM, 1 cycle per k)
+  </text>
+  <text x="500" y="48" text-anchor="middle" class="sub">
+    After H−1 cycles:  history_sum_acc  =  Σ<tspan baseline-shift="sub" font-size="9">k=1..H−1</tspan>  V[n−k] &gt;&gt;&gt; shift[k]
+  </text>
+
+  <!-- Shift diagram body down to give the title a clear margin -->
+  <g transform="translate(0, 20)">
+
+  <!-- ============ ROW 1: accum_index register + +1 adder ============ -->
+  <!-- accum_index register -->
+  <rect class="reg" x="30" y="80" width="140" height="50" rx="6"/>
+  <text x="100" y="100" text-anchor="middle" font-weight="600">accum_index</text>
+  <text x="100" y="118" text-anchor="middle" class="mono">k = 0 … H−2</text>
+
+  <!-- +1 adder -->
+  <rect class="data" x="220" y="85" width="60" height="40" rx="6"/>
+  <text x="250" y="110" text-anchor="middle" font-weight="600">+ 1</text>
+
+  <!-- accum_index → +1 -->
+  <path class="wire" d="M170,105 L220,105" marker-end="url(#arrow)"/>
+  <text x="195" y="98" text-anchor="middle" class="mono">k</text>
+
+  <!-- ============ ROW 2: history_ptr + mod subtractor ============ -->
+  <!-- history_ptr port -->
+  <rect class="io" x="30" y="160" width="140" height="40" rx="6"/>
+  <text x="100" y="184" text-anchor="middle" class="mono">history_ptr</text>
+
+  <!-- mod subtractor -->
+  <rect class="data" x="220" y="160" width="320" height="40" rx="6"/>
+  <text x="380" y="184" text-anchor="middle" font-weight="600">hist_idx  =  (history_ptr − (k+1))  mod  H</text>
+
+  <!-- +1 → mod sub (k+1 input from top) -->
+  <path class="wire" d="M250,125 L250,160" marker-end="url(#arrow)"/>
+  <text x="263" y="145" class="mono">k+1</text>
+
+  <!-- history_ptr → mod sub -->
+  <path class="wire" d="M170,180 L220,180" marker-end="url(#arrow)"/>
+
+  <!-- ============ ROW 3: History Buffer + Shift Amount Table ============ -->
+  <!-- History Buffer -->
+  <rect class="mem" x="190" y="240" width="260" height="90" rx="6"/>
+  <text x="320" y="263" text-anchor="middle" font-weight="600">History Buffer</text>
+  <text x="320" y="282" text-anchor="middle" class="sub">depth H, signed MEMBRANE_WIDTH</text>
+  <text x="320" y="300" text-anchor="middle" class="sub">circular, indexed by hist_idx</text>
+  <text x="320" y="318" text-anchor="middle" class="mono">read: V[n−(k+1)]</text>
+
+  <!-- Shift Amount Table -->
+  <rect class="mem" x="560" y="240" width="260" height="90" rx="6"/>
+  <text x="690" y="263" text-anchor="middle" font-weight="600">Shift Amount Table</text>
+  <text x="690" y="282" text-anchor="middle" class="sub">shift[1], shift[2], …, shift[H−1]</text>
+  <text x="690" y="300" text-anchor="middle" class="sub">compile-time LUT (SHIFT_MODE)</text>
+  <text x="690" y="318" text-anchor="middle" class="mono">read: shift[k+1]</text>
+
+  <!-- mod sub → History Buffer (hist_idx) -->
+  <path class="wire" d="M320,200 L320,240" marker-end="url(#arrow)"/>
+  <text x="312" y="222" text-anchor="end" class="mono">hist_idx</text>
+
+  <!-- accum_index → Shift Table (routed above the diagram to avoid crossing other signals) -->
+  <path class="wire" d="M150,80 L150,68 L760,68 L760,240" marker-end="url(#arrow)"/>
+  <text x="455" y="60" text-anchor="middle" class="mono">k  (LUT address)</text>
+
+  <!-- ============ ROW 4: Arithmetic right shifter ============ -->
+  <rect class="compute" x="370" y="380" width="240" height="70" rx="8"/>
+  <text x="490" y="408" text-anchor="middle" font-weight="600">&gt;&gt;&gt;</text>
+  <text x="490" y="428" text-anchor="middle" class="sub">arithmetic right shift (signed)</text>
+  <text x="490" y="444" text-anchor="middle" class="mono">term = V[n−(k+1)] &gt;&gt;&gt; shift[k+1]</text>
+
+  <!-- History Buffer → shifter (data input; jog right so arrow lands on the compute block) -->
+  <path class="wire" d="M320,330 L320,350 L400,350 L400,380" marker-end="url(#arrow)"/>
+  <text x="392" y="370" text-anchor="end" class="mono">V[n−(k+1)]</text>
+
+  <!-- Shift Table → shifter (amount input) -->
+  <path class="wire" d="M690,330 L690,360 L560,360 L560,380" marker-end="url(#arrow)"/>
+  <text x="600" y="354" text-anchor="middle" class="mono">shift[k+1]</text>
+
+  <!-- ============ ROW 5: Sign extend + Adder + history_sum_acc register ============ -->
+  <!-- Sign extend -->
+  <rect class="data" x="270" y="490" width="130" height="50" rx="6"/>
+  <text x="335" y="513" text-anchor="middle" font-weight="600">sign extend</text>
+  <text x="335" y="529" text-anchor="middle" class="sub">→ HISTORY_SUM_WIDTH</text>
+
+  <!-- + Adder -->
+  <rect class="data" x="450" y="490" width="70" height="50" rx="6"/>
+  <text x="485" y="522" text-anchor="middle" font-weight="600">+</text>
+
+  <!-- history_sum_acc register -->
+  <rect class="reg" x="570" y="490" width="250" height="50" rx="6"/>
+  <text x="695" y="513" text-anchor="middle" font-weight="600">history_sum_acc</text>
+  <text x="695" y="529" text-anchor="middle" class="sub">register (signed)</text>
+
+  <!-- shifter → sign extend -->
+  <path class="wire" d="M490,450 L490,470 L335,470 L335,490" marker-end="url(#arrow)"/>
+  <text x="370" y="464" class="mono">shifted V</text>
+
+  <!-- sign extend → adder -->
+  <path class="wire" d="M400,515 L450,515" marker-end="url(#arrow)"/>
+
+  <!-- adder → register -->
+  <path class="wire" d="M520,515 L570,515" marker-end="url(#arrow)"/>
+
+  <!-- Feedback: history_sum_acc → adder (dashed, brown) -->
+  <path class="wireFb" d="M820,515 L860,515 L860,575 L485,575 L485,540" marker-end="url(#arrow)"/>
+  <text x="700" y="570" text-anchor="middle" class="note">feedback: previous history_sum_acc</text>
+
+  <!-- Output -->
+  <path class="wire" d="M820,505 L865,505" marker-end="url(#arrow)"/>
+  <text x="872" y="500" class="mono">→ ST_PREP_NUM</text>
+  <text x="872" y="515" class="sub">(after H−1 cycles)</text>
+
+  <!-- ============ Legend ============ -->
+  <g transform="translate(30,595)">
+    <rect class="io"      x="0"   y="0" width="14" height="14"/><text x="20" y="11" class="sub">I/O port</text>
+    <rect class="reg"     x="85"  y="0" width="14" height="14"/><text x="105" y="11" class="sub">register</text>
+    <rect class="mem"     x="170" y="0" width="14" height="14"/><text x="190" y="11" class="sub">memory / LUT</text>
+    <rect class="data"    x="280" y="0" width="14" height="14"/><text x="300" y="11" class="sub">datapath (add / index gen)</text>
+    <rect class="compute" x="455" y="0" width="14" height="14"/><text x="475" y="11" class="sub">compute element (differs between variants)</text>
+  </g>
+
+  </g><!-- end body translate -->
+</svg>

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 480" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrowS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#888"/>
+    </marker>
+    <style>
+      .label    { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size:11px; fill:#111; }
+      .sigTop   { stroke:#1d4ed8; stroke-width:1.7; fill:none; }
+      .sigFc    { stroke:#a16207; stroke-width:1.7; fill:none; }
+      .sigLif   { stroke:#15803d; stroke-width:1.7; fill:none; }
+      .sigQ     { stroke:#be185d; stroke-width:1.7; fill:none; }
+      .busFill  { fill:#dcfce7; stroke:#15803d; stroke-width:1.2; }
+      .busTxt   { font-family: "SFMono-Regular", Menlo, Consolas, monospace; font-size:9px; fill:#111; text-anchor:middle; }
+      .brk      { stroke:#999; stroke-width:1.4; fill:none; }
+      .state    { font-size:12px; fill:#111; font-weight:600; text-anchor:middle; }
+      .substate { font-size:10px; fill:#7c2d12; font-style:italic; text-anchor:middle; }
+      .ann      { font-size:11px; fill:#555; }
+      .annS     { font-size:10px; fill:#555; }
+      .note     { font-size:11px; fill:#7c2d12; font-style:italic; }
+      .grpdiv   { stroke:#e5e7eb; stroke-width:1; stroke-dasharray:3 3; }
+    </style>
+  </defs>
+
+  <!-- ============== Faint state backgrounds (full wave height) ============== -->
+  <rect x="170" y="70"  width="50"  height="300" fill="#f1f5f9" opacity="0.7"/>
+  <rect x="220" y="70"  width="80"  height="300" fill="#fef9c3" opacity="0.5"/>
+  <rect x="340" y="70"  width="70"  height="300" fill="#fef9c3" opacity="0.5"/>
+  <rect x="410" y="70"  width="400" height="300" fill="#dcfce7" opacity="0.4"/>
+  <rect x="870" y="70"  width="90"  height="300" fill="#fce7f3" opacity="0.5"/>
+  <rect x="1010" y="70" width="80"  height="300" fill="#fce7f3" opacity="0.5"/>
+  <rect x="1090" y="70" width="170" height="300" fill="#dbeafe" opacity="0.6"/>
+
+  <!-- ============== State / sub-state labels at top ============== -->
+  <text x="195" y="20" class="state">IDLE</text>
+  <text x="370" y="20" class="state">LOAD_HL1</text>
+  <text x="610" y="20" class="state">RUN_TIMESTEPS</text>
+  <text x="980" y="20" class="state">FINISH_Q</text>
+  <text x="1175" y="20" class="state">DONE_STATE</text>
+
+  <!-- Sub-state annotations (kept close to waveform) -->
+  <text x="610" y="55" class="substate">× 30 timesteps (one shown in detail)</text>
+
+  <!-- Sub-state divisions within RUN_TIMESTEPS (inside wave area only) -->
+  <line x1="430" y1="70" x2="430" y2="370" class="grpdiv"/>
+  <line x1="450" y1="70" x2="450" y2="370" class="grpdiv"/>
+  <line x1="790" y1="70" x2="790" y2="370" class="grpdiv"/>
+  <text x="428" y="67" class="substate" style="text-anchor:end"   font-size="9">HL1_STEP</text>
+  <text x="432" y="67" class="substate" style="text-anchor:start" font-size="9">FC2_START</text>
+  <text x="620" y="67" class="substate" font-size="9">FC2_HL2 (fc2 streams 16 outputs → hl2_enable cascade)</text>
+  <text x="800" y="67" class="substate" font-size="9">NEXT</text>
+
+  <!-- ============== Compressed-time break markers (// across signal rows) ============== -->
+  <line class="brk" x1="305" y1="72" x2="315" y2="370"/>
+  <line class="brk" x1="320" y1="72" x2="330" y2="370"/>
+  <line class="brk" x1="822" y1="72" x2="832" y2="370"/>
+  <line class="brk" x1="847" y1="72" x2="857" y2="370"/>
+  <line class="brk" x1="972" y1="72" x2="982" y2="370"/>
+  <line class="brk" x1="990" y1="72" x2="1000" y2="370"/>
+
+  <!-- ============== Group dividers (faint horizontal) ============== -->
+  <line x1="155" y1="130" x2="1265" y2="130" class="grpdiv"/>
+  <line x1="155" y1="190" x2="1265" y2="190" class="grpdiv"/>
+  <line x1="155" y1="305" x2="1265" y2="305" class="grpdiv"/>
+
+  <!-- ====================== Signals ====================== -->
+
+  <!-- Group 1: top-level I/O -->
+
+  <!-- start (input) — 1-cycle pulse during IDLE -->
+  <text x="150" y="90" text-anchor="end" class="label">start</text>
+  <path class="sigTop" d="
+    M170,95 L185,95 L185,80 L205,80 L205,95 L300,95
+    M340,95 L810,95
+    M870,95 L960,95
+    M1010,95 L1260,95
+  "/>
+  <text x="195" y="76" text-anchor="middle" class="annS">1-cycle pulse</text>
+
+  <!-- done (output) — asserts when q_done detected, held until next start -->
+  <text x="150" y="120" text-anchor="end" class="label">done</text>
+  <path class="sigTop" d="
+    M170,125 L300,125
+    M340,125 L810,125
+    M870,125 L960,125
+    M1010,125 L1080,125 L1080,110 L1260,110
+  "/>
+  <text x="1170" y="105" text-anchor="middle" class="annS">held until next start</text>
+
+  <!-- Group 2: fc1 handshake -->
+
+  <!-- fc1_start — 1-cycle pulse, asserted as FSM enters LOAD_HL1 -->
+  <text x="150" y="150" text-anchor="end" class="label">fc1_start</text>
+  <path class="sigFc" d="
+    M170,155 L225,155 L225,140 L245,140 L245,155 L300,155
+    M340,155 L810,155
+    M870,155 L960,155
+    M1010,155 L1260,155
+  "/>
+
+  <!-- fc1_done — pulse at end of fc1 streaming (after ~65 cycles) -->
+  <text x="150" y="180" text-anchor="end" class="label">fc1_done</text>
+  <path class="sigFc" d="
+    M170,185 L300,185
+    M340,185 L370,185 L370,170 L390,170 L390,185 L810,185
+    M870,185 L960,185
+    M1010,185 L1260,185
+  "/>
+  <text x="380" y="166" text-anchor="middle" class="annS">asserted by linear_layer</text>
+
+  <!-- Group 3: per-timestep signals (HL1 / fc2 / HL2) -->
+
+  <!-- hl1_enable — 1-cycle pulse at TS_HL1_STEP -->
+  <text x="150" y="215" text-anchor="end" class="label">hl1_enable</text>
+  <path class="sigLif" d="
+    M170,220 L300,220
+    M340,220 L410,220 L410,205 L430,205 L430,220 L810,220
+    M870,220 L960,220
+    M1010,220 L1260,220
+  "/>
+
+  <!-- fc2_start — 1-cycle pulse at TS_FC2_START -->
+  <text x="150" y="245" text-anchor="end" class="label">fc2_start</text>
+  <path class="sigFc" d="
+    M170,250 L300,250
+    M340,250 L430,250 L430,235 L450,235 L450,250 L810,250
+    M870,250 L960,250
+    M1010,250 L1260,250
+  "/>
+
+  <!-- fc2_done — pulse near end of TS_FC2_HL2 -->
+  <text x="150" y="275" text-anchor="end" class="label">fc2_done</text>
+  <path class="sigFc" d="
+    M170,280 L300,280
+    M340,280 L770,280 L770,265 L790,265 L790,280 L810,280
+    M870,280 L960,280
+    M1010,280 L1260,280
+  "/>
+
+  <!-- hl2_enable[i] — bus-style cascade [0]→[1]→...→[15] across TS_FC2_HL2 -->
+  <text x="150" y="328" text-anchor="end" class="label">hl2_enable[i]</text>
+  <!-- baseline (no neuron enabled) -->
+  <path class="sigLif" d="
+    M170,335 L300,335
+    M340,335 L490,335
+    M810,335
+    M870,335 L960,335
+    M1010,335 L1260,335
+  "/>
+  <!-- Cascade cells: show [0], [1], [2], ..., [14], [15] -->
+  <g>
+    <rect class="busFill" x="490" y="320" width="20" height="20"/><text x="500" y="333" class="busTxt">0</text>
+    <rect class="busFill" x="510" y="320" width="20" height="20"/><text x="520" y="333" class="busTxt">1</text>
+    <rect class="busFill" x="530" y="320" width="20" height="20"/><text x="540" y="333" class="busTxt">2</text>
+    <text x="660" y="333" class="busTxt" font-size="11">…</text>
+    <rect class="busFill" x="770" y="320" width="20" height="20"/><text x="780" y="333" class="busTxt">14</text>
+    <rect class="busFill" x="790" y="320" width="20" height="20"/><text x="800" y="333" class="busTxt">15</text>
+  </g>
+  <text x="650" y="313" text-anchor="middle" class="annS">one 1-cycle enable per HL2 neuron, in sequence (tracks fc2 output_idx)</text>
+
+  <!-- Group 4: q_accumulator handshake -->
+
+  <!-- q_start — 1-cycle pulse on entry to FINISH_Q -->
+  <text x="150" y="358" text-anchor="end" class="label">q_start</text>
+  <path class="sigQ" d="
+    M170,363 L300,363
+    M340,363 L810,363
+    M870,363 L880,363 L880,348 L900,348 L900,363 L960,363
+    M1010,363 L1260,363
+  "/>
+
+  <!-- q_done — pulse at end of q_accumulator (~122 cycles after q_start) -->
+  <text x="150" y="388" text-anchor="end" class="label">q_done</text>
+  <path class="sigQ" d="
+    M170,393 L300,393
+    M340,393 L810,393
+    M870,393 L960,393
+    M1010,393 L1050,393 L1050,378 L1070,378 L1070,393 L1260,393
+  "/>
+  <text x="1060" y="372" text-anchor="middle" class="annS">asserted by q_accumulator</text>
+
+  <!-- ====================== Header note (beneath top-level state labels) ====================== -->
+  <text x="610" y="36" text-anchor="middle" class="annS">(all signals registered on posedge clk; pulses are 1 cycle wide unless labeled)</text>
+
+  <!-- ====================== Footer: legend + handshake pairings ====================== -->
+  <g transform="translate(40,415)">
+    <text x="0" y="0" font-weight="600" fill="#111" font-size="12">Handshake protocol (each sub-module):</text>
+    <text x="0" y="18" class="ann">top FSM pulses <tspan font-family="SFMono-Regular, Menlo, Consolas, monospace">*_start</tspan> for 1 cycle  →  sub-module asserts <tspan font-family="SFMono-Regular, Menlo, Consolas, monospace">*_done</tspan> when finished  →  top FSM advances state on next clk edge.</text>
+    <text x="0" y="36" class="ann">fc1: runs once during <tspan font-style="italic">LOAD_HL1</tspan>.    fc2 + hl1_enable + hl2_enable[i]: each timestep during <tspan font-style="italic">RUN_TIMESTEPS</tspan>.    q_accumulator: once during <tspan font-style="italic">FINISH_Q</tspan>.</text>
+
+    <!-- Color key -->
+    <line x1="0"   y1="55" x2="30"  y2="55" class="sigTop"/>
+    <text x="36" y="59" class="annS">top-level I/O</text>
+    <line x1="140" y1="55" x2="170" y2="55" class="sigFc"/>
+    <text x="176" y="59" class="annS">fc1 / fc2 handshake</text>
+    <line x1="320" y1="55" x2="350" y2="55" class="sigLif"/>
+    <text x="356" y="59" class="annS">LIF enables (HL1, HL2)</text>
+    <line x1="510" y1="55" x2="540" y2="55" class="sigQ"/>
+    <text x="546" y="59" class="annS">q_accumulator handshake</text>
+    <line x1="700" y1="48" x2="708" y2="62" class="brk"/>
+    <line x1="710" y1="48" x2="718" y2="62" class="brk"/>
+    <text x="726" y="59" class="annS">compressed-time break</text>
+  </g>
+</svg>
