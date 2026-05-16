@@ -1,10 +1,17 @@
 """
-Analyze Optuna studies for trials meeting a metric threshold.
+Analyze Optuna studies for trials passing the convergence-stability gate.
+
+"Successful" here means gate-passing: convergence_episode is set AND
+total_episodes - convergence_episode >= K (the same gate used by
+select_top_candidates.py). The --metric value is then a tiebreak for
+ranking gate-passing trials (smallest-neuron / shortest-history searches),
+not a filter — a separate metric floor would mechanically penalize
+late-but-stable convergers.
 
 Usage examples:
     python optuna_analysis.py --study-name leaky-iqm --storage sqlite:///optuna_studies/leaky-v3.db
     python optuna_analysis.py --study-name fractional-iqm --storage sqlite:///optuna_studies/fractional-v3.db \
-            --threshold 350 --print-trials
+            --print-trials
     python optuna_analysis.py --study leaky-iqm@sqlite:///optuna_studies/leaky-v3.db \
             --study fractional-iqm@sqlite:///optuna_studies/fractional-v3.db \
             --study bitshift-custom-slow-iqm@sqlite:///optuna_studies/bitshift-v3.db
@@ -98,10 +105,24 @@ def _trial_metric_value(
     return float(value) if value is not None else None
 
 
+def _passes_gate(
+    trial: optuna.trial.FrozenTrial,
+    min_sustained_episodes: int,
+    num_episodes_fallback: int,
+) -> bool:
+    """Same gate predicate used by select_top_candidates.py."""
+    conv = trial.user_attrs.get("convergence_episode")
+    if conv is None:
+        return False
+    total = trial.user_attrs.get("total_episodes") or num_episodes_fallback
+    return conv <= total - min_sustained_episodes
+
+
 def analyze(
     study: optuna.study.Study,
-    threshold: float,
     metric: str,
+    min_sustained_episodes: int,
+    num_episodes_fallback: int,
 ) -> Dict[str, Any]:
     complete_trials = [t for t in study.trials if t.state == TrialState.COMPLETE]
     converged_trials = [
@@ -109,19 +130,19 @@ def analyze(
         for t in complete_trials
         if t.user_attrs.get("convergence_episode") is not None
     ]
-    success_trials = []
-    missing_metric = 0
-    for t in complete_trials:
-        metric_value = _trial_metric_value(t, metric)
-        if metric_value is None:
-            missing_metric += 1
-            continue
-        if metric_value >= threshold:
-            success_trials.append(t)
-
-    converged_success = [
-        t for t in success_trials if t.user_attrs.get("convergence_episode") is not None
+    success_trials = [
+        t
+        for t in complete_trials
+        if _passes_gate(t, min_sustained_episodes, num_episodes_fallback)
     ]
+    missing_metric = sum(
+        1 for t in success_trials if _trial_metric_value(t, metric) is None
+    )
+
+    # converged_success is a legacy alias kept for printed-output parity.
+    # Under the gate, all gate-passers are by definition converged, so this
+    # equals success_trials.
+    converged_success = list(success_trials)
 
     results: Dict[str, Any] = {
         "metric": metric,
@@ -133,6 +154,7 @@ def analyze(
         "n_converged_success": len(converged_success),
         "n_success": len(success_trials),
         "missing_metric": missing_metric,
+        "min_sustained_episodes": min_sustained_episodes,
     }
     if not success_trials:
         return results
@@ -295,18 +317,27 @@ def main() -> None:
         "--metric",
         choices=["tail_iqm", "final_avg", "objective"],
         default="tail_iqm",
-        help="Metric used for thresholding and ranking (default: tail_iqm).",
+        help="Tiebreak metric for ranking gate-passing trials in the "
+        "smallest-neuron / shortest-history searches (default: tail_iqm).",
     )
     parser.add_argument(
-        "--threshold",
-        type=float,
-        default=450.0,
-        help="Success threshold for the chosen metric (default: 450.0)",
+        "--min-sustained-episodes",
+        type=int,
+        default=200,
+        help="K: matches the gate in select_top_candidates.py (default: 200). "
+        "A trial passes the gate iff convergence_episode <= total - K.",
+    )
+    parser.add_argument(
+        "--num-episodes-fallback",
+        type=int,
+        default=1500,
+        help="Fallback num_episodes for older trials lacking the "
+        "'total_episodes' user_attr (default: 1500).",
     )
     parser.add_argument(
         "--print-trials",
         action="store_true",
-        help="Print summary of individual successful trials",
+        help="Print summary of individual gate-passing trials",
     )
     args = parser.parse_args()
 
@@ -323,34 +354,35 @@ def main() -> None:
         study = optuna.load_study(study_name=study_name, storage=storage)
         print(f"Study: {study_name}")
         print(f"Storage: {storage}")
-        print(f"Metric: {args.metric} ({metric_label})")
-        print(f"Threshold: {args.threshold}")
+        print(f"Tiebreak metric: {args.metric} ({metric_label})")
+        print(f"Gate: convergence_episode <= total - {args.min_sustained_episodes}")
         print(f"Total trials in study: {len(study.trials)}")
 
-        out = analyze(study, args.threshold, args.metric)
+        out = analyze(
+            study,
+            metric=args.metric,
+            min_sustained_episodes=args.min_sustained_episodes,
+            num_episodes_fallback=args.num_episodes_fallback,
+        )
         if out.get("missing_metric", 0):
             print(
                 "Missing metric for COMPLETE trials: "
                 f"{out['missing_metric']} (skipped)"
             )
-        print(f"Converged trials (any metric): {out.get('n_converged', 0)}")
+        print(f"Converged trials: {out.get('n_converged', 0)}")
         converged_trials = out.get("converged_trials", [])
         if converged_trials:
             converged_ids = sorted(t.number for t in converged_trials)
             print(f"  trials: {converged_ids}")
-        print(
-            "Converged trials meeting threshold: "
-            f"{out.get('n_converged_success', 0)}"
-        )
-        converged_success = out.get("converged_success", [])
-        if converged_success:
-            converged_success_ids = sorted(t.number for t in converged_success)
-            print(f"  trials: {converged_success_ids}")
-        print(f"Successful trials: {out.get('n_success', 0)}")
+        print(f"Gate-passing trials: {out.get('n_success', 0)}")
+        gate_passing = out.get("converged_success", [])
+        if gate_passing:
+            gate_passing_ids = sorted(t.number for t in gate_passing)
+            print(f"  trials: {gate_passing_ids}")
         if out.get("n_success", 0) == 0:
             continue
 
-        print("Averages over successful trials:")
+        print("Averages over gate-passing trials:")
         if out["avg_metric"] is not None:
             print(f"  Avg {metric_label}: {out['avg_metric']:.2f}")
         if out["avg_tail_iqm"] is not None:
@@ -381,7 +413,7 @@ def main() -> None:
             print("  Avg history length: N/A")
 
         if args.print_trials:
-            print("\nSuccessful trial details:")
+            print("\nGate-passing trial details:")
             for t in out["trial_summaries"]:
                 metric_val = t["metric_value"]
                 tail_iqm = t["tail_iqm"]
@@ -435,7 +467,7 @@ def main() -> None:
             )
 
             print(
-                "\nSmallest-neuron successful trial "
+                "\nSmallest-neuron gate-passing trial "
                 "(priority: neurons -> metric -> history):"
             )
             print(f"  Trial #{best_smallest_total['trial_number']}")
@@ -452,7 +484,7 @@ def main() -> None:
                 f"{conv_ep if conv_ep is not None else 'N/A'}"
             )
             print(
-                "\nSmallest-neuron successful trial "
+                "\nSmallest-neuron gate-passing trial "
                 "(priority: neurons -> history -> metric):"
             )
             print(f"  Trial #{best_smallest_total_history_first['trial_number']}")
@@ -503,7 +535,7 @@ def main() -> None:
             )
 
             print(
-                "\nShortest-history successful trial "
+                "\nShortest-history gate-passing trial "
                 "(priority: history -> metric -> neurons):"
             )
             print(f"  Trial #{best_shortest_history_metric_first['trial_number']}")
@@ -529,7 +561,7 @@ def main() -> None:
                 f"{conv_ep if conv_ep is not None else 'N/A'}"
             )
             print(
-                "\nShortest-history successful trial "
+                "\nShortest-history gate-passing trial "
                 "(priority: history -> neurons -> metric):"
             )
             print(f"  Trial #{best_shortest_history_neurons_first['trial_number']}")
@@ -564,7 +596,7 @@ def main() -> None:
                 and t["total_neurons"] < 48
             ]
             print(
-                "\nSuccessful trials with history < 32 and total neurons < 48: "
+                "\nGate-passing trials with history < 32 and total neurons < 48: "
                 f"{len(compact_history_candidates)}"
             )
             if compact_history_candidates:
