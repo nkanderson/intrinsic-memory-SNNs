@@ -9,6 +9,8 @@
 #   make test_bitshift_lif_memory        # Run bitshift_lif memory-effect sweep (custom_slow_decay)
 #   make test_lif_timestep               # Run LIF with internal timestep loop tests
 #   make test_linear_layer               # Run linear_layer tests
+#   make test_linear_layer_equivalence   # Run parallel-vs-serial linear_layer equivalence test
+#   make test_neural_network_equivalence # Run parallel-vs-serial neural_network equivalence test
 #   make test_spike_buffer               # Run spike_buffer tests
 #   make test_spike_buffer_staggered     # Run spike_buffer_staggered tests (legacy)
 #   make test_membrane_buffer            # Run membrane_buffer tests
@@ -87,6 +89,16 @@ else ifeq ($(TEST),linear_layer)
     VERILOG_SOURCES = $(SV_DIR)/linear_layer.sv
     TOPLEVEL = linear_layer
     MODULE = test_linear_layer
+else ifeq ($(TEST),linear_layer_equivalence)
+    # Equivalence test: new parallel linear_layer vs archived linear_layer_serial.
+    # Wrapper instantiates both; cocotb test compares outputs bit-exactly.
+    # NOTE: will not compile until linear_layer.sv has been rewritten to the
+    # new parallel (vector + done) interface — that is by design.
+    VERILOG_SOURCES = $(SV_DIR)/linear_layer_equivalence.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(SV_DIR)/linear_layer_serial.sv
+    TOPLEVEL = linear_layer_equivalence
+    MODULE = test_linear_layer_equivalence
 else ifeq ($(TEST),spike_buffer)
     VERILOG_SOURCES = $(SV_DIR)/spike_buffer.sv
     TOPLEVEL = spike_buffer
@@ -115,6 +127,21 @@ else ifeq ($(TEST),neural_network)
                       $(SV_DIR)/q_accumulator.sv
     TOPLEVEL = neural_network
     MODULE = test_neural_network
+else ifeq ($(TEST),neural_network_equivalence)
+    # Equivalence test: parallel neural_network vs archived neural_network_serial.
+    # Wrapper instantiates both; cocotb test compares selected_action bit-exactly.
+    # Both networks share weights/biases. Will compile against (serial) neural_network.sv
+    # but only becomes meaningful once the parallel rewrite lands.
+    VERILOG_SOURCES = $(SV_DIR)/neural_network_equivalence.sv \
+                      $(SV_DIR)/neural_network.sv \
+                      $(SV_DIR)/neural_network_serial.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(SV_DIR)/linear_layer_serial.sv \
+                      $(COMMON_NEURON_DIR)/lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network_equivalence
+    MODULE = test_neural_network_equivalence
 else ifeq ($(TEST),golden_vectors_lif-64-16)
     VERILOG_SOURCES = $(SV_DIR)/neural_network.sv \
                       $(SV_DIR)/linear_layer.sv \
@@ -281,7 +308,7 @@ else ifeq ($(TEST),cp_integration_frac)
     TOPLEVEL = neural_network_fractional
     MODULE = test_cartpole_integration
 else
-    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'subthreshold_frac', 'subthreshold_bitshift', 'lif_timestep', 'linear_layer', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'golden_vectors_lif-64-16', 'golden_vectors_lif-32-16', 'golden_vectors_fractional-16-4-32', 'golden_vectors_fractional-32-4-16', 'golden_vectors_bitshift-custom_slow_decay', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
+    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'subthreshold_frac', 'subthreshold_bitshift', 'lif_timestep', 'linear_layer', 'linear_layer_equivalence', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'neural_network_equivalence', 'golden_vectors_lif-64-16', 'golden_vectors_lif-32-16', 'golden_vectors_fractional-16-4-32', 'golden_vectors_fractional-32-4-16', 'golden_vectors_bitshift-custom_slow_decay', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
 endif
 
 # Simulator - use Icarus for all tests (event-driven, correct timing)
@@ -297,6 +324,11 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Plinear_layer.NUM_INPUTS=4 -Plinear_layer.NUM_OUTPUTS=4
         COMPILE_ARGS += -Plinear_layer.WEIGHTS_FILE=\"$(PWD)/weights/test_weights.mem\"
         COMPILE_ARGS += -Plinear_layer.BIAS_FILE=\"$(PWD)/weights/test_bias.mem\"
+    endif
+    ifeq ($(TEST),linear_layer_equivalence)
+        COMPILE_ARGS += -Plinear_layer_equivalence.NUM_INPUTS=4 -Plinear_layer_equivalence.NUM_OUTPUTS=4
+        COMPILE_ARGS += -Plinear_layer_equivalence.WEIGHTS_FILE=\"$(PWD)/weights/test_weights.mem\"
+        COMPILE_ARGS += -Plinear_layer_equivalence.BIAS_FILE=\"$(PWD)/weights/test_bias.mem\"
     endif
     ifeq ($(TEST),spike_buffer)
         COMPILE_ARGS += -Pspike_buffer.NUM_NEURONS=8 -Pspike_buffer.NUM_TIMESTEPS=4
@@ -396,6 +428,17 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc2_bias.mem\"
         COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_weights.mem\"
         COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_bias.mem\"
+    endif
+    ifeq ($(TEST),neural_network_equivalence)
+        COMPILE_ARGS += -Pneural_network_equivalence.NUM_INPUTS=4 -Pneural_network_equivalence.HL1_SIZE=8
+        COMPILE_ARGS += -Pneural_network_equivalence.HL2_SIZE=4 -Pneural_network_equivalence.NUM_ACTIONS=2
+        COMPILE_ARGS += -Pneural_network_equivalence.NUM_TIMESTEPS=4 -Pneural_network_equivalence.Q_BATCH_SIZE=2
+        COMPILE_ARGS += -Pneural_network_equivalence.FC1_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_equivalence.FC1_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_equivalence.FC2_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_equivalence.FC2_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_equivalence.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_equivalence.FC_OUT_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_bias.mem\"
     endif
     ifeq ($(TEST),golden_vectors_lif-64-16)
         COMPILE_ARGS += -Pneural_network.NUM_INPUTS=4 -Pneural_network.HL1_SIZE=64
@@ -988,6 +1031,9 @@ test_lif_timestep:
 test_linear_layer:
 	$(MAKE) TEST=linear_layer
 
+test_linear_layer_equivalence:
+	$(MAKE) TEST=linear_layer_equivalence
+
 test_spike_buffer:
 	$(MAKE) TEST=spike_buffer
 
@@ -1005,6 +1051,9 @@ test_q_accumulator:
 
 test_neural_network:
 	$(MAKE) TEST=neural_network
+
+test_neural_network_equivalence:
+	$(MAKE) TEST=neural_network_equivalence
 
 test_golden_vectors_lif-64-16:
 	$(MAKE) TEST=golden_vectors_lif-64-16
