@@ -1,0 +1,109 @@
+[I 2026-05-19 15:36:39,072] Using an existing study with name 'fractional-1500' instead of creating a new one.
+[I 2026-05-19 20:18:54,864] Trial 122 finished with value: 443.2212698412698 and parameters: {'batch_size': 64, 'gamma': 0.9899099994618499, 'eps_start': 0.9541581658305888, 'eps_end': 0.016472336426048017, 'eps_decay': 1562, 'tau': 0.007900353017473523, 'lr': 0.00035851159254077984, 'num_steps': 10, 'hidden1_size': 64, 'hidden2_size': 8, 'lam': 0.14710674973003454, 'history_length': 8}. Best is trial 78 with value: 497.7857142857143.
+[I 2026-05-20 01:12:30,661] Trial 125 finished with value: 455.53142857142853 and parameters: {'batch_size': 64, 'gamma': 0.9919311364835977, 'eps_start': 0.9392687209403344, 'eps_end': 0.010084712361756272, 'eps_decay': 1479, 'tau': 0.00534701541062969, 'lr': 0.00039767713798694634, 'num_steps': 10, 'hidden1_size': 64, 'hidden2_size': 32, 'lam': 0.11234639607358601, 'history_length': 8}. Best is trial 78 with value: 497.7857142857143.
+Search space loaded from: configs/search_spaces/fractional.yaml
+Using device: cuda
+Resuming study 'fractional-1500' with 119 existing trials
+
+Study: fractional-1500
+Neuron type: fractional
+Trials: 2
+Storage: sqlite:///optuna_studies/fractional-v3.db
+
+
+============================================================
+Trial 122: fractional [64-8] lr=0.00035851159254077984
+============================================================
+  Episode 50/1500  avg(100): 17.8
+  Episode 100/1500  avg(100): 16.7
+  Episode 150/1500  avg(100): 21.0
+  Episode 200/1500  avg(100): 19.4
+  Episode 250/1500  avg(100): 56.4
+  Episode 300/1500  avg(100): 138.1
+  Episode 350/1500  avg(100): 205.8
+  Episode 400/1500  avg(100): 269.3
+  Episode 450/1500  avg(100): 377.4
+  Episode 500/1500  avg(100): 467.8
+  Episode 550/1500  avg(100): 491.8
+  Episode 600/1500  avg(100): 500.0
+  Episode 650/1500  avg(100): 500.0
+  Episode 700/1500  avg(100): 485.9
+  Episode 750/1500  avg(100): 395.3
+  Episode 800/1500  avg(100): 316.7
+  Episode 850/1500  avg(100): 354.4
+  Episode 900/1500  avg(100): 417.9
+  Episode 950/1500  avg(100): 470.9
+  Episode 1000/1500  avg(100): 500.0
+  Episode 1050/1500  avg(100): 423.2
+  Episode 1100/1500  avg(100): 361.2
+  Episode 1150/1500  avg(100): 401.5
+  Episode 1200/1500  avg(100): 459.7
+  Episode 1250/1500  avg(100): 468.3
+  Episode 1300/1500  avg(100): 449.9
+  Episode 1350/1500  avg(100): 468.6
+  Episode 1400/1500  avg(100): 437.2
+  Episode 1450/1500  avg(100): 400.1
+  Episode 1500/1500  avg(100): 449.0
+Trial 122 done: best_avg=500.0, final_avg=449.0, tail_iqm=446.9
+
+============================================================
+Trial 125: fractional [64-32] lr=0.00039767713798694634
+============================================================
+  Episode 50/1500  avg(100): 15.9
+  Episode 100/1500  avg(100): 32.9
+  Episode 150/1500  avg(100): 93.9
+  Episode 200/1500  avg(100): 141.0
+  Episode 250/1500  avg(100): 134.6
+  Episode 300/1500  avg(100): 146.2
+  Episode 350/1500  avg(100): 229.6
+  Episode 400/1500  avg(100): 396.0
+  Episode 450/1500  avg(100): 500.0
+  Episode 500/1500  avg(100): 500.0
+  Episode 550/1500  avg(100): 500.0
+  Episode 600/1500  avg(100): 500.0
+  Episode 650/1500  avg(100): 477.8
+  Episode 700/1500  avg(100): 466.0
+  Episode 750/1500  avg(100): 427.4
+  Episode 800/1500  avg(100): 253.8
+  Episode 850/1500  avg(100): 294.4
+  Episode 900/1500  avg(100): 423.6
+  Episode 950/1500  avg(100): 380.0
+  Episode 1000/1500  avg(100): 335.8
+  Episode 1050/1500  avg(100): 358.8
+  Episode 1100/1500  avg(100): 451.2
+  Episode 1150/1500  avg(100): 467.2
+  Episode 1200/1500  avg(100): 467.0
+  Episode 1250/1500  avg(100): 482.6
+  Episode 1300/1500  avg(100): 469.2
+  Episode 1350/1500  avg(100): 452.6
+  Episode 1400/1500  avg(100): 407.4
+  Episode 1450/1500  avg(100): 417.4
+  Episode 1500/1500  avg(100): 471.9
+Trial 125 done: best_avg=500.0, final_avg=471.9, tail_iqm=460.4
+
+============================================================
+OPTIMIZATION COMPLETE
+============================================================
+
+Best trial: 78
+Best value (avg reward): 497.79
+
+Best hyperparameters:
+  batch_size: 64
+  gamma: 0.9964933938925247
+  eps_start: 0.9544110662471411
+  eps_end: 0.012088104962771216
+  eps_decay: 1523
+  tau: 0.0034439772606456934
+  lr: 0.0003981427344038167
+  num_steps: 10
+  hidden1_size: 32
+  hidden2_size: 8
+  lam: 0.16343495082209825
+  history_length: 8
+Best config exported to: configs/optimized-fractional-1500.yaml
+
+Study saved to: sqlite:///optuna_studies/fractional-v3.db
+To see all trials: optuna-dashboard sqlite:///optuna_studies/fractional-v3.db
+To train with best config: python main.py --config configs/optimized-fractional-1500.yaml
+To resume this study: python optimize.py --neuron-type fractional --study-name fractional-1500 --n-trials <N>

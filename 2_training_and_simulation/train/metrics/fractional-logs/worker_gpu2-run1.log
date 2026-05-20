@@ -1,0 +1,1165 @@
+[I 2026-05-15 08:14:12,993] Using an existing study with name 'fractional-1500' instead of creating a new one.
+[I 2026-05-15 14:05:43,887] Trial 3 finished with value: 259.12465608465607 and parameters: {'batch_size': 256, 'gamma': 0.9657642782399312, 'eps_start': 0.9943365006609439, 'eps_end': 0.010972816475963508, 'eps_decay': 1592, 'tau': 0.009551886592949543, 'lr': 0.0012801829044147815, 'num_steps': 30, 'hidden1_size': 16, 'hidden2_size': 16, 'lam': 0.14404195220970722, 'history_length': 128}. Best is trial 3 with value: 259.12465608465607.
+[I 2026-05-15 17:05:23,206] Trial 10 finished with value: 250.3415343915344 and parameters: {'batch_size': 128, 'gamma': 0.9862196021330211, 'eps_start': 0.9648941015584083, 'eps_end': 0.07075898094039422, 'eps_decay': 1776, 'tau': 0.003656787992128934, 'lr': 0.0011501133903296578, 'num_steps': 10, 'hidden1_size': 64, 'hidden2_size': 16, 'lam': 0.13373650857101893, 'history_length': 4}. Best is trial 3 with value: 259.12465608465607.
+[I 2026-05-15 18:28:17,435] Trial 13 finished with value: 99.99185185185186 and parameters: {'batch_size': 256, 'gamma': 0.9879787315621471, 'eps_start': 0.8825806374038377, 'eps_end': 0.05240332899405089, 'eps_decay': 2322, 'tau': 0.0019699584332491457, 'lr': 0.006591378668774602, 'num_steps': 10, 'hidden1_size': 32, 'hidden2_size': 32, 'lam': 0.17795323121405315, 'history_length': 4}. Best is trial 9 with value: 369.42719576719577.
+[I 2026-05-15 21:36:16,270] Trial 17 finished with value: 418.34285714285716 and parameters: {'batch_size': 64, 'gamma': 0.9901253476802562, 'eps_start': 0.8236651328363784, 'eps_end': 0.033322308835462534, 'eps_decay': 1119, 'tau': 0.004802441311534184, 'lr': 0.0002400460699375719, 'num_steps': 10, 'hidden1_size': 32, 'hidden2_size': 8, 'lam': 0.1801891476807136, 'history_length': 64}. Best is trial 17 with value: 418.34285714285716.
+[I 2026-05-15 23:44:26,581] Trial 22 finished with value: 122.40566137566138 and parameters: {'batch_size': 128, 'gamma': 0.9526348829362512, 'eps_start': 0.9787531443880022, 'eps_end': 0.052973092096219886, 'eps_decay': 2220, 'tau': 0.0023671840794480406, 'lr': 0.0013914553712030446, 'num_steps': 10, 'hidden1_size': 16, 'hidden2_size': 16, 'lam': 0.26902513912789766, 'history_length': 4}. Best is trial 15 with value: 427.12772486772485.
+[I 2026-05-16 00:00:27,704] Trial 26 finished with value: 8.915714285714285 and parameters: {'batch_size': 128, 'gamma': 0.9596316078022826, 'eps_start': 0.8798413730109523, 'eps_end': 0.03555763551452829, 'eps_decay': 1250, 'tau': 0.00832859473122511, 'lr': 0.0001377359094770867, 'num_steps': 20, 'hidden1_size': 8, 'hidden2_size': 4, 'lam': 0.1682945698579008, 'history_length': 4}. Best is trial 15 with value: 427.12772486772485.
+[I 2026-05-16 00:00:28,965] Trial 27 pruned. Constraint violated: hidden2_size > hidden1_size
+[I 2026-05-16 04:38:44,095] Trial 28 finished with value: 184.03089947089947 and parameters: {'batch_size': 256, 'gamma': 0.9985637892278082, 'eps_start': 0.8324169951431157, 'eps_end': 0.04251709194417863, 'eps_decay': 1919, 'tau': 0.006202030836502501, 'lr': 0.00042308193843725256, 'num_steps': 20, 'hidden1_size': 32, 'hidden2_size': 8, 'lam': 0.10892930778702602, 'history_length': 16}. Best is trial 23 with value: 452.5764021164021.
+[I 2026-05-16 07:47:39,768] Trial 35 finished with value: 150.65656084656086 and parameters: {'batch_size': 256, 'gamma': 0.9635243938379036, 'eps_start': 0.8432915855413365, 'eps_end': 0.01926112732225361, 'eps_decay': 2053, 'tau': 0.005428887994920896, 'lr': 0.00018280499923712821, 'num_steps': 20, 'hidden1_size': 32, 'hidden2_size': 8, 'lam': 0.24803603822097522, 'history_length': 64}. Best is trial 23 with value: 452.5764021164021.
+[I 2026-05-16 10:04:21,959] Trial 40 finished with value: 148.66333333333336 and parameters: {'batch_size': 256, 'gamma': 0.9503161130721938, 'eps_start': 0.8669362429566856, 'eps_end': 0.01200025229955689, 'eps_decay': 2774, 'tau': 0.009914249479212702, 'lr': 0.00028959937656171316, 'num_steps': 20, 'hidden1_size': 16, 'hidden2_size': 4, 'lam': 0.2827166190096154, 'history_length': 64}. Best is trial 23 with value: 452.5764021164021.
+[I 2026-05-16 13:49:17,038] Trial 45 finished with value: 136.40433862433864 and parameters: {'batch_size': 256, 'gamma': 0.9542670961832042, 'eps_start': 0.8082532577966017, 'eps_end': 0.025089377258595367, 'eps_decay': 1635, 'tau': 0.0027803157016953184, 'lr': 0.0005110843811643752, 'num_steps': 20, 'hidden1_size': 64, 'hidden2_size': 4, 'lam': 0.2608963484090606, 'history_length': 64}. Best is trial 23 with value: 452.5764021164021.
+[I 2026-05-16 22:05:18,552] Trial 49 finished with value: 442.92957671957674 and parameters: {'batch_size': 256, 'gamma': 0.9905796291014994, 'eps_start': 0.9993367251464464, 'eps_end': 0.02255720387792506, 'eps_decay': 2233, 'tau': 0.0017495948187773187, 'lr': 0.0005604490914308063, 'num_steps': 30, 'hidden1_size': 32, 'hidden2_size': 8, 'lam': 0.19420822446320624, 'history_length': 8}. Best is trial 23 with value: 452.5764021164021.
+[I 2026-05-17 01:44:15,193] Trial 56 finished with value: 212.84825396825394 and parameters: {'batch_size': 256, 'gamma': 0.9906738323382901, 'eps_start': 0.9814068965934736, 'eps_end': 0.06792598082245652, 'eps_decay': 2076, 'tau': 0.0049448344005226285, 'lr': 0.0007544718739423091, 'num_steps': 30, 'hidden1_size': 32, 'hidden2_size': 32, 'lam': 0.27710655607280726, 'history_length': 8}. Best is trial 51 with value: 479.62227513227515.
+[I 2026-05-17 03:04:57,230] Trial 59 finished with value: 94.83804232804232 and parameters: {'batch_size': 64, 'gamma': 0.994148748129796, 'eps_start': 0.9727405511805564, 'eps_end': 0.03336416207473786, 'eps_decay': 1292, 'tau': 0.0044537597748934635, 'lr': 0.00016249467904597955, 'num_steps': 30, 'hidden1_size': 32, 'hidden2_size': 16, 'lam': 0.1930615812524651, 'history_length': 8}. Best is trial 51 with value: 479.62227513227515.
+[I 2026-05-17 12:22:07,727] Trial 61 finished with value: 403.83248677248673 and parameters: {'batch_size': 64, 'gamma': 0.9683089792438959, 'eps_start': 0.9625780588817728, 'eps_end': 0.006244712647360316, 'eps_decay': 1103, 'tau': 0.0031483949829267605, 'lr': 0.00044912982093711813, 'num_steps': 30, 'hidden1_size': 32, 'hidden2_size': 16, 'lam': 0.23111640555195462, 'history_length': 8}. Best is trial 51 with value: 479.62227513227515.
+[I 2026-05-17 19:22:29,064] Trial 67 finished with value: 323.26603174603173 and parameters: {'batch_size': 64, 'gamma': 0.9649043426650903, 'eps_start': 0.9900507401219769, 'eps_end': 0.015099147731243512, 'eps_decay': 1226, 'tau': 0.0040756407740209985, 'lr': 0.0009710580527857302, 'num_steps': 30, 'hidden1_size': 32, 'hidden2_size': 16, 'lam': 0.20469557272116587, 'history_length': 8}. Best is trial 65 with value: 480.7416402116402.
+[I 2026-05-17 23:24:59,109] Trial 71 finished with value: 486.6985714285714 and parameters: {'batch_size': 64, 'gamma': 0.9963602279043333, 'eps_start': 0.9629006642055522, 'eps_end': 0.007033738876184558, 'eps_decay': 1311, 'tau': 0.0031414055248155043, 'lr': 0.00038757654386252857, 'num_steps': 10, 'hidden1_size': 32, 'hidden2_size': 8, 'lam': 0.1578854051718898, 'history_length': 8}. Best is trial 71 with value: 486.6985714285714.
+[I 2026-05-18 01:01:22,537] Trial 76 finished with value: 98.70169312169313 and parameters: {'batch_size': 64, 'gamma': 0.9968242155661059, 'eps_start': 0.9415314273121812, 'eps_end': 0.008149323373242218, 'eps_decay': 1871, 'tau': 0.003608402193070195, 'lr': 0.00048514755501861273, 'num_steps': 10, 'hidden1_size': 32, 'hidden2_size': 8, 'lam': 0.185937263377725, 'history_length': 8}. Best is trial 71 with value: 486.6985714285714.
+[I 2026-05-18 04:12:23,216] Trial 77 finished with value: 275.3356084656085 and parameters: {'batch_size': 64, 'gamma': 0.988788724741568, 'eps_start': 0.9833758195587332, 'eps_end': 0.007666105341182744, 'eps_decay': 1512, 'tau': 0.003707555267410639, 'lr': 0.000376073987533872, 'num_steps': 10, 'hidden1_size': 32, 'hidden2_size': 8, 'lam': 0.12154041727390365, 'history_length': 8}. Best is trial 71 with value: 486.6985714285714.
+[I 2026-05-18 04:58:38,503] Trial 80 finished with value: 64.25925925925925 and parameters: {'batch_size': 128, 'gamma': 0.9868198990631758, 'eps_start': 0.9746232995124195, 'eps_end': 0.024603266378442838, 'eps_decay': 1174, 'tau': 0.0034073709199911838, 'lr': 0.00041660250552411657, 'num_steps': 10, 'hidden1_size': 8, 'hidden2_size': 8, 'lam': 0.1849959131744716, 'history_length': 32}. Best is trial 71 with value: 486.6985714285714.
+[I 2026-05-18 09:08:33,986] Trial 82 finished with value: 490.14322751322754 and parameters: {'batch_size': 64, 'gamma': 0.9921615323996014, 'eps_start': 0.934113911751119, 'eps_end': 0.01240975511146003, 'eps_decay': 1434, 'tau': 0.0052938909066203915, 'lr': 0.0003265857020263979, 'num_steps': 10, 'hidden1_size': 32, 'hidden2_size': 8, 'lam': 0.16615344361561207, 'history_length': 8}. Best is trial 78 with value: 497.7857142857143.
+[I 2026-05-18 10:18:08,651] Trial 88 finished with value: 174.74555555555554 and parameters: {'batch_size': 64, 'gamma': 0.9909109769225765, 'eps_start': 0.9141908382389418, 'eps_end': 0.03807953960586016, 'eps_decay': 1718, 'tau': 0.005325365282109677, 'lr': 0.00020604916513811006, 'num_steps': 10, 'hidden1_size': 32, 'hidden2_size': 8, 'lam': 0.13877863584623368, 'history_length': 8}. Best is trial 78 with value: 497.7857142857143.
+[I 2026-05-18 13:38:19,086] Trial 92 finished with value: 255.33502645502648 and parameters: {'batch_size': 256, 'gamma': 0.9978119481720696, 'eps_start': 0.9443758972529528, 'eps_end': 0.01840695388971725, 'eps_decay': 1846, 'tau': 0.0019792269816935482, 'lr': 0.0002641075314294709, 'num_steps': 10, 'hidden1_size': 64, 'hidden2_size': 8, 'lam': 0.1662957963237144, 'history_length': 8}. Best is trial 78 with value: 497.7857142857143.
+[I 2026-05-18 17:44:17,345] Trial 96 finished with value: 478.6928571428571 and parameters: {'batch_size': 256, 'gamma': 0.9933896859609241, 'eps_start': 0.9307094914167161, 'eps_end': 0.02385630378745052, 'eps_decay': 1653, 'tau': 0.004243256663099778, 'lr': 0.00029554042560424966, 'num_steps': 10, 'hidden1_size': 32, 'hidden2_size': 8, 'lam': 0.16334078658964699, 'history_length': 16}. Best is trial 78 with value: 497.7857142857143.
+[I 2026-05-18 20:48:00,862] Trial 101 finished with value: 122.72830687830688 and parameters: {'batch_size': 256, 'gamma': 0.9930491704381257, 'eps_start': 0.9279326701035204, 'eps_end': 0.013555920793694415, 'eps_decay': 1657, 'tau': 0.005113076916231072, 'lr': 0.0003141408399544788, 'num_steps': 10, 'hidden1_size': 32, 'hidden2_size': 8, 'lam': 0.15190336260271986, 'history_length': 16}. Best is trial 78 with value: 497.7857142857143.
+[I 2026-05-19 00:57:46,298] Trial 104 finished with value: 438.391164021164 and parameters: {'batch_size': 256, 'gamma': 0.9890186456426073, 'eps_start': 0.937513157967687, 'eps_end': 0.020173256820467694, 'eps_decay': 1946, 'tau': 0.006081114656135395, 'lr': 0.0003553182020453659, 'num_steps': 10, 'hidden1_size': 32, 'hidden2_size': 8, 'lam': 0.1297669115932858, 'history_length': 16}. Best is trial 78 with value: 497.7857142857143.
+[I 2026-05-19 05:49:58,934] Trial 108 finished with value: 487.2120105820106 and parameters: {'batch_size': 256, 'gamma': 0.9965837860643152, 'eps_start': 0.9219478417512332, 'eps_end': 0.010779447429296405, 'eps_decay': 1806, 'tau': 0.006299818176475178, 'lr': 0.00040544900324417847, 'num_steps': 10, 'hidden1_size': 32, 'hidden2_size': 32, 'lam': 0.17293101250382487, 'history_length': 16}. Best is trial 78 with value: 497.7857142857143.
+[I 2026-05-19 05:50:00,211] Trial 113 pruned. Constraint violated: hidden2_size > hidden1_size
+Search space loaded from: configs/search_spaces/fractional.yaml
+Using device: cuda
+
+Study: fractional-1500
+Neuron type: fractional
+Trials: 31
+Storage: sqlite:///optuna_studies/fractional-v3.db
+
+
+============================================================
+Trial 3: fractional [16-16] lr=0.0012801829044147815
+============================================================
+  Episode 50/1500  avg(100): 28.7
+  Episode 100/1500  avg(100): 85.7
+  Episode 150/1500  avg(100): 116.6
+  Episode 200/1500  avg(100): 126.9
+  Episode 250/1500  avg(100): 135.3
+  Episode 300/1500  avg(100): 121.9
+  Episode 350/1500  avg(100): 135.8
+  Episode 400/1500  avg(100): 100.5
+  Episode 450/1500  avg(100): 138.9
+  Episode 500/1500  avg(100): 298.9
+  Episode 550/1500  avg(100): 333.6
+  Episode 600/1500  avg(100): 371.5
+  Episode 650/1500  avg(100): 387.1
+  Episode 700/1500  avg(100): 282.9
+  Episode 750/1500  avg(100): 212.5
+  Episode 800/1500  avg(100): 235.9
+  Episode 850/1500  avg(100): 313.3
+  Episode 900/1500  avg(100): 258.0
+  Episode 950/1500  avg(100): 151.9
+  Episode 1000/1500  avg(100): 173.9
+  Episode 1050/1500  avg(100): 334.1
+  Episode 1100/1500  avg(100): 374.4
+  Episode 1150/1500  avg(100): 324.3
+  Episode 1200/1500  avg(100): 367.6
+  Episode 1250/1500  avg(100): 325.0
+  Episode 1300/1500  avg(100): 222.1
+  Episode 1350/1500  avg(100): 199.5
+  Episode 1400/1500  avg(100): 172.0
+  Episode 1450/1500  avg(100): 188.2
+  Episode 1500/1500  avg(100): 363.4
+Trial 3 done: best_avg=401.4, final_avg=363.4, tail_iqm=262.0
+
+============================================================
+Trial 10: fractional [64-16] lr=0.0011501133903296578
+============================================================
+  Episode 50/1500  avg(100): 16.7
+  Episode 100/1500  avg(100): 18.9
+  Episode 150/1500  avg(100): 68.5
+  Episode 200/1500  avg(100): 158.7
+  Episode 250/1500  avg(100): 137.9
+  Episode 300/1500  avg(100): 72.0
+  Episode 350/1500  avg(100): 73.3
+  Episode 400/1500  avg(100): 66.2
+  Episode 450/1500  avg(100): 99.0
+  Episode 500/1500  avg(100): 151.8
+  Episode 550/1500  avg(100): 266.4
+  Episode 600/1500  avg(100): 381.9
+  Episode 650/1500  avg(100): 319.6
+  Episode 700/1500  avg(100): 259.0
+  Episode 750/1500  avg(100): 262.9
+  Episode 800/1500  avg(100): 223.7
+  Episode 850/1500  avg(100): 235.5
+  Episode 900/1500  avg(100): 251.2
+  Episode 950/1500  avg(100): 287.2
+  Episode 1000/1500  avg(100): 359.4
+  Episode 1050/1500  avg(100): 368.2
+  Episode 1100/1500  avg(100): 286.4
+  Episode 1150/1500  avg(100): 142.2
+  Episode 1200/1500  avg(100): 72.5
+  Episode 1250/1500  avg(100): 62.8
+  Episode 1300/1500  avg(100): 238.7
+  Episode 1350/1500  avg(100): 429.2
+  Episode 1400/1500  avg(100): 398.8
+  Episode 1450/1500  avg(100): 345.7
+  Episode 1500/1500  avg(100): 345.2
+Trial 10 done: best_avg=455.1, final_avg=345.2, tail_iqm=254.4
+
+============================================================
+Trial 13: fractional [32-32] lr=0.006591378668774602
+============================================================
+  Episode 50/1500  avg(100): 17.1
+  Episode 100/1500  avg(100): 15.0
+  Episode 150/1500  avg(100): 15.2
+  Episode 200/1500  avg(100): 37.3
+  Episode 250/1500  avg(100): 71.2
+  Episode 300/1500  avg(100): 105.2
+  Episode 350/1500  avg(100): 183.8
+  Episode 400/1500  avg(100): 183.6
+  Episode 450/1500  avg(100): 136.5
+  Episode 500/1500  avg(100): 132.9
+  Episode 550/1500  avg(100): 115.7
+  Episode 600/1500  avg(100): 106.4
+  Episode 650/1500  avg(100): 106.0
+  Episode 700/1500  avg(100): 137.2
+  Episode 750/1500  avg(100): 149.4
+  Episode 800/1500  avg(100): 104.6
+  Episode 850/1500  avg(100): 64.9
+  Episode 900/1500  avg(100): 73.9
+  Episode 950/1500  avg(100): 78.7
+  Episode 1000/1500  avg(100): 70.2
+  Episode 1050/1500  avg(100): 70.7
+  Episode 1100/1500  avg(100): 65.3
+  Episode 1150/1500  avg(100): 68.7
+  Episode 1200/1500  avg(100): 77.9
+  Episode 1250/1500  avg(100): 89.2
+  Episode 1300/1500  avg(100): 100.9
+  Episode 1350/1500  avg(100): 108.7
+  Episode 1400/1500  avg(100): 127.5
+  Episode 1450/1500  avg(100): 161.6
+  Episode 1500/1500  avg(100): 158.1
+Trial 13 done: best_avg=190.2, final_avg=158.1, tail_iqm=103.2
+
+============================================================
+Trial 17: fractional [32-8] lr=0.0002400460699375719
+============================================================
+  Episode 50/1500  avg(100): 15.4
+  Episode 100/1500  avg(100): 13.6
+  Episode 150/1500  avg(100): 11.3
+  Episode 200/1500  avg(100): 21.7
+  Episode 250/1500  avg(100): 48.2
+  Episode 300/1500  avg(100): 92.3
+  Episode 350/1500  avg(100): 104.4
+  Episode 400/1500  avg(100): 83.7
+  Episode 450/1500  avg(100): 75.1
+  Episode 500/1500  avg(100): 82.2
+  Episode 550/1500  avg(100): 142.5
+  Episode 600/1500  avg(100): 248.0
+  Episode 650/1500  avg(100): 337.4
+  Episode 700/1500  avg(100): 342.1
+  Episode 750/1500  avg(100): 326.4
+  Episode 800/1500  avg(100): 361.0
+  Episode 850/1500  avg(100): 409.8
+  Episode 900/1500  avg(100): 423.3
+  Episode 950/1500  avg(100): 345.8
+  Episode 1000/1500  avg(100): 173.2
+  Episode 1050/1500  avg(100): 41.5
+  Episode 1100/1500  avg(100): 17.1
+  Episode 1150/1500  avg(100): 17.1
+  Episode 1200/1500  avg(100): 194.3
+  Episode 1250/1500  avg(100): 435.4
+  Episode 1300/1500  avg(100): 500.0
+  Episode 1350/1500  avg(100): 495.5
+  Episode 1400/1500  avg(100): 490.6
+  Episode 1450/1500  avg(100): 377.6
+  Episode 1500/1500  avg(100): 326.8
+Trial 17 done: best_avg=500.0, final_avg=326.8, tail_iqm=421.0
+
+============================================================
+Trial 22: fractional [16-16] lr=0.0013914553712030446
+============================================================
+  Episode 50/1500  avg(100): 17.5
+  Episode 100/1500  avg(100): 18.1
+  Episode 150/1500  avg(100): 34.3
+  Episode 200/1500  avg(100): 73.9
+  Episode 250/1500  avg(100): 89.3
+  Episode 300/1500  avg(100): 85.5
+  Episode 350/1500  avg(100): 91.4
+  Episode 400/1500  avg(100): 128.9
+  Episode 450/1500  avg(100): 171.8
+  Episode 500/1500  avg(100): 143.2
+  Episode 550/1500  avg(100): 126.9
+  Episode 600/1500  avg(100): 131.8
+  Episode 650/1500  avg(100): 209.3
+  Episode 700/1500  avg(100): 223.3
+  Episode 750/1500  avg(100): 180.1
+  Episode 800/1500  avg(100): 290.2
+  Episode 850/1500  avg(100): 275.9
+  Episode 900/1500  avg(100): 203.1
+  Episode 950/1500  avg(100): 205.6
+  Episode 1000/1500  avg(100): 205.6
+  Episode 1050/1500  avg(100): 228.0
+  Episode 1100/1500  avg(100): 251.8
+  Episode 1150/1500  avg(100): 225.6
+  Episode 1200/1500  avg(100): 151.3
+  Episode 1250/1500  avg(100): 111.6
+  Episode 1300/1500  avg(100): 106.0
+  Episode 1350/1500  avg(100): 108.7
+  Episode 1400/1500  avg(100): 122.3
+  Episode 1450/1500  avg(100): 134.4
+  Episode 1500/1500  avg(100): 151.8
+Trial 22 done: best_avg=308.2, final_avg=151.8, tail_iqm=124.0
+
+============================================================
+Trial 26: fractional [8-4] lr=0.0001377359094770867
+============================================================
+  Episode 50/1500  avg(100): 16.3
+  Episode 100/1500  avg(100): 14.6
+  Episode 150/1500  avg(100): 12.2
+  Episode 200/1500  avg(100): 10.9
+  Episode 250/1500  avg(100): 10.0
+  Episode 300/1500  avg(100): 9.8
+  Episode 350/1500  avg(100): 9.9
+  Episode 400/1500  avg(100): 9.6
+  Episode 450/1500  avg(100): 9.7
+  Episode 500/1500  avg(100): 9.8
+  Episode 550/1500  avg(100): 9.6
+  Episode 600/1500  avg(100): 9.7
+  Episode 650/1500  avg(100): 9.6
+  Episode 700/1500  avg(100): 9.3
+  Episode 750/1500  avg(100): 9.3
+  Episode 800/1500  avg(100): 9.5
+  Episode 850/1500  avg(100): 9.6
+  Episode 900/1500  avg(100): 9.5
+  Episode 950/1500  avg(100): 9.5
+  Episode 1000/1500  avg(100): 9.6
+  Episode 1050/1500  avg(100): 9.5
+  Episode 1100/1500  avg(100): 9.4
+  Episode 1150/1500  avg(100): 9.6
+  Episode 1200/1500  avg(100): 9.6
+  Episode 1250/1500  avg(100): 9.7
+  Episode 1300/1500  avg(100): 9.6
+  Episode 1350/1500  avg(100): 9.4
+  Episode 1400/1500  avg(100): 9.4
+  Episode 1450/1500  avg(100): 9.6
+  Episode 1500/1500  avg(100): 9.6
+Trial 26 done: best_avg=14.6, final_avg=9.6, tail_iqm=9.6
+
+============================================================
+Trial 28: fractional [32-8] lr=0.00042308193843725256
+============================================================
+  Episode 50/1500  avg(100): 16.4
+  Episode 100/1500  avg(100): 14.5
+  Episode 150/1500  avg(100): 16.9
+  Episode 200/1500  avg(100): 68.4
+  Episode 250/1500  avg(100): 124.8
+  Episode 300/1500  avg(100): 213.4
+  Episode 350/1500  avg(100): 380.3
+  Episode 400/1500  avg(100): 462.1
+  Episode 450/1500  avg(100): 367.0
+  Episode 500/1500  avg(100): 366.7
+  Episode 550/1500  avg(100): 409.0
+  Episode 600/1500  avg(100): 316.4
+  Episode 650/1500  avg(100): 364.5
+  Episode 700/1500  avg(100): 359.7
+  Episode 750/1500  avg(100): 251.2
+  Episode 800/1500  avg(100): 335.8
+  Episode 850/1500  avg(100): 328.7
+  Episode 900/1500  avg(100): 127.7
+  Episode 950/1500  avg(100): 40.9
+  Episode 1000/1500  avg(100): 48.8
+  Episode 1050/1500  avg(100): 40.0
+  Episode 1100/1500  avg(100): 25.5
+  Episode 1150/1500  avg(100): 14.1
+  Episode 1200/1500  avg(100): 13.4
+  Episode 1250/1500  avg(100): 50.5
+  Episode 1300/1500  avg(100): 168.7
+  Episode 1350/1500  avg(100): 291.8
+  Episode 1400/1500  avg(100): 337.3
+  Episode 1450/1500  avg(100): 319.5
+  Episode 1500/1500  avg(100): 374.5
+Trial 28 done: best_avg=471.8, final_avg=374.5, tail_iqm=186.2
+
+============================================================
+Trial 35: fractional [32-8] lr=0.00018280499923712821
+============================================================
+  Episode 50/1500  avg(100): 15.7
+  Episode 100/1500  avg(100): 14.6
+  Episode 150/1500  avg(100): 12.8
+  Episode 200/1500  avg(100): 13.4
+  Episode 250/1500  avg(100): 17.2
+  Episode 300/1500  avg(100): 15.3
+  Episode 350/1500  avg(100): 10.6
+  Episode 400/1500  avg(100): 10.4
+  Episode 450/1500  avg(100): 38.0
+  Episode 500/1500  avg(100): 94.4
+  Episode 550/1500  avg(100): 119.3
+  Episode 600/1500  avg(100): 120.5
+  Episode 650/1500  avg(100): 132.6
+  Episode 700/1500  avg(100): 161.2
+  Episode 750/1500  avg(100): 195.4
+  Episode 800/1500  avg(100): 203.7
+  Episode 850/1500  avg(100): 212.4
+  Episode 900/1500  avg(100): 232.5
+  Episode 950/1500  avg(100): 227.3
+  Episode 1000/1500  avg(100): 229.4
+  Episode 1050/1500  avg(100): 268.5
+  Episode 1100/1500  avg(100): 271.7
+  Episode 1150/1500  avg(100): 148.2
+  Episode 1200/1500  avg(100): 130.1
+  Episode 1250/1500  avg(100): 252.2
+  Episode 1300/1500  avg(100): 157.5
+  Episode 1350/1500  avg(100): 19.2
+  Episode 1400/1500  avg(100): 61.4
+  Episode 1450/1500  avg(100): 246.7
+  Episode 1500/1500  avg(100): 427.0
+Trial 35 done: best_avg=427.0, final_avg=427.0, tail_iqm=153.3
+
+============================================================
+Trial 40: fractional [16-4] lr=0.00028959937656171316
+============================================================
+  Episode 50/1500  avg(100): 17.8
+  Episode 100/1500  avg(100): 16.0
+  Episode 150/1500  avg(100): 13.7
+  Episode 200/1500  avg(100): 14.8
+  Episode 250/1500  avg(100): 15.9
+  Episode 300/1500  avg(100): 13.0
+  Episode 350/1500  avg(100): 10.3
+  Episode 400/1500  avg(100): 10.3
+  Episode 450/1500  avg(100): 23.1
+  Episode 500/1500  avg(100): 41.9
+  Episode 550/1500  avg(100): 64.5
+  Episode 600/1500  avg(100): 80.7
+  Episode 650/1500  avg(100): 88.7
+  Episode 700/1500  avg(100): 133.1
+  Episode 750/1500  avg(100): 151.6
+  Episode 800/1500  avg(100): 152.8
+  Episode 850/1500  avg(100): 186.7
+  Episode 900/1500  avg(100): 184.9
+  Episode 950/1500  avg(100): 163.6
+  Episode 1000/1500  avg(100): 150.3
+  Episode 1050/1500  avg(100): 143.2
+  Episode 1100/1500  avg(100): 168.4
+  Episode 1150/1500  avg(100): 166.2
+  Episode 1200/1500  avg(100): 158.9
+  Episode 1250/1500  avg(100): 177.2
+  Episode 1300/1500  avg(100): 164.2
+  Episode 1350/1500  avg(100): 143.3
+  Episode 1400/1500  avg(100): 122.3
+  Episode 1450/1500  avg(100): 106.1
+  Episode 1500/1500  avg(100): 115.2
+Trial 40 done: best_avg=191.2, final_avg=115.2, tail_iqm=150.3
+
+============================================================
+Trial 45: fractional [64-4] lr=0.0005110843811643752
+============================================================
+  Episode 50/1500  avg(100): 16.9
+  Episode 100/1500  avg(100): 14.0
+  Episode 150/1500  avg(100): 12.7
+  Episode 200/1500  avg(100): 17.4
+  Episode 250/1500  avg(100): 109.5
+  Episode 300/1500  avg(100): 228.0
+  Episode 350/1500  avg(100): 247.3
+  Episode 400/1500  avg(100): 240.1
+  Episode 450/1500  avg(100): 271.3
+  Episode 500/1500  avg(100): 332.4
+  Episode 550/1500  avg(100): 332.5
+  Episode 600/1500  avg(100): 236.2
+  Episode 650/1500  avg(100): 178.3
+  Episode 700/1500  avg(100): 195.1
+  Episode 750/1500  avg(100): 228.3
+  Episode 800/1500  avg(100): 242.9
+  Episode 850/1500  avg(100): 202.4
+  Episode 900/1500  avg(100): 165.2
+  Episode 950/1500  avg(100): 160.2
+  Episode 1000/1500  avg(100): 156.1
+  Episode 1050/1500  avg(100): 156.4
+  Episode 1100/1500  avg(100): 152.6
+  Episode 1150/1500  avg(100): 145.1
+  Episode 1200/1500  avg(100): 140.7
+  Episode 1250/1500  avg(100): 141.3
+  Episode 1300/1500  avg(100): 144.2
+  Episode 1350/1500  avg(100): 141.0
+  Episode 1400/1500  avg(100): 137.7
+  Episode 1450/1500  avg(100): 136.1
+  Episode 1500/1500  avg(100): 135.0
+Trial 45 done: best_avg=354.0, final_avg=135.0, tail_iqm=140.4
+
+============================================================
+Trial 49: fractional [32-8] lr=0.0005604490914308063
+============================================================
+  Episode 50/1500  avg(100): 19.0
+  Episode 100/1500  avg(100): 17.0
+  Episode 150/1500  avg(100): 13.9
+  Episode 200/1500  avg(100): 15.2
+  Episode 250/1500  avg(100): 68.9
+  Episode 300/1500  avg(100): 132.7
+  Episode 350/1500  avg(100): 130.4
+  Episode 400/1500  avg(100): 121.2
+  Episode 450/1500  avg(100): 128.4
+  Episode 500/1500  avg(100): 142.6
+  Episode 550/1500  avg(100): 161.1
+  Episode 600/1500  avg(100): 176.3
+  Episode 650/1500  avg(100): 289.0
+  Episode 700/1500  avg(100): 331.6
+  Episode 750/1500  avg(100): 282.6
+  Episode 800/1500  avg(100): 376.8
+  Episode 850/1500  avg(100): 479.6
+  Episode 900/1500  avg(100): 500.0
+  Episode 950/1500  avg(100): 500.0
+  Episode 1000/1500  avg(100): 500.0
+  Episode 1050/1500  avg(100): 487.1
+  Episode 1100/1500  avg(100): 477.6
+  Episode 1150/1500  avg(100): 490.5
+  Episode 1200/1500  avg(100): 482.7
+  Episode 1250/1500  avg(100): 384.1
+  Episode 1300/1500  avg(100): 348.4
+  Episode 1350/1500  avg(100): 434.0
+  Episode 1400/1500  avg(100): 454.9
+  Episode 1450/1500  avg(100): 453.9
+  Episode 1500/1500  avg(100): 397.4
+Trial 49 done: best_avg=500.0, final_avg=397.4, tail_iqm=445.0
+
+============================================================
+Trial 56: fractional [32-32] lr=0.0007544718739423091
+============================================================
+  Episode 50/1500  avg(100): 17.1
+  Episode 100/1500  avg(100): 44.4
+  Episode 150/1500  avg(100): 97.6
+  Episode 200/1500  avg(100): 120.4
+  Episode 250/1500  avg(100): 74.4
+  Episode 300/1500  avg(100): 51.9
+  Episode 350/1500  avg(100): 175.0
+  Episode 400/1500  avg(100): 214.2
+  Episode 450/1500  avg(100): 170.0
+  Episode 500/1500  avg(100): 102.2
+  Episode 550/1500  avg(100): 15.7
+  Episode 600/1500  avg(100): 42.9
+  Episode 650/1500  avg(100): 86.5
+  Episode 700/1500  avg(100): 76.8
+  Episode 750/1500  avg(100): 63.0
+  Episode 800/1500  avg(100): 72.2
+  Episode 850/1500  avg(100): 40.8
+  Episode 900/1500  avg(100): 15.2
+  Episode 950/1500  avg(100): 77.9
+  Episode 1000/1500  avg(100): 93.9
+  Episode 1050/1500  avg(100): 90.1
+  Episode 1100/1500  avg(100): 86.6
+  Episode 1150/1500  avg(100): 82.6
+  Episode 1200/1500  avg(100): 155.2
+  Episode 1250/1500  avg(100): 153.4
+  Episode 1300/1500  avg(100): 154.8
+  Episode 1350/1500  avg(100): 284.2
+  Episode 1400/1500  avg(100): 324.9
+  Episode 1450/1500  avg(100): 304.1
+  Episode 1500/1500  avg(100): 413.9
+Trial 56 done: best_avg=413.9, final_avg=413.9, tail_iqm=216.1
+
+============================================================
+Trial 59: fractional [32-16] lr=0.00016249467904597955
+============================================================
+  Episode 50/1500  avg(100): 16.7
+  Episode 100/1500  avg(100): 14.9
+  Episode 150/1500  avg(100): 12.2
+  Episode 200/1500  avg(100): 11.9
+  Episode 250/1500  avg(100): 13.4
+  Episode 300/1500  avg(100): 14.9
+  Episode 350/1500  avg(100): 16.6
+  Episode 400/1500  avg(100): 13.6
+  Episode 450/1500  avg(100): 9.6
+  Episode 500/1500  avg(100): 9.7
+  Episode 550/1500  avg(100): 9.8
+  Episode 600/1500  avg(100): 23.9
+  Episode 650/1500  avg(100): 33.8
+  Episode 700/1500  avg(100): 27.2
+  Episode 750/1500  avg(100): 24.9
+  Episode 800/1500  avg(100): 34.2
+  Episode 850/1500  avg(100): 52.7
+  Episode 900/1500  avg(100): 45.9
+  Episode 950/1500  avg(100): 30.1
+  Episode 1000/1500  avg(100): 31.5
+  Episode 1050/1500  avg(100): 46.3
+  Episode 1100/1500  avg(100): 76.0
+  Episode 1150/1500  avg(100): 87.8
+  Episode 1200/1500  avg(100): 88.5
+  Episode 1250/1500  avg(100): 100.3
+  Episode 1300/1500  avg(100): 151.0
+  Episode 1350/1500  avg(100): 166.7
+  Episode 1400/1500  avg(100): 105.2
+  Episode 1450/1500  avg(100): 64.2
+  Episode 1500/1500  avg(100): 55.9
+Trial 59 done: best_avg=172.7, final_avg=55.9, tail_iqm=97.3
+
+============================================================
+Trial 61: fractional [32-16] lr=0.00044912982093711813
+============================================================
+  Episode 50/1500  avg(100): 17.6
+  Episode 100/1500  avg(100): 16.6
+  Episode 150/1500  avg(100): 37.2
+  Episode 200/1500  avg(100): 130.3
+  Episode 250/1500  avg(100): 191.3
+  Episode 300/1500  avg(100): 218.1
+  Episode 350/1500  avg(100): 213.2
+  Episode 400/1500  avg(100): 225.9
+  Episode 450/1500  avg(100): 302.5
+  Episode 500/1500  avg(100): 405.2
+  Episode 550/1500  avg(100): 444.9
+  Episode 600/1500  avg(100): 342.4
+  Episode 650/1500  avg(100): 264.6
+  Episode 700/1500  avg(100): 288.7
+  Episode 750/1500  avg(100): 383.4
+  Episode 800/1500  avg(100): 450.2
+  Episode 850/1500  avg(100): 463.1
+  Episode 900/1500  avg(100): 469.0
+  Episode 950/1500  avg(100): 447.6
+  Episode 1000/1500  avg(100): 460.4
+  Episode 1050/1500  avg(100): 481.8
+  Episode 1100/1500  avg(100): 409.3
+  Episode 1150/1500  avg(100): 376.2
+  Episode 1200/1500  avg(100): 443.0
+  Episode 1250/1500  avg(100): 494.2
+  Episode 1300/1500  avg(100): 488.5
+  Episode 1350/1500  avg(100): 409.6
+  Episode 1400/1500  avg(100): 303.2
+  Episode 1450/1500  avg(100): 292.0
+  Episode 1500/1500  avg(100): 347.4
+Trial 61 done: best_avg=500.0, final_avg=347.4, tail_iqm=406.3
+
+============================================================
+Trial 67: fractional [32-16] lr=0.0009710580527857302
+============================================================
+  Episode 50/1500  avg(100): 16.1
+  Episode 100/1500  avg(100): 20.8
+  Episode 150/1500  avg(100): 121.3
+  Episode 200/1500  avg(100): 204.6
+  Episode 250/1500  avg(100): 190.9
+  Episode 300/1500  avg(100): 232.7
+  Episode 350/1500  avg(100): 232.8
+  Episode 400/1500  avg(100): 217.2
+  Episode 450/1500  avg(100): 242.4
+  Episode 500/1500  avg(100): 251.3
+  Episode 550/1500  avg(100): 326.9
+  Episode 600/1500  avg(100): 427.1
+  Episode 650/1500  avg(100): 298.5
+  Episode 700/1500  avg(100): 266.0
+  Episode 750/1500  avg(100): 419.5
+  Episode 800/1500  avg(100): 418.2
+  Episode 850/1500  avg(100): 257.1
+  Episode 900/1500  avg(100): 136.3
+  Episode 950/1500  avg(100): 148.3
+  Episode 1000/1500  avg(100): 153.9
+  Episode 1050/1500  avg(100): 163.5
+  Episode 1100/1500  avg(100): 217.0
+  Episode 1150/1500  avg(100): 385.8
+  Episode 1200/1500  avg(100): 469.2
+  Episode 1250/1500  avg(100): 329.2
+  Episode 1300/1500  avg(100): 234.6
+  Episode 1350/1500  avg(100): 327.6
+  Episode 1400/1500  avg(100): 371.8
+  Episode 1450/1500  avg(100): 233.1
+  Episode 1500/1500  avg(100): 126.5
+Trial 67 done: best_avg=484.3, final_avg=126.5, tail_iqm=325.7
+
+============================================================
+Trial 71: fractional [32-8] lr=0.00038757654386252857
+============================================================
+  Episode 50/1500  avg(100): 16.1
+  Episode 100/1500  avg(100): 15.2
+  Episode 150/1500  avg(100): 16.6
+  Episode 200/1500  avg(100): 28.3
+  Episode 250/1500  avg(100): 63.3
+  Episode 300/1500  avg(100): 95.6
+  Episode 350/1500  avg(100): 104.2
+  Episode 400/1500  avg(100): 101.6
+  Episode 450/1500  avg(100): 102.8
+  Episode 500/1500  avg(100): 104.1
+  Episode 550/1500  avg(100): 121.4
+  Episode 600/1500  avg(100): 163.2
+  Episode 650/1500  avg(100): 245.0
+  Episode 700/1500  avg(100): 234.4
+  Episode 750/1500  avg(100): 192.9
+  Episode 800/1500  avg(100): 261.9
+  Episode 850/1500  avg(100): 397.3
+  Episode 900/1500  avg(100): 497.3
+  Episode 950/1500  avg(100): 500.0
+  Episode 1000/1500  avg(100): 409.5
+  Episode 1050/1500  avg(100): 384.1
+  Episode 1100/1500  avg(100): 278.9
+  Episode 1150/1500  avg(100): 188.1
+  Episode 1200/1500  avg(100): 349.4
+  Episode 1250/1500  avg(100): 465.6
+  Episode 1300/1500  avg(100): 500.0
+  Episode 1350/1500  avg(100): 500.0
+  Episode 1400/1500  avg(100): 500.0
+  Episode 1450/1500  avg(100): 500.0
+  Episode 1500/1500  avg(100): 500.0
+Trial 71 done: best_avg=500.0, final_avg=500.0, tail_iqm=488.8
+  -> Converged at episode: 1254
+
+============================================================
+Trial 76: fractional [32-8] lr=0.00048514755501861273
+============================================================
+  Episode 50/1500  avg(100): 16.5
+  Episode 100/1500  avg(100): 14.7
+  Episode 150/1500  avg(100): 14.1
+  Episode 200/1500  avg(100): 42.0
+  Episode 250/1500  avg(100): 80.1
+  Episode 300/1500  avg(100): 116.2
+  Episode 350/1500  avg(100): 137.2
+  Episode 400/1500  avg(100): 154.9
+  Episode 450/1500  avg(100): 160.4
+  Episode 500/1500  avg(100): 255.5
+  Episode 550/1500  avg(100): 428.4
+  Episode 600/1500  avg(100): 309.1
+  Episode 650/1500  avg(100): 94.0
+  Episode 700/1500  avg(100): 42.6
+  Episode 750/1500  avg(100): 34.5
+  Episode 800/1500  avg(100): 66.3
+  Episode 850/1500  avg(100): 105.6
+  Episode 900/1500  avg(100): 120.7
+  Episode 950/1500  avg(100): 104.1
+  Episode 1000/1500  avg(100): 71.5
+  Episode 1050/1500  avg(100): 32.1
+  Episode 1100/1500  avg(100): 12.7
+  Episode 1150/1500  avg(100): 12.5
+  Episode 1200/1500  avg(100): 38.6
+  Episode 1250/1500  avg(100): 117.5
+  Episode 1300/1500  avg(100): 146.9
+  Episode 1350/1500  avg(100): 121.9
+  Episode 1400/1500  avg(100): 114.5
+  Episode 1450/1500  avg(100): 96.5
+  Episode 1500/1500  avg(100): 58.5
+Trial 76 done: best_avg=434.9, final_avg=58.5, tail_iqm=100.8
+
+============================================================
+Trial 77: fractional [32-8] lr=0.000376073987533872
+============================================================
+  Episode 50/1500  avg(100): 18.0
+  Episode 100/1500  avg(100): 15.0
+  Episode 150/1500  avg(100): 14.7
+  Episode 200/1500  avg(100): 36.2
+  Episode 250/1500  avg(100): 72.0
+  Episode 300/1500  avg(100): 123.3
+  Episode 350/1500  avg(100): 145.7
+  Episode 400/1500  avg(100): 130.9
+  Episode 450/1500  avg(100): 121.4
+  Episode 500/1500  avg(100): 129.6
+  Episode 550/1500  avg(100): 138.8
+  Episode 600/1500  avg(100): 144.2
+  Episode 650/1500  avg(100): 145.7
+  Episode 700/1500  avg(100): 138.6
+  Episode 750/1500  avg(100): 145.9
+  Episode 800/1500  avg(100): 178.0
+  Episode 850/1500  avg(100): 216.6
+  Episode 900/1500  avg(100): 228.4
+  Episode 950/1500  avg(100): 286.2
+  Episode 1000/1500  avg(100): 421.6
+  Episode 1050/1500  avg(100): 397.6
+  Episode 1100/1500  avg(100): 235.2
+  Episode 1150/1500  avg(100): 172.6
+  Episode 1200/1500  avg(100): 159.4
+  Episode 1250/1500  avg(100): 161.2
+  Episode 1300/1500  avg(100): 222.8
+  Episode 1350/1500  avg(100): 340.4
+  Episode 1400/1500  avg(100): 454.7
+  Episode 1450/1500  avg(100): 500.0
+  Episode 1500/1500  avg(100): 500.0
+Trial 77 done: best_avg=500.0, final_avg=500.0, tail_iqm=277.4
+  -> Converged at episode: 1414
+
+============================================================
+Trial 80: fractional [8-8] lr=0.00041660250552411657
+============================================================
+  Episode 50/1500  avg(100): 16.9
+  Episode 100/1500  avg(100): 14.5
+  Episode 150/1500  avg(100): 12.2
+  Episode 200/1500  avg(100): 20.0
+  Episode 250/1500  avg(100): 34.0
+  Episode 300/1500  avg(100): 41.1
+  Episode 350/1500  avg(100): 26.9
+  Episode 400/1500  avg(100): 10.4
+  Episode 450/1500  avg(100): 9.4
+  Episode 500/1500  avg(100): 9.4
+  Episode 550/1500  avg(100): 9.4
+  Episode 600/1500  avg(100): 9.4
+  Episode 650/1500  avg(100): 12.6
+  Episode 700/1500  avg(100): 20.1
+  Episode 750/1500  avg(100): 24.1
+  Episode 800/1500  avg(100): 24.1
+  Episode 850/1500  avg(100): 26.7
+  Episode 900/1500  avg(100): 33.3
+  Episode 950/1500  avg(100): 76.4
+  Episode 1000/1500  avg(100): 117.7
+  Episode 1050/1500  avg(100): 122.0
+  Episode 1100/1500  avg(100): 140.1
+  Episode 1150/1500  avg(100): 162.2
+  Episode 1200/1500  avg(100): 117.8
+  Episode 1250/1500  avg(100): 50.7
+  Episode 1300/1500  avg(100): 46.0
+  Episode 1350/1500  avg(100): 68.4
+  Episode 1400/1500  avg(100): 66.8
+  Episode 1450/1500  avg(100): 47.9
+  Episode 1500/1500  avg(100): 52.9
+Trial 80 done: best_avg=164.0, final_avg=52.9, tail_iqm=65.4
+
+============================================================
+Trial 82: fractional [32-8] lr=0.0003265857020263979
+============================================================
+  Episode 50/1500  avg(100): 18.0
+  Episode 100/1500  avg(100): 14.9
+  Episode 150/1500  avg(100): 11.9
+  Episode 200/1500  avg(100): 14.8
+  Episode 250/1500  avg(100): 25.0
+  Episode 300/1500  avg(100): 31.1
+  Episode 350/1500  avg(100): 24.1
+  Episode 400/1500  avg(100): 19.4
+  Episode 450/1500  avg(100): 62.3
+  Episode 500/1500  avg(100): 106.4
+  Episode 550/1500  avg(100): 112.9
+  Episode 600/1500  avg(100): 131.0
+  Episode 650/1500  avg(100): 142.2
+  Episode 700/1500  avg(100): 160.8
+  Episode 750/1500  avg(100): 216.0
+  Episode 800/1500  avg(100): 291.4
+  Episode 850/1500  avg(100): 326.9
+  Episode 900/1500  avg(100): 358.7
+  Episode 950/1500  avg(100): 448.3
+  Episode 1000/1500  avg(100): 500.0
+  Episode 1050/1500  avg(100): 487.2
+  Episode 1100/1500  avg(100): 446.2
+  Episode 1150/1500  avg(100): 454.1
+  Episode 1200/1500  avg(100): 495.1
+  Episode 1250/1500  avg(100): 495.1
+  Episode 1300/1500  avg(100): 490.3
+  Episode 1350/1500  avg(100): 488.8
+  Episode 1400/1500  avg(100): 492.0
+  Episode 1450/1500  avg(100): 498.3
+  Episode 1500/1500  avg(100): 500.0
+Trial 82 done: best_avg=500.0, final_avg=500.0, tail_iqm=492.2
+  -> Converged at episode: 1191
+
+============================================================
+Trial 88: fractional [32-8] lr=0.00020604916513811006
+============================================================
+  Episode 50/1500  avg(100): 17.5
+  Episode 100/1500  avg(100): 15.7
+  Episode 150/1500  avg(100): 14.4
+  Episode 200/1500  avg(100): 17.3
+  Episode 250/1500  avg(100): 21.6
+  Episode 300/1500  avg(100): 16.8
+  Episode 350/1500  avg(100): 9.9
+  Episode 400/1500  avg(100): 9.8
+  Episode 450/1500  avg(100): 9.9
+  Episode 500/1500  avg(100): 17.9
+  Episode 550/1500  avg(100): 34.7
+  Episode 600/1500  avg(100): 39.4
+  Episode 650/1500  avg(100): 38.1
+  Episode 700/1500  avg(100): 37.7
+  Episode 750/1500  avg(100): 31.9
+  Episode 800/1500  avg(100): 28.6
+  Episode 850/1500  avg(100): 25.7
+  Episode 900/1500  avg(100): 23.8
+  Episode 950/1500  avg(100): 23.5
+  Episode 1000/1500  avg(100): 23.0
+  Episode 1050/1500  avg(100): 24.7
+  Episode 1100/1500  avg(100): 25.7
+  Episode 1150/1500  avg(100): 27.6
+  Episode 1200/1500  avg(100): 34.3
+  Episode 1250/1500  avg(100): 99.0
+  Episode 1300/1500  avg(100): 190.0
+  Episode 1350/1500  avg(100): 223.4
+  Episode 1400/1500  avg(100): 241.2
+  Episode 1450/1500  avg(100): 284.2
+  Episode 1500/1500  avg(100): 356.2
+Trial 88 done: best_avg=357.3, final_avg=356.2, tail_iqm=176.8
+
+============================================================
+Trial 92: fractional [64-8] lr=0.0002641075314294709
+============================================================
+  Episode 50/1500  avg(100): 18.6
+  Episode 100/1500  avg(100): 15.7
+  Episode 150/1500  avg(100): 12.9
+  Episode 200/1500  avg(100): 14.5
+  Episode 250/1500  avg(100): 25.0
+  Episode 300/1500  avg(100): 80.2
+  Episode 350/1500  avg(100): 124.9
+  Episode 400/1500  avg(100): 113.7
+  Episode 450/1500  avg(100): 90.5
+  Episode 500/1500  avg(100): 129.1
+  Episode 550/1500  avg(100): 139.1
+  Episode 600/1500  avg(100): 158.2
+  Episode 650/1500  avg(100): 287.6
+  Episode 700/1500  avg(100): 389.6
+  Episode 750/1500  avg(100): 406.4
+  Episode 800/1500  avg(100): 375.1
+  Episode 850/1500  avg(100): 191.8
+  Episode 900/1500  avg(100): 183.6
+  Episode 950/1500  avg(100): 422.1
+  Episode 1000/1500  avg(100): 500.0
+  Episode 1050/1500  avg(100): 472.8
+  Episode 1100/1500  avg(100): 260.5
+  Episode 1150/1500  avg(100): 218.4
+  Episode 1200/1500  avg(100): 319.4
+  Episode 1250/1500  avg(100): 234.4
+  Episode 1300/1500  avg(100): 239.0
+  Episode 1350/1500  avg(100): 388.9
+  Episode 1400/1500  avg(100): 328.0
+  Episode 1450/1500  avg(100): 103.2
+  Episode 1500/1500  avg(100): 71.2
+Trial 92 done: best_avg=500.0, final_avg=71.2, tail_iqm=259.0
+
+============================================================
+Trial 96: fractional [32-8] lr=0.00029554042560424966
+============================================================
+  Episode 50/1500  avg(100): 19.3
+  Episode 100/1500  avg(100): 15.8
+  Episode 150/1500  avg(100): 13.2
+  Episode 200/1500  avg(100): 14.7
+  Episode 250/1500  avg(100): 12.6
+  Episode 300/1500  avg(100): 10.1
+  Episode 350/1500  avg(100): 13.5
+  Episode 400/1500  avg(100): 64.3
+  Episode 450/1500  avg(100): 117.7
+  Episode 500/1500  avg(100): 136.4
+  Episode 550/1500  avg(100): 150.0
+  Episode 600/1500  avg(100): 114.2
+  Episode 650/1500  avg(100): 114.3
+  Episode 700/1500  avg(100): 207.1
+  Episode 750/1500  avg(100): 273.6
+  Episode 800/1500  avg(100): 308.7
+  Episode 850/1500  avg(100): 343.2
+  Episode 900/1500  avg(100): 298.6
+  Episode 950/1500  avg(100): 339.3
+  Episode 1000/1500  avg(100): 413.6
+  Episode 1050/1500  avg(100): 389.4
+  Episode 1100/1500  avg(100): 382.6
+  Episode 1150/1500  avg(100): 435.0
+  Episode 1200/1500  avg(100): 468.4
+  Episode 1250/1500  avg(100): 470.1
+  Episode 1300/1500  avg(100): 497.1
+  Episode 1350/1500  avg(100): 500.0
+  Episode 1400/1500  avg(100): 492.0
+  Episode 1450/1500  avg(100): 472.8
+  Episode 1500/1500  avg(100): 475.2
+Trial 96 done: best_avg=500.0, final_avg=475.2, tail_iqm=480.9
+  -> Converged at episode: 1490
+
+============================================================
+Trial 101: fractional [32-8] lr=0.0003141408399544788
+============================================================
+  Episode 50/1500  avg(100): 17.3
+  Episode 100/1500  avg(100): 15.7
+  Episode 150/1500  avg(100): 18.5
+  Episode 200/1500  avg(100): 50.4
+  Episode 250/1500  avg(100): 136.0
+  Episode 300/1500  avg(100): 195.8
+  Episode 350/1500  avg(100): 274.0
+  Episode 400/1500  avg(100): 198.7
+  Episode 450/1500  avg(100): 172.2
+  Episode 500/1500  avg(100): 283.4
+  Episode 550/1500  avg(100): 268.0
+  Episode 600/1500  avg(100): 356.6
+  Episode 650/1500  avg(100): 316.3
+  Episode 700/1500  avg(100): 185.2
+  Episode 750/1500  avg(100): 163.2
+  Episode 800/1500  avg(100): 183.0
+  Episode 850/1500  avg(100): 303.5
+  Episode 900/1500  avg(100): 345.4
+  Episode 950/1500  avg(100): 228.7
+  Episode 1000/1500  avg(100): 154.6
+  Episode 1050/1500  avg(100): 137.7
+  Episode 1100/1500  avg(100): 220.2
+  Episode 1150/1500  avg(100): 172.8
+  Episode 1200/1500  avg(100): 22.6
+  Episode 1250/1500  avg(100): 72.0
+  Episode 1300/1500  avg(100): 117.3
+  Episode 1350/1500  avg(100): 114.8
+  Episode 1400/1500  avg(100): 143.5
+  Episode 1450/1500  avg(100): 258.9
+  Episode 1500/1500  avg(100): 391.2
+Trial 101 done: best_avg=396.3, final_avg=391.2, tail_iqm=124.9
+
+============================================================
+Trial 104: fractional [32-8] lr=0.0003553182020453659
+============================================================
+  Episode 50/1500  avg(100): 19.2
+  Episode 100/1500  avg(100): 16.7
+  Episode 150/1500  avg(100): 14.1
+  Episode 200/1500  avg(100): 17.2
+  Episode 250/1500  avg(100): 89.6
+  Episode 300/1500  avg(100): 168.3
+  Episode 350/1500  avg(100): 216.7
+  Episode 400/1500  avg(100): 289.9
+  Episode 450/1500  avg(100): 316.0
+  Episode 500/1500  avg(100): 241.4
+  Episode 550/1500  avg(100): 103.5
+  Episode 600/1500  avg(100): 183.7
+  Episode 650/1500  avg(100): 358.1
+  Episode 700/1500  avg(100): 300.5
+  Episode 750/1500  avg(100): 183.9
+  Episode 800/1500  avg(100): 287.5
+  Episode 850/1500  avg(100): 463.6
+  Episode 900/1500  avg(100): 377.0
+  Episode 950/1500  avg(100): 134.7
+  Episode 1000/1500  avg(100): 13.8
+  Episode 1050/1500  avg(100): 84.3
+  Episode 1100/1500  avg(100): 187.5
+  Episode 1150/1500  avg(100): 328.2
+  Episode 1200/1500  avg(100): 412.6
+  Episode 1250/1500  avg(100): 423.9
+  Episode 1300/1500  avg(100): 471.8
+  Episode 1350/1500  avg(100): 465.1
+  Episode 1400/1500  avg(100): 437.8
+  Episode 1450/1500  avg(100): 464.1
+  Episode 1500/1500  avg(100): 500.0
+Trial 104 done: best_avg=500.0, final_avg=500.0, tail_iqm=440.6
+  -> Converged at episode: 1453
+
+============================================================
+Trial 108: fractional [32-32] lr=0.00040544900324417847
+============================================================
+  Episode 50/1500  avg(100): 16.3
+  Episode 100/1500  avg(100): 16.4
+  Episode 150/1500  avg(100): 58.5
+  Episode 200/1500  avg(100): 144.8
+  Episode 250/1500  avg(100): 113.7
+  Episode 300/1500  avg(100): 51.5
+  Episode 350/1500  avg(100): 42.2
+  Episode 400/1500  avg(100): 15.9
+  Episode 450/1500  avg(100): 12.6
+  Episode 500/1500  avg(100): 13.9
+  Episode 550/1500  avg(100): 44.9
+  Episode 600/1500  avg(100): 129.9
+  Episode 650/1500  avg(100): 198.0
+  Episode 700/1500  avg(100): 262.4
+  Episode 750/1500  avg(100): 385.8
+  Episode 800/1500  avg(100): 479.1
+  Episode 850/1500  avg(100): 500.0
+  Episode 900/1500  avg(100): 500.0
+  Episode 950/1500  avg(100): 500.0
+  Episode 1000/1500  avg(100): 500.0
+  Episode 1050/1500  avg(100): 500.0
+  Episode 1100/1500  avg(100): 500.0
+  Episode 1150/1500  avg(100): 500.0
+  Episode 1200/1500  avg(100): 500.0
+  Episode 1250/1500  avg(100): 496.2
+  Episode 1300/1500  avg(100): 496.2
+  Episode 1350/1500  avg(100): 463.2
+  Episode 1400/1500  avg(100): 458.7
+  Episode 1450/1500  avg(100): 484.3
+  Episode 1500/1500  avg(100): 481.8
+Trial 108 done: best_avg=500.0, final_avg=481.8, tail_iqm=490.6
+  -> Converged at episode: 1434
+
+============================================================
+Trial 114: fractional [32-32] lr=0.0002287394077629778
+============================================================
+  Episode 50/1500  avg(100): 17.7
+  Episode 100/1500  avg(100): 15.7
+  Episode 150/1500  avg(100): 13.8
+  Episode 200/1500  avg(100): 13.7
+  Episode 250/1500  avg(100): 21.9
+  Episode 300/1500  avg(100): 52.6
+  Episode 350/1500  avg(100): 79.8
+  Episode 400/1500  avg(100): 88.4
+  Episode 450/1500  avg(100): 100.5
+  Episode 500/1500  avg(100): 133.7
+  Episode 550/1500  avg(100): 195.7
+  Episode 600/1500  avg(100): 229.3
+  Episode 650/1500  avg(100): 334.6
+  Episode 700/1500  avg(100): 414.9
+  Episode 750/1500  avg(100): 334.0
+  Episode 800/1500  avg(100): 271.3
+  Episode 850/1500  avg(100): 380.6
+  Episode 900/1500  avg(100): 497.0
+  Episode 950/1500  avg(100): 497.0
+  Episode 1000/1500  avg(100): 480.3
+  Episode 1050/1500  avg(100): 480.3
+  Episode 1100/1500  avg(100): 484.3
+  Episode 1150/1500  avg(100): 481.1
+  Episode 1200/1500  avg(100): 491.5
+  Episode 1250/1500  avg(100): 487.9
+Traceback (most recent call last):
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: database is locked
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/optuna/storages/_rdb/storage.py", line 77, in _create_scoped_session
+    session.commit()
+    ~~~~~~~~~~~~~~^^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "<string>", line 2, in commit
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py", line 1311, in commit
+    self._prepare_impl()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "<string>", line 2, in _prepare_impl
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py", line 1286, in _prepare_impl
+    self.session.flush()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py", line 4331, in flush
+    self._flush(objects)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/util/langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py", line 4427, in _flush
+    flush_context.execute()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_for_mapper_hierarchy(self.mapper, False, False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/orm/persistence.py", line 85, in save_obj
+    _emit_update_statements(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        update,
+        ^^^^^^^
+    )
+    ^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/orm/persistence.py", line 912, in _emit_update_statements
+    c = connection.execute(
+        statement, multiparams, execution_options=execution_options
+    )
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/sql/elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) database is locked
+[SQL: UPDATE trials SET state=?, datetime_complete=? WHERE trials.trial_id = ?]
+[parameters: ('FAIL', '2026-05-19 09:31:16.015171', 165)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/optuna/study/_optimize.py", line 209, in _run_trial
+    frozen_trial = _tell_with_warning(
+        study=study,
+    ...<3 lines>...
+        suppress_warning=True,
+    )
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/optuna/study/_tell.py", line 181, in _tell_with_warning
+    study._storage.set_trial_state_values(frozen_trial._trial_id, state, values)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/optuna/storages/_cached_storage.py", line 185, in set_trial_state_values
+    return self._backend.set_trial_state_values(trial_id, state=state, values=values)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/optuna/storages/_rdb/storage.py", line 617, in set_trial_state_values
+    with _create_scoped_session(self.scoped_session) as session:
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/u/niklas2/.pyenv/versions/3.13.7/lib/python3.13/contextlib.py", line 148, in __exit__
+    next(self.gen)
+    ~~~~^^^^^^^^^^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/optuna/storages/_rdb/storage.py", line 94, in _create_scoped_session
+    raise optuna.exceptions.StorageInternalError(message) from e
+optuna.exceptions.StorageInternalError: An exception is raised during the commit. This typically happens due to invalid data in the commit, e.g. exceeding max length. 
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/u/niklas2/intrinsic-memory-SNNs/2_training_and_simulation/train/optimize.py", line 664, in <module>
+    main()
+    ~~~~^^
+  File "/u/niklas2/intrinsic-memory-SNNs/2_training_and_simulation/train/optimize.py", line 623, in main
+    study.optimize(objective, n_trials=args.n_trials)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/optuna/study/study.py", line 475, in optimize
+    _optimize(
+    ~~~~~~~~~^
+        study=self,
+        ^^^^^^^^^^^
+    ...<7 lines>...
+        show_progress_bar=show_progress_bar,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/optuna/study/_optimize.py", line 63, in _optimize
+    _optimize_sequential(
+    ~~~~~~~~~~~~~~~~~~~~^
+        study,
+        ^^^^^^
+    ...<8 lines>...
+        progress_bar=progress_bar,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/optuna/study/_optimize.py", line 160, in _optimize_sequential
+    frozen_trial = _run_trial(study, func, catch)
+  File "/u/niklas2/intrinsic-memory-SNNs/venv/lib/python3.13/site-packages/optuna/study/_optimize.py", line 241, in _run_trial
+    assert False, "Should not reach."
+           ^^^^^
+AssertionError: Should not reach.
