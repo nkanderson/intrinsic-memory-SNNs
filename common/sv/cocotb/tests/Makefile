@@ -11,6 +11,8 @@
 #   make test_linear_layer               # Run linear_layer tests
 #   make test_linear_layer_equivalence   # Run parallel-vs-serial linear_layer equivalence test
 #   make test_neural_network_equivalence # Run parallel-vs-serial neural_network equivalence test
+#   make test_neural_network_bitshift_equivalence    # Same, bitshift LIF variant
+#   make test_neural_network_fractional_equivalence  # Same, fractional LIF variant
 #   make test_spike_buffer               # Run spike_buffer tests
 #   make test_spike_buffer_staggered     # Run spike_buffer_staggered tests (legacy)
 #   make test_membrane_buffer            # Run membrane_buffer tests
@@ -142,6 +144,32 @@ else ifeq ($(TEST),neural_network_equivalence)
                       $(SV_DIR)/q_accumulator.sv
     TOPLEVEL = neural_network_equivalence
     MODULE = test_neural_network_equivalence
+else ifeq ($(TEST),neural_network_bitshift_equivalence)
+    # Equivalence test for the bitshift LIF variant. Recovered pre-refactor
+    # neural_network_bitshift_serial uses linear_layer_serial internally.
+    VERILOG_SOURCES = $(SV_DIR)/neural_network_bitshift_equivalence.sv \
+                      $(SV_DIR)/neural_network_bitshift.sv \
+                      $(SV_DIR)/neural_network_bitshift_serial.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(SV_DIR)/linear_layer_serial.sv \
+                      $(COMMON_NEURON_DIR)/bitshift_lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network_bitshift_equivalence
+    MODULE = test_neural_network_bitshift_equivalence
+else ifeq ($(TEST),neural_network_fractional_equivalence)
+    # Equivalence test for the fractional LIF variant. Recovered pre-refactor
+    # neural_network_fractional_serial uses linear_layer_serial internally.
+    VERILOG_SOURCES = $(SV_DIR)/neural_network_fractional_equivalence.sv \
+                      $(SV_DIR)/neural_network_fractional.sv \
+                      $(SV_DIR)/neural_network_fractional_serial.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(SV_DIR)/linear_layer_serial.sv \
+                      $(COMMON_NEURON_DIR)/fractional_lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network_fractional_equivalence
+    MODULE = test_neural_network_fractional_equivalence
 else ifeq ($(TEST),golden_vectors_lif-64-16)
     VERILOG_SOURCES = $(SV_DIR)/neural_network.sv \
                       $(SV_DIR)/linear_layer.sv \
@@ -308,7 +336,7 @@ else ifeq ($(TEST),cp_integration_frac)
     TOPLEVEL = neural_network_fractional
     MODULE = test_cartpole_integration
 else
-    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'subthreshold_frac', 'subthreshold_bitshift', 'lif_timestep', 'linear_layer', 'linear_layer_equivalence', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'neural_network_equivalence', 'golden_vectors_lif-64-16', 'golden_vectors_lif-32-16', 'golden_vectors_fractional-16-4-32', 'golden_vectors_fractional-32-4-16', 'golden_vectors_bitshift-custom_slow_decay', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
+    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'subthreshold_frac', 'subthreshold_bitshift', 'lif_timestep', 'linear_layer', 'linear_layer_equivalence', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'neural_network_equivalence', 'neural_network_bitshift_equivalence', 'neural_network_fractional_equivalence', 'golden_vectors_lif-64-16', 'golden_vectors_lif-32-16', 'golden_vectors_fractional-16-4-32', 'golden_vectors_fractional-32-4-16', 'golden_vectors_bitshift-custom_slow_decay', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
 endif
 
 # Simulator - use Icarus for all tests (event-driven, correct timing)
@@ -439,6 +467,50 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_equivalence.FC2_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc2_bias.mem\"
         COMPILE_ARGS += -Pneural_network_equivalence.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_weights.mem\"
         COMPILE_ARGS += -Pneural_network_equivalence.FC_OUT_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_bias.mem\"
+    endif
+    ifeq ($(TEST),neural_network_bitshift_equivalence)
+        # Small test config (HL1=8, HL2=4, NUM_TIMESTEPS=4) — reuses nn-test weights.
+        # Models aren't actually trained for these weights; the test only requires
+        # bit-exact agreement between parallel and serial instances, which holds
+        # under any (deterministic) weight values.
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.NUM_INPUTS=4
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.HL1_SIZE=8
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.HL2_SIZE=4
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.NUM_ACTIONS=2
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.NUM_TIMESTEPS=4
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.Q_BATCH_SIZE=2
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.FRAC_BITS=12
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.HISTORY_LENGTH=8
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.SHIFT_WIDTH=8
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.SHIFT_MODE=3
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.CUSTOM_DECAY_RATE=3
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.INV_DENOM=59823
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.FC1_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.FC1_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.FC2_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.FC2_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_bitshift_equivalence.FC_OUT_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_bias.mem\"
+    endif
+    ifeq ($(TEST),neural_network_fractional_equivalence)
+        # Small test config (HL1=8, HL2=4, NUM_TIMESTEPS=4) — reuses nn-test
+        # weights and the existing 8-history GL coefficient file.
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.NUM_INPUTS=4
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.HL1_SIZE=8
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.HL2_SIZE=4
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.NUM_ACTIONS=2
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.NUM_TIMESTEPS=4
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.Q_BATCH_SIZE=2
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.HISTORY_LENGTH=8
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.COEFF_WIDTH=16
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.COEFF_FRAC_BITS=15
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.GL_COEFF_FILE=\"$(PWD)/weights/fractional_gl_coeffs_h8.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.FC1_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.FC1_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.FC2_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.FC2_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional_equivalence.FC_OUT_BIAS_FILE=\"$(PWD)/weights/nn-test/nn_fc_out_bias.mem\"
     endif
     ifeq ($(TEST),golden_vectors_lif-64-16)
         COMPILE_ARGS += -Pneural_network.NUM_INPUTS=4 -Pneural_network.HL1_SIZE=64
@@ -1054,6 +1126,12 @@ test_neural_network:
 
 test_neural_network_equivalence:
 	$(MAKE) TEST=neural_network_equivalence
+
+test_neural_network_bitshift_equivalence:
+	$(MAKE) TEST=neural_network_bitshift_equivalence
+
+test_neural_network_fractional_equivalence:
+	$(MAKE) TEST=neural_network_fractional_equivalence
 
 test_golden_vectors_lif-64-16:
 	$(MAKE) TEST=golden_vectors_lif-64-16
