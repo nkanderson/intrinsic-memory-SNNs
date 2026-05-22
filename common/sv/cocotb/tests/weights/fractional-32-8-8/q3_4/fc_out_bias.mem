@@ -1,0 +1,8 @@
+// Parameter: fc_out.bias
+// Shape: [2]
+// Format: QS-2_4 (3-bit signed, -2 integer bits, 4 fractional bits)
+// Range: [-0.250000, 0.187500], Resolution: 0.437500
+// Total values: 2
+//
+03  // [0] = 0.187500
+03  // [1] = 0.187500

@@ -20,6 +20,8 @@
 #   make cp_integration                  # Run cartpole integration tests
 #   make cp_integration_frac-32-16-64    # Run cp_fractional integration tests
 #   make test_cp_integration_bitshift_custom_slow_decay # Run bitshift custom_slow_decay integration tests
+#   make test_cp_integration_frac-32-8-8-QS2_13 # Run cp_frac-32-8-8 integration tests (v3 Optuna, seed 44, QS2.13 weights)
+#   make test_cp_integration_frac-32-8-8-QS3_4  # Run cp_frac-32-8-8 integration tests (v3 Optuna, seed 44, QS3.4 weights)
 #   make test_cp_integration_frac-16-4-256 # Run cp_frac-16-4-256 integration tests
 #   make clean                           # Clean build artifacts
 
@@ -287,6 +289,26 @@ else ifeq ($(TEST),cp_integration_bitshift_custom_slow_decay)
                       $(SV_DIR)/q_accumulator.sv
     TOPLEVEL = neural_network_bitshift
     MODULE = test_cartpole_integration
+# v3 Optuna study output (seed 44). Same fractional-32-8-8 model with two
+# weight-quantization variants: QS2.13 (16-bit) and QS3.4 (8-bit).
+else ifeq ($(TEST),cp_integration_frac-32-8-8-QS2_13)
+    # Full model integration test with gymnasium using fractional LIF neurons
+    VERILOG_SOURCES = $(SV_DIR)/neural_network_fractional.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/fractional_lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network_fractional
+    MODULE = test_cartpole_integration
+else ifeq ($(TEST),cp_integration_frac-32-8-8-QS3_4)
+    # Full model integration test with gymnasium using fractional LIF neurons
+    VERILOG_SOURCES = $(SV_DIR)/neural_network_fractional.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/fractional_lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network_fractional
+    MODULE = test_cartpole_integration
 # The following cart-pole integration tests are legacy models, but are being
 # maintained as they may serve different purposes (e.g. stress testing in the case
 # of the 256-hist fractional model) and prevent regressions.
@@ -336,7 +358,7 @@ else ifeq ($(TEST),cp_integration_frac)
     TOPLEVEL = neural_network_fractional
     MODULE = test_cartpole_integration
 else
-    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'subthreshold_frac', 'subthreshold_bitshift', 'lif_timestep', 'linear_layer', 'linear_layer_equivalence', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'neural_network_equivalence', 'neural_network_bitshift_equivalence', 'neural_network_fractional_equivalence', 'golden_vectors_lif-64-16', 'golden_vectors_lif-32-16', 'golden_vectors_fractional-16-4-32', 'golden_vectors_fractional-32-4-16', 'golden_vectors_bitshift-custom_slow_decay', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
+    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'subthreshold_frac', 'subthreshold_bitshift', 'lif_timestep', 'linear_layer', 'linear_layer_equivalence', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'neural_network_equivalence', 'neural_network_bitshift_equivalence', 'neural_network_fractional_equivalence', 'golden_vectors_lif-64-16', 'golden_vectors_lif-32-16', 'golden_vectors_fractional-16-4-32', 'golden_vectors_fractional-32-4-16', 'golden_vectors_bitshift-custom_slow_decay', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration_frac-32-8-8-QS2_13', 'cp_integration_frac-32-8-8-QS3_4', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
 endif
 
 # Simulator - use Icarus for all tests (event-driven, correct timing)
@@ -671,6 +693,48 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_bitshift.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_weights.mem\"
         COMPILE_ARGS += -Pneural_network_bitshift.FC_OUT_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_bias.mem\"
     endif
+    # v3 Optuna study output (seed 44). Same fractional-32-8-8 model with two
+    # weight-quantization variants below; non-quantization constants are shared.
+    # INV_DENOM=56330 sourced from weights/fractional-32-8-8/fractional_constants.txt.
+    ifeq ($(TEST),cp_integration_frac-32-8-8-QS2_13)
+        # Fractional model with history_length=8 from weights/fractional-32-8-8/q2_13: 32 HL1, 8 HL2, 10 timesteps.
+        # QS2.13 (16-bit signed, 13 fractional bits) — matches neural_network_fractional defaults.
+        COMPILE_ARGS += -Pneural_network_fractional.NUM_INPUTS=4 -Pneural_network_fractional.HL1_SIZE=32
+        COMPILE_ARGS += -Pneural_network_fractional.HL2_SIZE=8 -Pneural_network_fractional.NUM_ACTIONS=2
+        COMPILE_ARGS += -Pneural_network_fractional.NUM_TIMESTEPS=10 -Pneural_network_fractional.Q_BATCH_SIZE=4
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=8
+        COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=15
+        COMPILE_ARGS += -Pneural_network_fractional.INV_DENOM=56330
+        COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional-32-8-8/gl_coefficients.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_BIAS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_BIAS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc_out_bias.mem\"
+    endif
+    ifeq ($(TEST),cp_integration_frac-32-8-8-QS3_4)
+        # Fractional model with history_length=8 from weights/fractional-32-8-8/q3_4: 32 HL1, 8 HL2, 10 timesteps.
+        # QS3.4 (8-bit signed, 4 fractional bits) — override DATA_WIDTH/FRAC_BITS and rescale
+        # THRESHOLD so 1.0 == 2^FRAC_BITS in the data path.
+        COMPILE_ARGS += -Pneural_network_fractional.NUM_INPUTS=4 -Pneural_network_fractional.HL1_SIZE=32
+        COMPILE_ARGS += -Pneural_network_fractional.HL2_SIZE=8 -Pneural_network_fractional.NUM_ACTIONS=2
+        COMPILE_ARGS += -Pneural_network_fractional.NUM_TIMESTEPS=10 -Pneural_network_fractional.Q_BATCH_SIZE=4
+        COMPILE_ARGS += -Pneural_network_fractional.DATA_WIDTH=8 -Pneural_network_fractional.FRAC_BITS=4
+        COMPILE_ARGS += -Pneural_network_fractional.THRESHOLD=16
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=8
+        COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=15
+        COMPILE_ARGS += -Pneural_network_fractional.INV_DENOM=56330
+        COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional-32-8-8/gl_coefficients.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q3_4/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC1_BIAS_FILE=\"$(PWD)/weights/fractional-32-8-8/q3_4/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q3_4/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC2_BIAS_FILE=\"$(PWD)/weights/fractional-32-8-8/q3_4/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q3_4/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_BIAS_FILE=\"$(PWD)/weights/fractional-32-8-8/q3_4/fc_out_bias.mem\"
+    endif
     ifeq ($(TEST),uart_top_wrapper)
         # End-to-end wrapper test with the lif-64-16 model. BAUD is bumped to
         # 10 Mbaud (10 cycles/bit at 100 MHz) so simulation finishes quickly;
@@ -950,6 +1014,48 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_weights.mem\"
         COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_bias.mem\"
     endif
+    # v3 Optuna study output (seed 44). Same fractional-32-8-8 model with two
+    # weight-quantization variants below; non-quantization constants are shared.
+    # INV_DENOM=56330 sourced from weights/fractional-32-8-8/fractional_constants.txt.
+    ifeq ($(TEST),cp_integration_frac-32-8-8-QS2_13)
+        # Fractional model with history_length=8 from weights/fractional-32-8-8/q2_13: 32 HL1, 8 HL2, 10 timesteps.
+        # QS2.13 (16-bit signed, 13 fractional bits) — matches neural_network_fractional defaults.
+        COMPILE_ARGS += -GNUM_INPUTS=4 -GHL1_SIZE=32
+        COMPILE_ARGS += -GHL2_SIZE=8 -GNUM_ACTIONS=2
+        COMPILE_ARGS += -GNUM_TIMESTEPS=10 -GQ_BATCH_SIZE=4
+        COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -GHISTORY_LENGTH=8
+        COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=15
+        COMPILE_ARGS += -GINV_DENOM=56330
+        COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional-32-8-8/gl_coefficients.mem\"
+        COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc1_weights.mem\"
+        COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc1_bias.mem\"
+        COMPILE_ARGS += -GFC2_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc2_weights.mem\"
+        COMPILE_ARGS += -GFC2_BIAS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc2_bias.mem\"
+        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc_out_weights.mem\"
+        COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc_out_bias.mem\"
+    endif
+    ifeq ($(TEST),cp_integration_frac-32-8-8-QS3_4)
+        # Fractional model with history_length=8 from weights/fractional-32-8-8/q3_4: 32 HL1, 8 HL2, 10 timesteps.
+        # QS3.4 (8-bit signed, 4 fractional bits) — override DATA_WIDTH/FRAC_BITS and rescale
+        # THRESHOLD so 1.0 == 2^FRAC_BITS in the data path.
+        COMPILE_ARGS += -GNUM_INPUTS=4 -GHL1_SIZE=32
+        COMPILE_ARGS += -GHL2_SIZE=8 -GNUM_ACTIONS=2
+        COMPILE_ARGS += -GNUM_TIMESTEPS=10 -GQ_BATCH_SIZE=4
+        COMPILE_ARGS += -GDATA_WIDTH=8 -GFRAC_BITS=4
+        COMPILE_ARGS += -GTHRESHOLD=16
+        COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -GHISTORY_LENGTH=8
+        COMPILE_ARGS += -GCOEFF_WIDTH=16 -GCOEFF_FRAC_BITS=15
+        COMPILE_ARGS += -GINV_DENOM=56330
+        COMPILE_ARGS += -GGL_COEFF_FILE=\"$(PWD)/weights/fractional-32-8-8/gl_coefficients.mem\"
+        COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q3_4/fc1_weights.mem\"
+        COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/fractional-32-8-8/q3_4/fc1_bias.mem\"
+        COMPILE_ARGS += -GFC2_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q3_4/fc2_weights.mem\"
+        COMPILE_ARGS += -GFC2_BIAS_FILE=\"$(PWD)/weights/fractional-32-8-8/q3_4/fc2_bias.mem\"
+        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q3_4/fc_out_weights.mem\"
+        COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/fractional-32-8-8/q3_4/fc_out_bias.mem\"
+    endif
     ifeq ($(TEST),cp_integration)
         # NOTE: This is an older test and should be skipped in most instances. It was one of the inital models created.
         # Full model: 64 HL1, 16 HL2, 30 timesteps
@@ -1174,6 +1280,14 @@ test_cp_integration_lif-64-16:
 test_cp_integration_bitshift_custom_slow_decay:
 	$(MAKE) TEST=cp_integration_bitshift_custom_slow_decay
 
+# v3 Optuna study output (seed 44). Same fractional-32-8-8 model with two
+# weight-quantization variants: QS2.13 (16-bit) and QS3.4 (8-bit).
+test_cp_integration_frac-32-8-8-QS2_13:
+	$(MAKE) TEST=cp_integration_frac-32-8-8-QS2_13
+
+test_cp_integration_frac-32-8-8-QS3_4:
+	$(MAKE) TEST=cp_integration_frac-32-8-8-QS3_4
+
 # The following cart-pole integration tests are legacy models, but are being
 # maintained as they may serve different purposes (e.g. stress testing in the case
 # of the 256-hist fractional model) and prevent regressions.
@@ -1195,4 +1309,4 @@ clean::
 	rm -rf __pycache__
 	rm -rf .pytest_cache
 
-.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_fractional_lif_memory_constant_sweep test_fractional_lif_memory_constant_capture test_fractional_lif_memory_dropout_sweep test_fractional_lif_memory_dropout_capture test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_memory_constant_sweep test_bitshift_lif_memory_constant_capture test_bitshift_lif_memory_dropout_sweep test_bitshift_lif_memory_dropout_capture test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_golden_vectors_lif-64-16 test_golden_vectors_lif-32-16 test_golden_vectors_fractional-16-4-32 test_golden_vectors_fractional-32-4-16 test_golden_vectors_bitshift-custom_slow_decay test_uart_loopback test_uart_accel_ctrl test_uart_top_wrapper test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac
+.PHONY: clean test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_fractional_lif_memory_constant_sweep test_fractional_lif_memory_constant_capture test_fractional_lif_memory_dropout_sweep test_fractional_lif_memory_dropout_capture test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_memory_constant_sweep test_bitshift_lif_memory_constant_capture test_bitshift_lif_memory_dropout_sweep test_bitshift_lif_memory_dropout_capture test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_golden_vectors_lif-64-16 test_golden_vectors_lif-32-16 test_golden_vectors_fractional-16-4-32 test_golden_vectors_fractional-32-4-16 test_golden_vectors_bitshift-custom_slow_decay test_uart_loopback test_uart_accel_ctrl test_uart_top_wrapper test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac-32-8-8-QS2_13 test_cp_integration_frac-32-8-8-QS3_4 test_cp_integration_frac
