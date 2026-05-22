@@ -109,8 +109,10 @@ def get_hl1_size(dut) -> int:
     try:
         return len(dut.hl1_spikes)
     except Exception:
+        # fc1_outputs replaced the legacy hl1_currents capture register
+        # after the parallel linear_layer rewrite (vector + done interface).
         try:
-            return len(dut.hl1_currents)
+            return len(dut.fc1_outputs)
         except Exception:
             return 0
 
@@ -303,16 +305,21 @@ def _safe_hl1_spike_count(dut):
 
 
 def _safe_hl1_sample(dut, sample_size: int = 8) -> tuple[str, str]:
-    """Capture small HL1 current/spike samples for timestep-0 sensitivity checks."""
+    """Capture small HL1 current/spike samples for timestep-0 sensitivity checks.
+
+    After the parallel linear_layer rewrite, HL1 currents are read directly
+    from `dut.fc1_outputs` (the registered vector output of the fc1 instance)
+    instead of the legacy `hl1_currents` capture register array.
+    """
     try:
-        num_curr = len(dut.hl1_currents)
+        num_curr = len(dut.fc1_outputs)
         num_spk = len(dut.hl1_spikes)
         sample_n = min(sample_size, num_curr, num_spk)
 
         currents = []
         spikes = []
         for i in range(sample_n):
-            curr = _safe_array_int(dut, "hl1_currents", i, bits=TOTAL_BITS)
+            curr = _safe_array_int(dut, "fc1_outputs", i, bits=TOTAL_BITS)
             spk = _safe_array_int(dut, "hl1_spikes", i)
             currents.append("" if curr == "" else str(curr))
             spikes.append("" if spk == "" else str(spk))
@@ -356,12 +363,16 @@ async def run_inference_with_timestep_snapshots(
     for cycle in range(timeout_cycles):
         await RisingEdge(dut.clk)
 
-        if int(dut.fc2_output_valid.value) == 1:
+        # After the parallel linear_layer rewrite, fc2 no longer streams one
+        # output per cycle. Instead it pulses fc2_done once and registers the
+        # full output vector simultaneously. We synthesize the per-output
+        # "fc2_stream" records by iterating fc2_outputs[] on the fc2_done
+        # cycle. fc2.sat_pos/sat_neg are now STICKY flags (cleared on start,
+        # OR'd across all outputs); the count therefore measures "fc2 runs
+        # with any saturation" rather than "saturating outputs", but the
+        # zero/nonzero distinction the saturation test checks is preserved.
+        if int(dut.fc2_done.value) == 1:
             ts = int(dut.current_timestep.value)
-            fc2_idx = int(dut.fc2_output_idx.value)
-            fc2_raw = int(dut.fc2_output_current.value)
-            fc2_bits = len(dut.fc2_output_current)
-            fc2_signed = to_signed(fc2_raw, fc2_bits)
             fc2_sat_pos = _safe_int(dut.fc2.sat_pos)
             fc2_sat_neg = _safe_int(dut.fc2.sat_neg)
             if fc2_sat_pos != "":
@@ -369,49 +380,68 @@ async def run_inference_with_timestep_snapshots(
             if fc2_sat_neg != "":
                 fc2_sat_neg_count += int(fc2_sat_neg)
 
-            if full_debug and ts == 0 and fc2_idx == 0 and hl1_t0_curr_sample == "":
+            if full_debug and ts == 0 and hl1_t0_curr_sample == "":
                 hl1_t0_curr_sample, hl1_t0_spike_sample = _safe_hl1_sample(dut)
 
-            records.append(
-                {
-                    "inference": inference_idx,
-                    "cycle": cycle,
-                    "stage": "fc2_stream",
-                    "timestep": ts,
-                    "fc2_idx": fc2_idx,
-                    "fc2_raw": fc2_raw,
-                    "fc2_signed": fc2_signed,
-                    "fc2_float": fc2_signed / scale_factor,
-                    "fc2_sat_pos": fc2_sat_pos,
-                    "fc2_sat_neg": fc2_sat_neg,
-                    "fc2_sat_pos_count": fc2_sat_pos_count,
-                    "fc2_sat_neg_count": fc2_sat_neg_count,
-                    "obs0": obs_floats[0],
-                    "obs1": obs_floats[1],
-                    "obs2": obs_floats[2],
-                    "obs3": obs_floats[3],
-                    "obs0_fixed": obs_fixed[0],
-                    "obs1_fixed": obs_fixed[1],
-                    "obs2_fixed": obs_fixed[2],
-                    "obs3_fixed": obs_fixed[3],
-                    "hl1_spike_count": _safe_hl1_spike_count(dut) if full_debug else "",
-                    "hl1_t0_curr_sample": hl1_t0_curr_sample if full_debug else "",
-                    "hl1_t0_spike_sample": hl1_t0_spike_sample if full_debug else "",
-                    "hl2_mem_mean": "",
-                    "hl2_mem_max": "",
-                    "hl2_mem_min": "",
-                    "q_read_timestep": "",
-                    "q_state": "",
-                    "q_accum0": "",
-                    "q_accum1": "",
-                    "q_div0": "",
-                    "q_div1": "",
-                    "selected_action": "",
-                }
-            )
+            hl2_size = get_hl2_size(dut)
+            for fc2_idx in range(hl2_size):
+                fc2_raw = _safe_array_int(dut, "fc2_outputs", fc2_idx)
+                if fc2_raw == "":
+                    continue
+                try:
+                    fc2_bits = len(dut.fc2_outputs[fc2_idx])
+                except Exception:
+                    fc2_bits = TOTAL_BITS  # safe fallback
+                fc2_signed = to_signed(fc2_raw, fc2_bits)
+                records.append(
+                    {
+                        "inference": inference_idx,
+                        "cycle": cycle,
+                        "stage": "fc2_stream",
+                        "timestep": ts,
+                        "fc2_idx": fc2_idx,
+                        "fc2_raw": fc2_raw,
+                        "fc2_signed": fc2_signed,
+                        "fc2_float": fc2_signed / scale_factor,
+                        "fc2_sat_pos": fc2_sat_pos,
+                        "fc2_sat_neg": fc2_sat_neg,
+                        "fc2_sat_pos_count": fc2_sat_pos_count,
+                        "fc2_sat_neg_count": fc2_sat_neg_count,
+                        "obs0": obs_floats[0],
+                        "obs1": obs_floats[1],
+                        "obs2": obs_floats[2],
+                        "obs3": obs_floats[3],
+                        "obs0_fixed": obs_fixed[0],
+                        "obs1_fixed": obs_fixed[1],
+                        "obs2_fixed": obs_fixed[2],
+                        "obs3_fixed": obs_fixed[3],
+                        "hl1_spike_count": (
+                            _safe_hl1_spike_count(dut) if full_debug else ""
+                        ),
+                        "hl1_t0_curr_sample": (
+                            hl1_t0_curr_sample if full_debug else ""
+                        ),
+                        "hl1_t0_spike_sample": (
+                            hl1_t0_spike_sample if full_debug else ""
+                        ),
+                        "hl2_mem_mean": "",
+                        "hl2_mem_max": "",
+                        "hl2_mem_min": "",
+                        "q_read_timestep": "",
+                        "q_state": "",
+                        "q_accum0": "",
+                        "q_accum1": "",
+                        "q_div0": "",
+                        "q_div1": "",
+                        "selected_action": "",
+                    }
+                )
 
-        if int(dut.fc2_done.value) == 1:
-            ts = int(dut.current_timestep.value)
+            # Timestep summary follows the fc2_stream records. HL2 membranes
+            # at this cycle still hold values from the PREVIOUS timestep (HL2
+            # LIFs haven't fired yet for this timestep — that happens in
+            # TS_HL2_STEP after fc2_done). This matches the prior serial
+            # behavior, where the last HL2 LIF was also stale at fc2_done.
             hl2_mem_vals = [
                 to_signed(int(dut.hl2_membranes[i].value), 24)
                 for i in range(get_hl2_size(dut))
