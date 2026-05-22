@@ -345,10 +345,14 @@ STACK_Y_TICKS = [100, 300, 500]
 def _stack_panel_label(ax, label: str) -> None:
     """Place the config name in the upper-left corner of a stacked panel."""
     ax.text(
-        0.012, 0.92, label,
+        0.012,
+        0.92,
+        label,
         transform=ax.transAxes,
-        fontsize=LEGEND_FONTSIZE, fontweight="bold",
-        va="top", ha="left",
+        fontsize=LEGEND_FONTSIZE,
+        fontweight="bold",
+        va="top",
+        ha="left",
         bbox=dict(facecolor="white", edgecolor="none", alpha=0.85, pad=2),
     )
 
@@ -370,7 +374,8 @@ def plot_cross_config_stacked(
     """
     n = len(configs)
     fig, axes = plt.subplots(
-        n, 1,
+        n,
+        1,
         figsize=(DEFAULT_FIGSIZE[0], 1.9 * n + 1.0),
         sharex=True,
         constrained_layout=True,
@@ -386,9 +391,12 @@ def plot_cross_config_stacked(
 
         for i in range(n_seeds):
             ax.plot(
-                episodes, mat[i],
-                alpha=0.35, linewidth=0.7,
-                color=COLOR_RAW, zorder=1,
+                episodes,
+                mat[i],
+                alpha=0.35,
+                linewidth=0.7,
+                color=COLOR_RAW,
+                zorder=1,
             )
 
         iqm, lo, hi = _per_episode_band(mat)
@@ -419,16 +427,30 @@ def plot_cross_config_stacked(
     # IQM/band entries since each panel uses its own config color.
     NEUTRAL = "#555555"
     legend_handles = [
-        Line2D([0], [0], color=COLOR_RAW, linewidth=0.8, alpha=0.6,
-               label="Individual seeds"),
+        Line2D(
+            [0],
+            [0],
+            color=COLOR_RAW,
+            linewidth=0.8,
+            alpha=0.6,
+            label="Individual seeds",
+        ),
         Line2D([0], [0], color=NEUTRAL, linewidth=1.8, label="IQM"),
         Patch(facecolor=NEUTRAL, alpha=0.2, label="IQR (25–75th %ile)"),
-        Line2D([0], [0], color=COLOR_THRESHOLD, linestyle="--", linewidth=0.9,
-               label=f"solved ({SUCCESS_THRESHOLD:.0f})"),
+        Line2D(
+            [0],
+            [0],
+            color=COLOR_THRESHOLD,
+            linestyle="--",
+            linewidth=0.9,
+            label=f"solved ({SUCCESS_THRESHOLD:.0f})",
+        ),
     ]
     axes[-1].legend(
-        handles=legend_handles, loc="lower right",
-        fontsize=LEGEND_FONTSIZE, framealpha=0.9,
+        handles=legend_handles,
+        loc="lower right",
+        fontsize=LEGEND_FONTSIZE,
+        framealpha=0.9,
     )
 
     return _savefig(
@@ -691,7 +713,8 @@ def plot_drawdown_curve(
     if stacked:
         n = len(configs)
         fig, axes = plt.subplots(
-            n, 1,
+            n,
+            1,
             figsize=(DEFAULT_FIGSIZE[0], 1.9 * n + 1.0),
             sharex=True,
             constrained_layout=True,
@@ -721,9 +744,7 @@ def plot_drawdown_curve(
         ax.plot(episodes, iqm, color=color, linewidth=2.0, label=cfg)
         ax.fill_between(episodes, lo, hi, color=color, alpha=0.2)
     ax.set_xlabel("Episode", fontsize=AXIS_LABEL_FONTSIZE)
-    ax.set_ylabel(
-        "Drawdown from running peak (reward)", fontsize=AXIS_LABEL_FONTSIZE
-    )
+    ax.set_ylabel("Drawdown from running peak (reward)", fontsize=AXIS_LABEL_FONTSIZE)
     ax.tick_params(labelsize=TICK_LABEL_FONTSIZE)
     ax.legend(loc="upper left", fontsize=LEGEND_FONTSIZE)
     ax.grid(True, alpha=0.3)
@@ -946,9 +967,7 @@ def plot_post_solve_dip_strip(
         for i in range(n_total):
             run_row = running_mat[i]
             raw_row = raw_mat[i]
-            crossings = np.where(
-                ~np.isnan(run_row) & (run_row >= SUCCESS_THRESHOLD)
-            )[0]
+            crossings = np.where(~np.isnan(run_row) & (run_row >= SUCCESS_THRESHOLD))[0]
             if crossings.size == 0:
                 continue
             t_solved = int(crossings[0])
@@ -966,8 +985,11 @@ def plot_post_solve_dip_strip(
                 [x - 0.18, x + 0.18], [median_y, median_y], color=color, linewidth=2.0
             )
         ax.text(
-            x, 0.06, f"{n_solved}/{n_total}",
-            ha="center", va="bottom",
+            x,
+            0.06,
+            f"{n_solved}/{n_total}",
+            ha="center",
+            va="bottom",
             fontsize=LEGEND_FONTSIZE,
             transform=ax.get_xaxis_transform(),
             bbox=dict(
@@ -992,9 +1014,7 @@ def plot_post_solve_dip_strip(
 def _parse_run_arg(spec: str) -> tuple[str, Path]:
     """Parse a --run LABEL=PATH argument into (label, Path)."""
     if "=" not in spec:
-        raise argparse.ArgumentTypeError(
-            f"--run expects LABEL=PATH, got {spec!r}"
-        )
+        raise argparse.ArgumentTypeError(f"--run expects LABEL=PATH, got {spec!r}")
     label, path = spec.split("=", 1)
     label = label.strip()
     path = path.strip()
@@ -1014,8 +1034,8 @@ def main():
         action="append",
         default=[],
         help="Config name (CSV stem). Repeatable for cross-config plots. "
-             "CSVs are resolved under <metrics-dir>/<config-name>/ (or "
-             "<metrics-dir>/ for the legacy flat layout).",
+        "CSVs are resolved under <metrics-dir>/<config-name>/ (or "
+        "<metrics-dir>/ for the legacy flat layout).",
     )
     parser.add_argument(
         "--run",
@@ -1023,18 +1043,18 @@ def main():
         default=[],
         type=_parse_run_arg,
         help="Add a run as LABEL=PATH. PATH points directly at the directory "
-             "containing *-seed*.csv files; the CSV base name is inferred. "
-             "Use this for the wrapped buffer-size layout where inner files "
-             "keep the original config name (e.g. "
-             "--run 25k=metrics/multi-seed/fractional-32-8-8-25k/fractional-32-8-8). "
-             "Repeatable; ordering in the CLI is preserved in every plot.",
+        "containing *-seed*.csv files; the CSV base name is inferred. "
+        "Use this for the wrapped buffer-size layout where inner files "
+        "keep the original config name (e.g. "
+        "--run 25k=metrics/multi-seed/fractional-32-8-8-25k/fractional-32-8-8). "
+        "Repeatable; ordering in the CLI is preserved in every plot.",
     )
     parser.add_argument(
         "--metrics-dir",
         type=str,
         default="metrics/multi-seed",
         help="Directory containing the per-seed and summary CSVs. Used only "
-             "by --config-name resolution.",
+        "by --config-name resolution.",
     )
     parser.add_argument(
         "--output-dir",
@@ -1048,16 +1068,16 @@ def main():
         choices=["png", "svg", "pdf"],
         default="png",
         help="Output format. Use svg or pdf for paper-ready vector figures; "
-             "png is the convenient development default.",
+        "png is the convenient development default.",
     )
     parser.add_argument(
         "--stacked",
         action="store_true",
         help="For the cross-config learning curve, produce a one-row-per-"
-             "config stacked layout (shared x-axis, shared y-limits) instead "
-             "of the overlaid plot. Mirrors the stacked variant in "
-             "visualize_training_metrics.py. Also applies to the "
-             "drawdown-curve plot.",
+        "config stacked layout (shared x-axis, shared y-limits) instead "
+        "of the overlaid plot. Mirrors the stacked variant in "
+        "visualize_training_metrics.py. Also applies to the "
+        "drawdown-curve plot.",
     )
     args = parser.parse_args()
 
@@ -1098,7 +1118,13 @@ def main():
         summary_by_label[label] = load_summary(csv_dir, base)
 
         out = plot_learning_curve(
-            label, seeds, episodes, running_mat, summary_by_label[label], output_dir, fmt
+            label,
+            seeds,
+            episodes,
+            running_mat,
+            summary_by_label[label],
+            output_dir,
+            fmt,
         )
         print(f"  wrote {out}")
         out = plot_loss_curves(label, episodes, loss_mat, output_dir, fmt)
@@ -1108,11 +1134,21 @@ def main():
     if len(labels) >= 2:
         if args.stacked:
             out = plot_cross_config_stacked(
-                labels, episodes_by_label, running_by_label, summary_by_label, output_dir, fmt
+                labels,
+                episodes_by_label,
+                running_by_label,
+                summary_by_label,
+                output_dir,
+                fmt,
             )
         else:
             out = plot_cross_config(
-                labels, episodes_by_label, running_by_label, summary_by_label, output_dir, fmt
+                labels,
+                episodes_by_label,
+                running_by_label,
+                summary_by_label,
+                output_dir,
+                fmt,
             )
         print(f"  wrote {out}")
         out = plot_convergence_strip(labels, summary_by_label, output_dir, fmt)
@@ -1130,8 +1166,13 @@ def main():
     # plots are meaningful even for a single config; seed-disagreement is
     # a comparison and needs 2+.
     out = plot_drawdown_curve(
-        labels, episodes_by_label, running_by_label, summary_by_label,
-        output_dir, fmt, stacked=args.stacked,
+        labels,
+        episodes_by_label,
+        running_by_label,
+        summary_by_label,
+        output_dir,
+        fmt,
+        stacked=args.stacked,
     )
     print(f"  wrote {out}")
     out = plot_raw_volatility_bars(labels, raw_by_label, output_dir, fmt)
