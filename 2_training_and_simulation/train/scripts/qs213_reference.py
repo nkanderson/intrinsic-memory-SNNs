@@ -391,6 +391,25 @@ def model_matrix() -> Dict[str, ModelConfig]:
             inv_denom_frac_bits=16,
             gl_coeff_file="../gl_coefficients.mem",
         ),
+        "bitshift-64-32-4": ModelConfig(
+            name="bitshift-64-32-4",
+            neuron_type="bitshift",
+            num_inputs=4,
+            hl1_size=64,
+            hl2_size=32,
+            num_actions=2,
+            num_timesteps=20,
+            threshold=THRESHOLD,
+            fc2_output_width=24,
+            frac_bits=13,
+            weights_dir=base / "bitshift-64-32-4",
+            history_length=4,
+            shift_width=8,
+            shift_mode=3,
+            custom_decay_rate=3,
+            inv_denom=52475,
+            inv_denom_frac_bits=16,
+        ),
         "bitshift-custom_slow_decay": ModelConfig(
             name="bitshift-custom_slow_decay",
             neuron_type="bitshift",
@@ -562,7 +581,7 @@ def main() -> int:
     parser.add_argument(
         "--model",
         default="lif-64-16",
-        help="Model name (lif-64-16, lif-32-16, fractional-16-4-32, fractional-32-4-16, frac-32-8-8-q2_13, bitshift-custom_slow_decay)",
+        help="Model name (lif-64-16, lif-32-16, fractional-16-4-32, fractional-32-4-16, frac-32-8-8-q2_13, bitshift-custom_slow_decay, bitshift-64-32-4)",
     )
     parser.add_argument(
         "--obs",
