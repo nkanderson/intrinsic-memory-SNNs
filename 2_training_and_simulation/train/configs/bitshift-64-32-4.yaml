@@ -30,3 +30,4 @@ snn:
   beta: 0.9
   alpha: 0.5
   dt: 1.0
+  shift_func: custom_slow_decay
