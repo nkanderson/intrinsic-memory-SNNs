@@ -1,0 +1,164 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.1 (lin64) Build 6140274 Wed May 21 22:58:25 MDT 2025
+| Date         : Sat May 23 14:03:26 2026
+| Host         : niklas.ece.pdx.edu running 64-bit Pop!_OS 22.04 LTS
+| Command      : report_utilization -hierarchical -hierarchical_depth 3 -file results/bitshift-64-32-4/post_synth_hier.rpt
+| Design       : board_top_bitshift_64_32_4
+| Device       : xc7a100tcsg324-1
+| Speed File   : -1
+| Design State : Synthesized
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++---------------------------------+----------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+|             Instance            |              Module              | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs  | RAMB36 | RAMB18 | DSP Blocks |
++---------------------------------+----------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+| board_top_bitshift_64_32_4      |                            (top) |      67878 |      67878 |       0 |    0 | 41849 |      0 |      0 |         34 |
+|   (board_top_bitshift_64_32_4)  |                            (top) |          1 |          1 |       0 |    0 |    28 |      0 |      0 |          0 |
+|   u_accel                       |           top_uart_accel_wrapper |      67877 |      67877 |       0 |    0 | 41821 |      0 |      0 |         34 |
+|     u_ctrl                      |                  uart_accel_ctrl |       1134 |       1134 |       0 |    0 |   416 |      0 |      0 |          0 |
+|     gen_nn_bitshift.u_accel     |          neural_network_bitshift |      66683 |      66683 |       0 |    0 | 41353 |      0 |      0 |         34 |
+|       (gen_nn_bitshift.u_accel) |          neural_network_bitshift |         11 |         11 |       0 |    0 |   142 |      0 |      0 |          0 |
+|       fc1                       |                     linear_layer |       1384 |       1384 |       0 |    0 |  1664 |      0 |      0 |         16 |
+|       fc2                       |     linear_layer__parameterized0 |       1603 |       1603 |       0 |    0 |  1475 |      0 |      0 |         16 |
+|       gen_hl1_lif[0].hl1_lif    |                     bitshift_lif |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[10].hl1_lif   |                   bitshift_lif_0 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[11].hl1_lif   |                   bitshift_lif_1 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[12].hl1_lif   |                   bitshift_lif_2 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[13].hl1_lif   |                   bitshift_lif_3 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[14].hl1_lif   |                   bitshift_lif_4 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[15].hl1_lif   |                   bitshift_lif_5 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[16].hl1_lif   |                   bitshift_lif_6 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[17].hl1_lif   |                   bitshift_lif_7 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[18].hl1_lif   |                   bitshift_lif_8 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[19].hl1_lif   |                   bitshift_lif_9 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[1].hl1_lif    |                  bitshift_lif_10 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[20].hl1_lif   |                  bitshift_lif_11 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[21].hl1_lif   |                  bitshift_lif_12 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[22].hl1_lif   |                  bitshift_lif_13 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[23].hl1_lif   |                  bitshift_lif_14 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[24].hl1_lif   |                  bitshift_lif_15 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[25].hl1_lif   |                  bitshift_lif_16 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[26].hl1_lif   |                  bitshift_lif_17 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[27].hl1_lif   |                  bitshift_lif_18 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[28].hl1_lif   |                  bitshift_lif_19 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[29].hl1_lif   |                  bitshift_lif_20 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[2].hl1_lif    |                  bitshift_lif_21 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[30].hl1_lif   |                  bitshift_lif_22 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[31].hl1_lif   |                  bitshift_lif_23 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[32].hl1_lif   |                  bitshift_lif_24 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[33].hl1_lif   |                  bitshift_lif_25 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[34].hl1_lif   |                  bitshift_lif_26 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[35].hl1_lif   |                  bitshift_lif_27 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[36].hl1_lif   |                  bitshift_lif_28 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[37].hl1_lif   |                  bitshift_lif_29 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[38].hl1_lif   |                  bitshift_lif_30 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[39].hl1_lif   |                  bitshift_lif_31 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[3].hl1_lif    |                  bitshift_lif_32 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[40].hl1_lif   |                  bitshift_lif_33 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[41].hl1_lif   |                  bitshift_lif_34 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[42].hl1_lif   |                  bitshift_lif_35 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[43].hl1_lif   |                  bitshift_lif_36 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[44].hl1_lif   |                  bitshift_lif_37 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[45].hl1_lif   |                  bitshift_lif_38 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[46].hl1_lif   |                  bitshift_lif_39 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[47].hl1_lif   |                  bitshift_lif_40 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[48].hl1_lif   |                  bitshift_lif_41 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[49].hl1_lif   |                  bitshift_lif_42 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[4].hl1_lif    |                  bitshift_lif_43 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[50].hl1_lif   |                  bitshift_lif_44 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[51].hl1_lif   |                  bitshift_lif_45 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[52].hl1_lif   |                  bitshift_lif_46 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[53].hl1_lif   |                  bitshift_lif_47 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[54].hl1_lif   |                  bitshift_lif_48 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[55].hl1_lif   |                  bitshift_lif_49 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[56].hl1_lif   |                  bitshift_lif_50 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[57].hl1_lif   |                  bitshift_lif_51 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[58].hl1_lif   |                  bitshift_lif_52 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[59].hl1_lif   |                  bitshift_lif_53 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[5].hl1_lif    |                  bitshift_lif_54 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[60].hl1_lif   |                  bitshift_lif_55 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[61].hl1_lif   |                  bitshift_lif_56 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[62].hl1_lif   |                  bitshift_lif_57 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[63].hl1_lif   |                  bitshift_lif_58 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[6].hl1_lif    |                  bitshift_lif_59 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[7].hl1_lif    |                  bitshift_lif_60 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[8].hl1_lif    |                  bitshift_lif_61 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl1_lif[9].hl1_lif    |                  bitshift_lif_62 |        607 |        607 |       0 |    0 |   224 |      0 |      0 |          0 |
+|       gen_hl2[0].hl2_lif        |     bitshift_lif__parameterized0 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[0].membrane_buf   |           neuron_membrane_buffer |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[10].hl2_lif       |  bitshift_lif__parameterized0_63 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[10].membrane_buf  |        neuron_membrane_buffer_64 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[11].hl2_lif       |  bitshift_lif__parameterized0_65 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[11].membrane_buf  |        neuron_membrane_buffer_66 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[12].hl2_lif       |  bitshift_lif__parameterized0_67 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[12].membrane_buf  |        neuron_membrane_buffer_68 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[13].hl2_lif       |  bitshift_lif__parameterized0_69 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[13].membrane_buf  |        neuron_membrane_buffer_70 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[14].hl2_lif       |  bitshift_lif__parameterized0_71 |        617 |        617 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[14].membrane_buf  |        neuron_membrane_buffer_72 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[15].hl2_lif       |  bitshift_lif__parameterized0_73 |        614 |        614 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[15].membrane_buf  |        neuron_membrane_buffer_74 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[16].hl2_lif       |  bitshift_lif__parameterized0_75 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[16].membrane_buf  |        neuron_membrane_buffer_76 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[17].hl2_lif       |  bitshift_lif__parameterized0_77 |        614 |        614 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[17].membrane_buf  |        neuron_membrane_buffer_78 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[18].hl2_lif       |  bitshift_lif__parameterized0_79 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[18].membrane_buf  |        neuron_membrane_buffer_80 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[19].hl2_lif       |  bitshift_lif__parameterized0_81 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[19].membrane_buf  |        neuron_membrane_buffer_82 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[1].hl2_lif        |  bitshift_lif__parameterized0_83 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[1].membrane_buf   |        neuron_membrane_buffer_84 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[20].hl2_lif       |  bitshift_lif__parameterized0_85 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[20].membrane_buf  |        neuron_membrane_buffer_86 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[21].hl2_lif       |  bitshift_lif__parameterized0_87 |        614 |        614 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[21].membrane_buf  |        neuron_membrane_buffer_88 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[22].hl2_lif       |  bitshift_lif__parameterized0_89 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[22].membrane_buf  |        neuron_membrane_buffer_90 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[23].hl2_lif       |  bitshift_lif__parameterized0_91 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[23].membrane_buf  |        neuron_membrane_buffer_92 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[24].hl2_lif       |  bitshift_lif__parameterized0_93 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[24].membrane_buf  |        neuron_membrane_buffer_94 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[25].hl2_lif       |  bitshift_lif__parameterized0_95 |        614 |        614 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[25].membrane_buf  |        neuron_membrane_buffer_96 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[26].hl2_lif       |  bitshift_lif__parameterized0_97 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[26].membrane_buf  |        neuron_membrane_buffer_98 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[27].hl2_lif       |  bitshift_lif__parameterized0_99 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[27].membrane_buf  |       neuron_membrane_buffer_100 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[28].hl2_lif       | bitshift_lif__parameterized0_101 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[28].membrane_buf  |       neuron_membrane_buffer_102 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[29].hl2_lif       | bitshift_lif__parameterized0_103 |        614 |        614 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[29].membrane_buf  |       neuron_membrane_buffer_104 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[2].hl2_lif        | bitshift_lif__parameterized0_105 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[2].membrane_buf   |       neuron_membrane_buffer_106 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[30].hl2_lif       | bitshift_lif__parameterized0_107 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[30].membrane_buf  |       neuron_membrane_buffer_108 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[31].hl2_lif       | bitshift_lif__parameterized0_109 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[31].membrane_buf  |       neuron_membrane_buffer_110 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[3].hl2_lif        | bitshift_lif__parameterized0_111 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[3].membrane_buf   |       neuron_membrane_buffer_112 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[4].hl2_lif        | bitshift_lif__parameterized0_113 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[4].membrane_buf   |       neuron_membrane_buffer_114 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[5].hl2_lif        | bitshift_lif__parameterized0_115 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[5].membrane_buf   |       neuron_membrane_buffer_116 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[6].hl2_lif        | bitshift_lif__parameterized0_117 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[6].membrane_buf   |       neuron_membrane_buffer_118 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[7].hl2_lif        | bitshift_lif__parameterized0_119 |        614 |        614 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[7].membrane_buf   |       neuron_membrane_buffer_120 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[8].hl2_lif        | bitshift_lif__parameterized0_121 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[8].membrane_buf   |       neuron_membrane_buffer_122 |        141 |        141 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       gen_hl2[9].hl2_lif        | bitshift_lif__parameterized0_123 |        613 |        613 |       0 |    0 |   258 |      0 |      0 |          0 |
+|       gen_hl2[9].membrane_buf   |       neuron_membrane_buffer_124 |        165 |        165 |       0 |    0 |   480 |      0 |      0 |          0 |
+|       q_accum                   |                    q_accumulator |        315 |        315 |       0 |    0 |   120 |      0 |      0 |          2 |
++---------------------------------+----------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+
+

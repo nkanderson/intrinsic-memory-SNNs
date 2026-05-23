@@ -89,6 +89,15 @@ CONFIGS: list[Config] = [
         weights_dir="fractional-32-8-8/q2_13",
         display_label="Frac 32-8 Q2.13",
     ),
+    Config(
+        name="bitshift-64-32-4",
+        neuron_type="bitshift",
+        cocotb_test_target="cp_integration_bitshift_64_32_4",
+        board_top="board_top_bitshift_64_32_4",
+        xdc="nexys_a7_general.xdc",
+        weights_dir="bitshift-64-32-4",
+        display_label="Bitshift 64-32-4",
+    ),
 ]
 
 

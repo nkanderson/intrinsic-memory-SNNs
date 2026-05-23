@@ -1,0 +1,874 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.1 (lin64) Build 6140274 Wed May 21 22:58:25 MDT 2025
+| Date         : Sat May 23 13:10:33 2026
+| Host         : niklas.ece.pdx.edu running 64-bit Pop!_OS 22.04 LTS
+| Command      : report_drc -file board_top_bitshift_64_32_4_drc_opted.rpt -pb board_top_bitshift_64_32_4_drc_opted.pb -rpx board_top_bitshift_64_32_4_drc_opted.rpx
+| Design       : board_top_bitshift_64_32_4
+| Device       : xc7a100tcsg324-1
+| Speed File   : -1
+| Design State : Synthesized
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Report DRC
+
+Table of Contents
+-----------------
+1. REPORT SUMMARY
+2. REPORT DETAILS
+
+1. REPORT SUMMARY
+-----------------
+            Netlist: netlist
+          Floorplan: design_1
+      Design limits: <entire design considered>
+           Ruledeck: default
+             Max checks: <unlimited>
+             Checks found: 167
++--------+----------+------------------------+--------+
+| Rule   | Severity | Description            | Checks |
++--------+----------+------------------------+--------+
+| UTLZ-1 | Error    | Resource utilization   | 1      |
+| DPIP-1 | Warning  | Input pipelining       | 100    |
+| DPOP-1 | Warning  | PREG Output pipelining | 32     |
+| DPOP-2 | Warning  | MREG Output pipelining | 34     |
++--------+----------+------------------------+--------+
+
+2. REPORT DETAILS
+-----------------
+UTLZ-1#1 Error
+Resource utilization  - PBlock:ROOT
+LUT as Logic over-utilized in Top Level Design (This design requires more LUT as Logic cells than are available in the target device. This design requires 67878 of such cell types but only 63400 compatible sites are available in the target device. Please analyze your synthesis results and constraints to ensure the design is mapped to Xilinx primitives as expected. If so, please consider targeting a larger device. Please set tcl parameter "drc.disableLUTOverUtilError" to 1 to change this error to warning.)ROOT
+Related violations: <none>
+
+DPIP-1#1 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[0]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[0]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#2 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[0]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[0]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#3 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[0]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[0]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#4 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[10]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[10]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#5 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[10]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[10]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#6 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[10]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[10]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#7 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[11]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[11]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#8 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[11]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[11]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#9 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[11]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[11]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#10 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[12]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[12]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#11 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[12]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[12]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#12 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[12]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[12]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#13 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[13]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[13]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#14 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[13]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[13]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#15 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[13]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[13]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#16 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[14]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[14]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#17 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[14]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[14]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#18 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[14]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[14]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#19 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[15]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[15]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#20 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[15]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[15]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#21 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[15]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[15]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#22 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[1]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[1]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#23 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[1]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[1]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#24 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[1]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[1]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#25 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[2]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[2]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#26 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[2]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[2]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#27 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[2]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[2]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#28 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[3]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[3]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#29 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[3]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[3]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#30 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[3]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[3]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#31 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[4]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[4]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#32 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[4]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[4]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#33 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[4]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[4]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#34 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[5]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[5]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#35 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[5]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[5]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#36 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[5]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[5]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#37 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[6]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[6]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#38 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[6]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[6]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#39 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[6]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[6]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#40 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[7]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[7]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#41 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[7]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[7]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#42 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[7]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[7]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#43 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[8]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[8]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#44 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[8]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[8]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#45 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[8]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[8]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#46 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[9]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[9]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#47 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[9]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[9]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#48 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[9]1 input u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[9]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#49 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[0]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[0]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#50 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[0]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[0]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#51 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[0]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[0]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#52 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[10]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[10]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#53 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[10]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[10]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#54 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[10]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[10]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#55 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[11]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[11]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#56 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[11]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[11]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#57 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[11]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[11]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#58 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[12]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[12]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#59 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[12]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[12]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#60 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[12]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[12]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#61 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[13]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[13]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#62 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[13]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[13]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#63 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[13]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[13]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#64 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[14]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[14]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#65 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[14]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[14]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#66 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[14]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[14]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#67 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[15]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[15]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#68 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[15]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[15]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#69 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[15]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[15]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#70 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[1]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[1]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#71 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[1]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[1]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#72 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[1]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[1]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#73 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[2]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[2]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#74 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[2]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[2]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#75 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[2]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[2]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#76 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[3]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[3]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#77 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[3]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[3]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#78 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[3]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[3]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#79 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[4]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[4]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#80 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[4]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[4]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#81 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[4]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[4]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#82 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[5]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[5]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#83 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[5]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[5]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#84 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[5]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[5]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#85 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[6]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[6]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#86 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[6]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[6]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#87 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[6]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[6]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#88 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[7]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[7]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#89 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[7]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[7]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#90 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[7]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[7]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#91 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[8]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[8]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#92 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[8]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[8]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#93 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[8]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[8]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#94 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[9]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[9]1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#95 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[9]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[9]1/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#96 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[9]1 input u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[9]1/C[47:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#97 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/q_accum/p_0_out input u_accel/gen_nn_bitshift.u_accel/q_accum/p_0_out/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#98 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/q_accum/p_0_out input u_accel/gen_nn_bitshift.u_accel/q_accum/p_0_out/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#99 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/q_accum/p_0_out__0 input u_accel/gen_nn_bitshift.u_accel/q_accum/p_0_out__0/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#100 Warning
+Input pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/q_accum/p_0_out__0 input u_accel/gen_nn_bitshift.u_accel/q_accum/p_0_out__0/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPOP-1#1 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[0]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[0]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#2 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[10]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[10]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#3 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[11]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[11]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#4 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[12]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[12]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#5 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[13]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[13]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#6 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[14]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[14]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#7 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[15]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[15]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#8 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[1]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[1]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#9 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[2]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[2]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#10 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[3]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[3]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#11 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[4]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[4]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#12 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[5]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[5]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#13 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[6]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[6]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#14 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[7]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[7]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#15 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[8]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[8]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#16 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[9]1 output u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[9]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#17 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[0]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[0]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#18 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[10]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[10]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#19 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[11]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[11]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#20 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[12]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[12]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#21 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[13]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[13]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#22 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[14]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[14]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#23 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[15]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[15]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#24 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[1]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[1]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#25 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[2]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[2]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#26 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[3]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[3]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#27 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[4]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[4]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#28 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[5]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[5]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#29 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[6]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[6]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#30 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[7]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[7]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#31 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[8]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[8]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-1#32 Warning
+PREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[9]1 output u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[9]1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-2#1 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[0]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[0]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#2 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[10]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[10]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#3 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[11]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[11]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#4 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[12]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[12]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#5 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[13]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[13]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#6 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[14]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[14]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#7 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[15]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[15]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#8 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[1]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[1]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#9 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[2]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[2]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#10 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[3]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[3]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#11 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[4]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[4]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#12 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[5]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[5]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#13 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[6]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[6]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#14 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[7]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[7]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#15 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[8]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[8]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#16 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[9]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc1/accums_reg[9]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#17 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[0]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[0]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#18 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[10]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[10]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#19 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[11]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[11]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#20 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[12]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[12]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#21 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[13]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[13]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#22 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[14]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[14]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#23 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[15]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[15]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#24 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[1]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[1]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#25 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[2]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[2]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#26 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[3]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[3]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#27 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[4]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[4]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#28 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[5]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[5]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#29 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[6]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[6]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#30 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[7]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[7]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#31 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[8]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[8]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#32 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[9]1 multiplier stage u_accel/gen_nn_bitshift.u_accel/fc2/accums_reg[9]1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#33 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/q_accum/p_0_out multiplier stage u_accel/gen_nn_bitshift.u_accel/q_accum/p_0_out/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#34 Warning
+MREG Output pipelining  
+DSP u_accel/gen_nn_bitshift.u_accel/q_accum/p_0_out__0 multiplier stage u_accel/gen_nn_bitshift.u_accel/q_accum/p_0_out__0/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+
