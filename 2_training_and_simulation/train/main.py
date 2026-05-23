@@ -457,7 +457,7 @@ if __name__ == "__main__":
         net_num_steps = checkpoint_config.get("num_steps", num_steps)
         net_beta = checkpoint_config.get("beta", beta)
         net_neuron_type = checkpoint_config.get("neuron_type", neuron_type)
-        net_shift_func_name = checkpoint_config.get("shift_func", shift_func_name)
+        net_shift_func_name = checkpoint_config.get("shift_func") or shift_func_name
         net_shift_func = resolve_shift_func(net_shift_func_name)
 
         # Set config_overrides for loading the agent. This is only necessary for

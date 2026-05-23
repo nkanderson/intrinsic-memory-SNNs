@@ -235,6 +235,7 @@ def train(
         lam=lam,
         history_length=history_length,
         dt=dt,
+        shift_func_name=shift_func_name,
     )
 
     # ── Training loop ──
