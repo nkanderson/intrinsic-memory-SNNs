@@ -11,7 +11,7 @@ sim_build/
 **/cocotb/**/results.xml
 **/cocotb/results/
 # large files
-fractional_lif_constant_current.vcd 
+fractional_lif_constant_current.vcd
 
 # Python
 venv/
@@ -27,6 +27,7 @@ __pycache__/
 *.asc
 # Might need to make this more specific depending on any data output by unrelated scripts
 **/scripts/*.json
+**/vivado_project
 
 !3_benchmarking_on_FPGA/results
 
