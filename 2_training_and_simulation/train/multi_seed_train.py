@@ -214,6 +214,12 @@ def main():
         help="Override num_episodes from config (useful for smoke tests).",
     )
     parser.add_argument(
+        "--replay-memory-size",
+        type=int,
+        default=None,
+        help="Override experience replay buffer capacity (default: 10000).",
+    )
+    parser.add_argument(
         "--save-best",
         action="store_true",
         help="Also save a -seedN-best.pth checkpoint per seed.",
@@ -295,6 +301,9 @@ def main():
         # train_fn.train() streams per-episode rows to per_seed_csv in append
         # mode as each episode completes. This gives live progress visibility
         # (tail -f / wc -l on the CSV) and keeps data durable against kills.
+        train_kwargs = {}
+        if args.replay_memory_size is not None:
+            train_kwargs["replay_memory_size"] = args.replay_memory_size
         result = train(
             config=flat,
             device=device,
@@ -304,6 +313,7 @@ def main():
             model_prefix=prefix,
             seed=seed,
             metrics_csv_path=per_seed_csv,
+            **train_kwargs,
         )
 
         print(f"  per-episode CSV streamed to: {per_seed_csv}")

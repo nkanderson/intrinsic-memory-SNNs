@@ -94,6 +94,7 @@ def train(
     seed: int | None = None,
     metrics_csv_path: str | Path | None = None,
     max_episode_steps: int | None = None,
+    replay_memory_size: int = 10000,
 ) -> dict:
     """
     Run a full SNN-DQN training session on CartPole and return metrics.
@@ -119,6 +120,7 @@ def train(
             seeded so trajectories still vary across episodes within a run.
         max_episode_steps: Maximum steps per CartPole episode. None uses
             the gym default (500).
+        replay_memory_size: Capacity of the experience replay buffer (default: 10000).
         metrics_csv_path: If provided, the per-episode metrics
             (episode, episode_steps, running_avg_100, avg_loss) are
             streamed to this CSV in append mode after each episode
@@ -181,7 +183,7 @@ def train(
 
     # ── Create environment, networks, optimizer, memory ──
     env = gym.make("CartPole-v1", max_episode_steps=max_episode_steps)
-    memory = ReplayMemory(10000)
+    memory = ReplayMemory(replay_memory_size)
 
     policy_net = SNNPolicy(
         N_OBSERVATIONS,

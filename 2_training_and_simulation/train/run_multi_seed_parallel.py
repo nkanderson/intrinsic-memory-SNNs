@@ -87,6 +87,10 @@ def parse_args():
         help="Override num_episodes from config (passed through).",
     )
     p.add_argument(
+        "--replay-memory-size", type=int, default=None,
+        help="Override experience replay buffer capacity (passed through).",
+    )
+    p.add_argument(
         "--save-best", action="store_true",
         help="Save -seed<N>-best.pth per seed (passed through).",
     )
@@ -135,6 +139,8 @@ def build_subprocess_cmd(args, seed: int, worker_dir: Path) -> list[str]:
     ]
     if args.num_episodes is not None:
         cmd += ["--num-episodes", str(args.num_episodes)]
+    if args.replay_memory_size is not None:
+        cmd += ["--replay-memory-size", str(args.replay_memory_size)]
     if args.save_best:
         cmd += ["--save-best"]
     if args.no_save_final:
