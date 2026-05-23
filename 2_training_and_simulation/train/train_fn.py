@@ -87,11 +87,13 @@ def train(
     device: str = "cpu",
     verbose: bool = True,
     save_models: bool = False,
+    save_final_model: bool = True,
     save_best_model: bool = False,
     model_prefix: str = "optuna",
     optuna_trial=None,
     seed: int | None = None,
     metrics_csv_path: str | Path | None = None,
+    max_episode_steps: int | None = None,
 ) -> dict:
     """
     Run a full SNN-DQN training session on CartPole and return metrics.
@@ -105,7 +107,9 @@ def train(
             Bitshift (optional): shift_func (string name)
         device: Torch device string ("cpu", "cuda", "mps").
         verbose: If True, print progress during training.
-        save_models: If True, save best/final model checkpoints.
+        save_models: If True, enable model saving (gates save_final_model and save_best_model).
+        save_final_model: If True (and save_models), save the final checkpoint.
+        save_best_model: If True (and save_models), save the best-rolling-avg checkpoint.
         model_prefix: Prefix for saved model filenames.
         optuna_trial: If provided, an optuna.Trial object for pruning support.
             Reports intermediate values (100-episode avg reward) for Optuna's
@@ -113,6 +117,8 @@ def train(
         seed: If provided, seeds Python's random, numpy, torch, and the
             environment for reproducibility. Only the first env.reset is
             seeded so trajectories still vary across episodes within a run.
+        max_episode_steps: Maximum steps per CartPole episode. None uses
+            the gym default (500).
         metrics_csv_path: If provided, the per-episode metrics
             (episode, episode_steps, running_avg_100, avg_loss) are
             streamed to this CSV in append mode after each episode
@@ -174,7 +180,7 @@ def train(
     spike_grad = surrogate.fast_sigmoid(slope=surrogate_gradient_slope)
 
     # ── Create environment, networks, optimizer, memory ──
-    env = gym.make("CartPole-v1")
+    env = gym.make("CartPole-v1", max_episode_steps=max_episode_steps)
     memory = ReplayMemory(10000)
 
     policy_net = SNNPolicy(
@@ -432,7 +438,7 @@ def train(
             if sum(episode_durations[0:100]) / 100.0 >= convergence_threshold:
                 convergence_episode = 99
 
-    if save_models:
+    if save_models and save_final_model:
         agent.episode = num_episodes - 1
         agent.avg_reward = final_avg
         fname = str(Path("models") / f"{model_prefix}-final.pth")

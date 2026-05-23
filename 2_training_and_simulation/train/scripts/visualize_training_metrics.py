@@ -100,6 +100,11 @@ def load(path: Path) -> pd.DataFrame:
     df = pd.read_csv(path, header=0)
     df.columns = df.columns.str.strip()
 
+    # train_fn writes "episode_steps"; legacy_main.py writes "episode_reward".
+    # In CartPole-v1 they are numerically identical (reward = 1 per step).
+    if "episode_reward" not in df.columns and "episode_steps" in df.columns:
+        df["episode_reward"] = df["episode_steps"]
+
     # generalization_rewards is a pipe-delimited "r1|r2|..." string per row
     # (one entry per eval seed, typically 30). Split it and take per-row
     # min / max / percentiles so we can draw uncertainty bands below the mean.
