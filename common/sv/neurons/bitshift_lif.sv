@@ -63,13 +63,26 @@ module bitshift_lif #(
   localparam signed [MEMBRANE_WIDTH-1:0] MEMBRANE_MAX = {1'b0, {(MEMBRANE_WIDTH-1){1'b1}}};
   localparam signed [MEMBRANE_WIDTH-1:0] MEMBRANE_MIN = {1'b1, {(MEMBRANE_WIDTH-1){1'b0}}};
 
-  typedef enum logic [5:0] {
-    ST_IDLE      = 6'b000001,
-    ST_ACCUM     = 6'b000010,
-    ST_PREP_NUM  = 6'b000100,
-    ST_MUL_DIV   = 6'b001000,
-    ST_POST      = 6'b010000,
-    ST_WRITEBACK = 6'b100000
+  // FSM split rationale: ST_MUL_DIV was previously a single state that did
+  // both the reciprocal multiply (numerator_reg * INV_DENOM) and the shift
+  // (>>> INV_DENOM_FRAC_BITS) before registering the result. With the
+  // multiply output going through a combinational shift before any
+  // register, Vivado declined to map the 27x17 multiplier to a DSP48E1's
+  // M-register (cascade cost + shift-in-path heuristic), dropping all 96
+  // multipliers in a bitshift-64-32-4 build into LUT logic and blowing
+  // the LUT budget. Splitting into ST_MUL_RECIP (register the raw multiply
+  // output) + ST_SHIFT_DIV (shift the registered value, then register the
+  // shifted result) gives DSP a directly-registered multiply target,
+  // matching fractional_lif's structure which does map to DSPs.
+  // Cost: +1 cycle of multi-cycle latency per neuron. Values unchanged.
+  typedef enum logic [6:0] {
+    ST_IDLE      = 7'b0000001,
+    ST_ACCUM     = 7'b0000010,
+    ST_PREP_NUM  = 7'b0000100,
+    ST_MUL_RECIP = 7'b0001000,
+    ST_SHIFT_DIV = 7'b0010000,
+    ST_POST      = 7'b0100000,
+    ST_WRITEBACK = 7'b1000000
   } state_t;
 
   // Internal state
@@ -100,6 +113,10 @@ module bitshift_lif #(
   logic signed [NUMERATOR_WIDTH-1:0] numerator_reg;
 
   (* use_dsp = "yes" *) logic signed [SCALED_RESULT_WIDTH-1:0] mul_scaled_result;
+  // Register the raw multiply output before the shift so Vivado can absorb
+  // the multiply into a DSP48E1 M-register. The shift happens on the next
+  // FSM cycle out of this register.
+  logic signed [SCALED_RESULT_WIDTH-1:0] mul_scaled_result_reg;
   logic signed [SCALED_RESULT_WIDTH-1:0] mul_membrane_pre_reset;
   logic signed [SCALED_RESULT_WIDTH-1:0] membrane_pre_reset_reg;
 
@@ -211,10 +228,20 @@ module bitshift_lif #(
                      {{(NUMERATOR_WIDTH-HISTORY_SUM_WIDTH){prep_scaled_history[HISTORY_SUM_WIDTH-1]}}, prep_scaled_history};
   end
 
-  // ST_MUL_DIV stage: divide by (1+lambda) using reciprocal multiply
+  // ST_MUL_RECIP stage: reciprocal multiply (numerator * 1/(1+lambda)).
+  // Combinational; the FSM registers this into mul_scaled_result_reg on the
+  // next clock edge so the multiply output is directly registered (DSP M-reg
+  // target).
   always_comb begin
     mul_scaled_result = numerator_reg * $signed({1'b0, INV_DENOM});
-    mul_membrane_pre_reset = mul_scaled_result >>> INV_DENOM_FRAC_BITS;
+  end
+
+  // ST_SHIFT_DIV stage: arithmetic shift to undo the INV_DENOM scaling.
+  // Operates on the *registered* multiply output (mul_scaled_result_reg),
+  // not the combinational mul_scaled_result, so there is no combinational
+  // multiply-then-shift chain that would discourage DSP packing.
+  always_comb begin
+    mul_membrane_pre_reset = mul_scaled_result_reg >>> INV_DENOM_FRAC_BITS;
   end
 
   // ST_POST stage: delayed reset subtraction, saturation, spike generation
@@ -252,6 +279,7 @@ module bitshift_lif #(
       accum_index <= '0;
       history_sum_acc <= '0;
       numerator_reg <= '0;
+      mul_scaled_result_reg <= '0;
       membrane_pre_reset_reg <= '0;
       finalize_membrane_reg <= '0;
       finalize_spike_reg <= 1'b0;
@@ -270,6 +298,7 @@ module bitshift_lif #(
       accum_index <= '0;
       history_sum_acc <= '0;
       numerator_reg <= '0;
+      mul_scaled_result_reg <= '0;
       membrane_pre_reset_reg <= '0;
       finalize_membrane_reg <= '0;
       finalize_spike_reg <= 1'b0;
@@ -305,10 +334,22 @@ module bitshift_lif #(
 
         ST_PREP_NUM: begin
           numerator_reg <= prep_numerator;
-          state <= ST_MUL_DIV;
+          state <= ST_MUL_RECIP;
         end
 
-        ST_MUL_DIV: begin
+        ST_MUL_RECIP: begin
+          // Register the raw multiply output. Vivado packs this into the
+          // DSP48E1 M-register (with the prior numerator_reg as A-input
+          // and INV_DENOM as B-input). Without this register, the
+          // multiplier was being implemented in LUTs instead.
+          mul_scaled_result_reg <= mul_scaled_result;
+          state <= ST_SHIFT_DIV;
+        end
+
+        ST_SHIFT_DIV: begin
+          // Shift the registered multiply output to undo the INV_DENOM
+          // scaling, then register the result. Constant shift is free in
+          // routing.
           membrane_pre_reset_reg <= mul_membrane_pre_reset;
           state <= ST_POST;
         end
