@@ -135,8 +135,98 @@ Expected throughput at 921600 baud with latency timer = 1 ms: ~0.5–1 ms/step
    `constraints/nexys_a7_<config>.xdc`. Run `phys_opt_design -directive
    AggressiveExplore` after `route_design` before `write_bitstream` — the
    fractional LIF configs have a marginal timing path that the standard
-   router doesn't always close.
-2. Program the board.
+   router doesn't always close. Or use the TCL batch wrapper:
+   `python scripts/build_config.py <config>`.
+2. Program the board:
+   `python scripts/flash_config.py <config>` (uses `vivado -mode batch`
+   and reads `results/<config>/bitstream.bit`).
 3. `python uart_smoke.py` — confirm PING returns `5A 00 01 50 <csum>`.
 4. `python validate_fpga.py --golden ../../common/sv/cocotb/tests/golden_vectors/<config>.json`
 5. `python eval_cartpole_hw.py --config <config> --episodes 100`
+
+## Collecting PPA + inference-cycle metrics
+
+Per-config FPGA metrics — area, timing, power — and simulated per-stage
+inference cycle counts share one data-flow. All scripts live in `scripts/`
+and read the config registry in [scripts/configs.py](scripts/configs.py).
+
+### 1. Verify per-config parameters are consistent
+
+```bash
+python 3_benchmarking_on_FPGA/scripts/check_param_drift.py
+```
+
+Compares each config's `cp_integration_<config>` cocotb Makefile block to
+its `board_top_<config>.sv` and warns if numeric parameters (`HL1_SIZE`,
+`INV_DENOM`, `SHIFT_MODE`, ...) or weight-file basenames disagree. Run
+this before any synthesis or cycle measurement so you don't compare apples
+to oranges. Note: `Q_BATCH_SIZE` intentionally differs (sim uses 4, board
+uses 1 because the UART feeds one observation at a time) — current output
+lists this as MISMATCH; treat as expected drift unless that ever changes.
+
+### 2. Build bitstreams + extract Vivado reports
+
+```bash
+# Build one config
+python 3_benchmarking_on_FPGA/scripts/build_config.py lif-64-16
+
+# Or every config that has a board_top + XDC
+python 3_benchmarking_on_FPGA/scripts/build_config.py --all
+```
+
+The wrapper invokes `vivado -mode batch -source build_config.tcl` with the
+right paths and copies the synth/impl/power reports plus the bitstream to
+`results/<config>/` with canonical filenames (see
+[docs/vivado_bringup_lif_64_16.md](docs/vivado_bringup_lif_64_16.md) §10
+for the table). GUI-driven runs still work; you just need to copy the
+reports to the canonical names manually after each run.
+
+Parse one config's reports without rebuilding (handy after a GUI run):
+
+```bash
+python 3_benchmarking_on_FPGA/scripts/synth_metrics.py --config lif-64-16
+```
+
+### 3. Measure inference cycles per FSM stage (cocotb)
+
+The cycle test reuses each `cp_integration_<config>` parameter block so
+there's zero duplication of `HL1_SIZE` / `INV_DENOM` / weights paths.
+Per-config Make wrappers live alongside the existing cocotb targets:
+
+```bash
+# Inside the cocotb Docker container (common/sv/cocotb/docker-compose.yml)
+cd /workspace/tests
+make cycle_breakdown_lif-64-16
+make cycle_breakdown_frac-32-4-16
+make cycle_breakdown_bitshift-custom_slow_decay
+# ...etc, one per config in configs.py
+```
+
+Each writes a one-row CSV to
+`common/sv/cocotb/results/<config>/cycles.csv` with columns:
+`total_cycles, cycles_idle, cycles_load_hl1, cycles_run_timesteps,
+cycles_finish_q, cycles_done_state, num_timesteps, cycles_per_timestep,
+hl1_size, hl2_size, history_length`.
+
+### 4. Aggregate + visualize
+
+```bash
+# Join PPA + cycles into a single CSV; compute latency, throughput, energy/inference
+python 3_benchmarking_on_FPGA/scripts/aggregate_ppa.py
+# -> results/summary/ppa_cycles_combined.csv
+
+# Plots use common/scripts/plot_styles.py (Okabe-Ito palette, LaTeX-sized figs)
+python 3_benchmarking_on_FPGA/scripts/plot_ppa.py                # PNG (default)
+python 3_benchmarking_on_FPGA/scripts/plot_ppa.py --format svg   # SVG
+```
+
+Plots emitted:
+- `area.{png,svg}` — grouped bars: LUT/FF/DSP/BRAM per config (log scale)
+- `performance_fmax.{png,svg}` — bars colored by neuron type with 100 MHz target line
+- `power_stacked.{png,svg}` — static + dynamic, total annotated
+- `cycles_per_stage.{png,svg}` — LOAD_HL1 / RUN_TIMESTEPS / FINISH_Q stacked
+- `figures_of_merit.{png,svg}` — three small bars: latency_us, throughput_hz, energy_per_inference_uj
+
+Configs without synth artifacts yet (e.g. `frac-32-8-8-q2_13`, which has a
+cocotb target but no `board_top_*` / XDC) appear in the master CSV with
+cycle data only; PPA columns stay blank until those files are authored.

@@ -1,7 +1,22 @@
 # Vivado bring-up: lif-64-16 on Nexys A7-100T
 
-First-light synthesis flow for `board_top_lif_64_16`. GUI-driven for now;
-[promote to a Tcl build script](../README.md) once the design is stable.
+First-light synthesis flow for `board_top_lif_64_16`.
+
+## TCL batch build (preferred, once design is stable)
+
+```bash
+# From the repo root
+python 3_benchmarking_on_FPGA/scripts/build_config.py lif-64-16
+# Or for every config with a board_top + XDC:
+python 3_benchmarking_on_FPGA/scripts/build_config.py --all
+```
+
+This invokes `vivado -mode batch -source build_config.tcl` with the right
+paths resolved from `scripts/configs.py`. Reports and the bitstream land
+in `results/lif-64-16/` with canonical filenames (see step 10 below).
+
+The GUI flow below stays valid as a fallback for first bring-up of a new
+config or when you need to inspect intermediate runs.
 
 ## 1. Create the project
 
@@ -121,3 +136,20 @@ Save the implementation/timing/utilization reports under
 `3_benchmarking_on_FPGA/results/lif-64-16/` along with the `.bit` file
 and a short note of the Vivado version used. This is the baseline we'll
 compare every subsequent bitstream against.
+
+The downstream metrics pipeline (`synth_metrics.py`, `aggregate_ppa.py`)
+expects these **canonical filenames** in `results/<config>/`:
+
+| Canonical name                | Source in the Vivado run                          |
+|-------------------------------|---------------------------------------------------|
+| `synth_utilization.rpt`       | post-synth `report_utilization`                   |
+| `synth_timing_summary.rpt`    | post-synth `report_timing_summary`                |
+| `impl_utilization.rpt`        | `*_utilization_placed.rpt` from `impl_1/`         |
+| `impl_timing_summary.rpt`     | `*_timing_summary_routed.rpt` from `impl_1/`      |
+| `impl_power.rpt`              | `*_power_routed.rpt` from `impl_1/`               |
+| `bitstream.bit`               | `*.bit` from `impl_1/`                            |
+
+The TCL script in §"TCL batch build" copies these automatically. When
+running GUI-driven, copy them manually after `Generate Bitstream`
+completes — without the canonical names, `synth_metrics.py` will report
+empty fields for that config.
