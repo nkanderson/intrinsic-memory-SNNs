@@ -1,0 +1,56 @@
+Multi-seed training for: leaky-32-32
+  device       : cpu
+  num_seeds    : 1
+  base_seed    : 50
+  num_episodes : 1500
+  output_dir   : metrics/multi-seed/leaky-32-32-20k/leaky-32-32/_workers/seed50
+
+============================================================
+Seed 50 (1/1)
+============================================================
+  Episode 50/1500  avg(100): 18.1
+  Episode 100/1500  avg(100): 15.9
+  Episode 150/1500  avg(100): 17.6
+  Episode 200/1500  avg(100): 32.9
+  Episode 250/1500  avg(100): 86.5
+  Episode 300/1500  avg(100): 128.6
+  Episode 350/1500  avg(100): 139.3
+  Episode 400/1500  avg(100): 136.5
+  Episode 450/1500  avg(100): 124.8
+  Episode 500/1500  avg(100): 125.2
+  Episode 550/1500  avg(100): 144.1
+  Episode 600/1500  avg(100): 141.6
+  Episode 650/1500  avg(100): 120.0
+  Episode 700/1500  avg(100): 123.9
+  Episode 750/1500  avg(100): 132.4
+  Episode 800/1500  avg(100): 150.4
+  Episode 850/1500  avg(100): 156.2
+  Episode 900/1500  avg(100): 138.9
+  Episode 950/1500  avg(100): 120.9
+  Episode 1000/1500  avg(100): 151.0
+  Episode 1050/1500  avg(100): 230.5
+  Episode 1100/1500  avg(100): 291.8
+  Episode 1150/1500  avg(100): 334.8
+  Episode 1200/1500  avg(100): 370.2
+  Episode 1250/1500  avg(100): 290.1
+  Episode 1300/1500  avg(100): 200.6
+  Episode 1350/1500  avg(100): 216.3
+  Episode 1400/1500  avg(100): 201.8
+  Episode 1450/1500  avg(100): 309.3
+  Episode 1500/1500  avg(100): 434.0
+Model saved to models/leaky-32-32-seed50-final.pth
+  per-episode CSV streamed to: metrics/multi-seed/leaky-32-32-20k/leaky-32-32/_workers/seed50/leaky-32-32-seed50.csv
+
+Summary CSV: metrics/multi-seed/leaky-32-32-20k/leaky-32-32/_workers/seed50/leaky-32-32-summary.csv
+
+Results across 1 seeds:
+  solved (final_avg >= 475) : 0/1 seeds
+  final_avg_reward  : 433.97 ± 0.00  (primary metric: CartPole-v1 standard)
+  best_avg_reward   : 433.97 ± 0.00
+  tail_iqm_reward   : 280.62 ± 0.00  (diagnostic: matches Optuna selection metric)
+  convergence_ep    : never reached threshold in any seed
+
+Robust reporting (final_avg_reward across seeds, 95% bootstrap CI):
+  IQM   : 433.97  [95% CI: 433.97, 433.97]
+  Mean  : 433.97  [95% CI: 433.97, 433.97]
+  (note: with N < 10, bootstrap CIs and IQM are necessarily wide; per Colas et al. 2018 consider increasing --num-seeds.)
