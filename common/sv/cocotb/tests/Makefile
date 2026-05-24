@@ -22,6 +22,8 @@
 #   make test_cp_integration_bitshift_custom_slow_decay # Run bitshift custom_slow_decay integration tests
 #   make test_cp_integration_frac-32-8-8-QS2_13 # Run cp_frac-32-8-8 integration tests (v3 Optuna, seed 44, QS2.13 weights)
 #   make test_cp_integration_frac-32-8-8-QS3_4  # Run cp_frac-32-8-8 integration tests (v3 Optuna, seed 44, QS3.4 weights)
+#   make test_cp_integration_leaky-32-32 # Run cp_leaky-32-32 integration tests (v3 Optuna LIF, seed 48, QS2.13 weights)
+#   make test_golden_vectors_leaky-32-32 # Run leaky-32-32 golden-vector test
 #   make test_cp_integration_frac-16-4-256 # Run cp_frac-16-4-256 integration tests
 #   make clean                           # Clean build artifacts
 
@@ -228,6 +230,14 @@ else ifeq ($(TEST),golden_vectors_bitshift-64-32-4)
                       $(SV_DIR)/q_accumulator.sv
     TOPLEVEL = neural_network_bitshift
     MODULE = test_golden_vectors_bitshift_64_32_4
+else ifeq ($(TEST),golden_vectors_leaky-32-32)
+    VERILOG_SOURCES = $(SV_DIR)/neural_network.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network
+    MODULE = test_golden_vectors_leaky_32_32
 else ifeq ($(TEST),uart_loopback)
     VERILOG_SOURCES = $(HOST_IF_DIR)/uart_rx.sv \
                       $(HOST_IF_DIR)/uart_tx.sv \
@@ -314,6 +324,15 @@ else ifeq ($(TEST),cp_integration_bitshift-64-32-4)
                       $(SV_DIR)/q_accumulator.sv
     TOPLEVEL = neural_network_bitshift
     MODULE = test_cartpole_integration
+else ifeq ($(TEST),cp_integration_leaky-32-32)
+    # v3 Optuna study LIF model (seed 48): 32 HL1, 32 HL2, 20 timesteps, QS2.13.
+    VERILOG_SOURCES = $(SV_DIR)/neural_network.sv \
+                      $(SV_DIR)/linear_layer.sv \
+                      $(COMMON_NEURON_DIR)/lif.sv \
+                      $(SV_DIR)/neuron_membrane_buffer.sv \
+                      $(SV_DIR)/q_accumulator.sv
+    TOPLEVEL = neural_network
+    MODULE = test_cartpole_integration
 # v3 Optuna study output (seed 44). Same fractional-32-8-8 model with two
 # weight-quantization variants: QS2.13 (16-bit) and QS3.4 (8-bit).
 else ifeq ($(TEST),cp_integration_frac-32-8-8-QS2_13)
@@ -383,7 +402,7 @@ else ifeq ($(TEST),cp_integration_frac)
     TOPLEVEL = neural_network_fractional
     MODULE = test_cartpole_integration
 else
-    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'subthreshold_frac', 'subthreshold_bitshift', 'lif_timestep', 'linear_layer', 'linear_layer_equivalence', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'neural_network_equivalence', 'neural_network_bitshift_equivalence', 'neural_network_fractional_equivalence', 'golden_vectors_lif-64-16', 'golden_vectors_lif-32-16', 'golden_vectors_fractional-16-4-32', 'golden_vectors_fractional-32-4-16', 'golden_vectors_bitshift-custom_slow_decay', 'golden_vectors_frac-32-8-8-q2_13', 'golden_vectors_bitshift-64-32-4', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration_bitshift-64-32-4', 'cp_integration_frac-32-8-8-QS2_13', 'cp_integration_frac-32-8-8-QS3_4', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
+    $(error Unknown TEST value: $(TEST). Use 'lif', 'fractional_lif', 'fractional_lif_hist64', 'fractional_lif_memory', 'bitshift_lif', 'bitshift_lif_memory', 'bitshift_lif_mode0', 'bitshift_lif_mode1', 'bitshift_lif_mode2', 'bitshift_lif_mode3', 'subthreshold_frac', 'subthreshold_bitshift', 'lif_timestep', 'linear_layer', 'linear_layer_equivalence', 'spike_buffer', 'spike_buffer_staggered', 'membrane_buffer', 'neuron_membrane_buffer', 'q_accumulator', 'neural_network', 'neural_network_equivalence', 'neural_network_bitshift_equivalence', 'neural_network_fractional_equivalence', 'golden_vectors_lif-64-16', 'golden_vectors_lif-32-16', 'golden_vectors_fractional-16-4-32', 'golden_vectors_fractional-32-4-16', 'golden_vectors_bitshift-custom_slow_decay', 'golden_vectors_frac-32-8-8-q2_13', 'golden_vectors_bitshift-64-32-4', 'golden_vectors_leaky-32-32', 'uart_loopback', 'uart_accel_ctrl', 'uart_top_wrapper', 'cp_integration_frac-16-4-32', 'cp_integration_frac-32-4-16', 'cp_integration_lif-32-16', 'cp_integration_lif-64-16', 'cp_integration_bitshift_custom_slow_decay', 'cp_integration_bitshift-64-32-4', 'cp_integration_leaky-32-32', 'cp_integration_frac-32-8-8-QS2_13', 'cp_integration_frac-32-8-8-QS3_4', 'cp_integration', 'cp_integration_frac-32-16-64', 'cp_integration_frac-32-16-8', 'cp_integration_frac-16-4-256', or 'cp_integration_frac')
 endif
 
 # Simulator - use Icarus for all tests (event-driven, correct timing)
@@ -652,6 +671,21 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc_out_weights.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC_OUT_BIAS_FILE=\"$(PWD)/weights/fractional-32-8-8/q2_13/fc_out_bias.mem\"
     endif
+    ifeq ($(TEST),golden_vectors_leaky-32-32)
+        # v3 Optuna study LIF model (seed 48). See train/configs/leaky-32-32.yaml.
+        # QS2.13 weights, HL1=32, HL2=32, 20 timesteps. Q_BATCH_SIZE=1 to match
+        # the FPGA board_top convention used by the other golden_vectors blocks.
+        COMPILE_ARGS += -Pneural_network.NUM_INPUTS=4 -Pneural_network.HL1_SIZE=32
+        COMPILE_ARGS += -Pneural_network.HL2_SIZE=32 -Pneural_network.NUM_ACTIONS=2
+        COMPILE_ARGS += -Pneural_network.NUM_TIMESTEPS=20 -Pneural_network.Q_BATCH_SIZE=1
+        COMPILE_ARGS += -Pneural_network.FC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE=\"$(PWD)/weights/leaky-32-32/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE=\"$(PWD)/weights/leaky-32-32/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_WEIGHTS_FILE=\"$(PWD)/weights/leaky-32-32/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE=\"$(PWD)/weights/leaky-32-32/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/leaky-32-32/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/leaky-32-32/fc_out_bias.mem\"
+    endif
     ifeq ($(TEST),golden_vectors_bitshift-64-32-4)
         # Larger bitshift custom_slow_decay model from multi-seed retrain
         # (see train/configs/bitshift-64-32-4.yaml). QS2.13 weights, HL1=64,
@@ -760,6 +794,20 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_bitshift.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_weights.mem\"
         COMPILE_ARGS += -Pneural_network_bitshift.FC_OUT_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_bias.mem\"
     endif
+    ifeq ($(TEST),cp_integration_leaky-32-32)
+        # v3 Optuna study LIF model (seed 48). See train/configs/leaky-32-32.yaml.
+        # QS2.13 weights, HL1=32, HL2=32, 20 timesteps.
+        COMPILE_ARGS += -Pneural_network.NUM_INPUTS=4 -Pneural_network.HL1_SIZE=32
+        COMPILE_ARGS += -Pneural_network.HL2_SIZE=32 -Pneural_network.NUM_ACTIONS=2
+        COMPILE_ARGS += -Pneural_network.NUM_TIMESTEPS=20 -Pneural_network.Q_BATCH_SIZE=4
+        COMPILE_ARGS += -Pneural_network.FC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE=\"$(PWD)/weights/leaky-32-32/fc1_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE=\"$(PWD)/weights/leaky-32-32/fc1_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_WEIGHTS_FILE=\"$(PWD)/weights/leaky-32-32/fc2_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC2_BIAS_FILE=\"$(PWD)/weights/leaky-32-32/fc2_bias.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/leaky-32-32/fc_out_weights.mem\"
+        COMPILE_ARGS += -Pneural_network.FC_OUT_BIAS_FILE=\"$(PWD)/weights/leaky-32-32/fc_out_bias.mem\"
+    endif
     ifeq ($(TEST),cp_integration_bitshift-64-32-4)
         # Larger bitshift custom_slow_decay model from multi-seed retrain
         # (see train/configs/bitshift-64-32-4.yaml). QS2.13 weights, HL1=64,
@@ -813,7 +861,7 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_fractional.THRESHOLD=16
         COMPILE_ARGS += -Pneural_network_fractional.FC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=8
-        COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=15
+        COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=16
         COMPILE_ARGS += -Pneural_network_fractional.INV_DENOM=56330
         COMPILE_ARGS += -Pneural_network_fractional.GL_COEFF_FILE=\"$(PWD)/weights/fractional-32-8-8/gl_coefficients.mem\"
         COMPILE_ARGS += -Pneural_network_fractional.FC1_WEIGHTS_FILE=\"$(PWD)/weights/fractional-32-8-8/q3_4/fc1_weights.mem\"
@@ -1102,6 +1150,20 @@ ifeq ($(SIM),verilator)
         COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_weights.mem\"
         COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_bias.mem\"
     endif
+    ifeq ($(TEST),cp_integration_leaky-32-32)
+        # Keep these parameters in sync with the Icarus block above.
+        # v3 Optuna study LIF model (seed 48); 32 HL1, 32 HL2, 20 timesteps, QS2.13.
+        COMPILE_ARGS += -GNUM_INPUTS=4 -GHL1_SIZE=32
+        COMPILE_ARGS += -GHL2_SIZE=32 -GNUM_ACTIONS=2
+        COMPILE_ARGS += -GNUM_TIMESTEPS=20 -GQ_BATCH_SIZE=4
+        COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
+        COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/leaky-32-32/fc1_weights.mem\"
+        COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/leaky-32-32/fc1_bias.mem\"
+        COMPILE_ARGS += -GFC2_WEIGHTS_FILE=\"$(PWD)/weights/leaky-32-32/fc2_weights.mem\"
+        COMPILE_ARGS += -GFC2_BIAS_FILE=\"$(PWD)/weights/leaky-32-32/fc2_bias.mem\"
+        COMPILE_ARGS += -GFC_OUT_WEIGHTS_FILE=\"$(PWD)/weights/leaky-32-32/fc_out_weights.mem\"
+        COMPILE_ARGS += -GFC_OUT_BIAS_FILE=\"$(PWD)/weights/leaky-32-32/fc_out_bias.mem\"
+    endif
     ifeq ($(TEST),cp_integration_bitshift-64-32-4)
         # Keep these parameters in sync with the Icarus block above.
         COMPILE_ARGS += -GNUM_INPUTS=4 -GHL1_SIZE=64
@@ -1366,6 +1428,9 @@ test_golden_vectors_frac-32-8-8-q2_13:
 test_golden_vectors_bitshift-64-32-4:
 	$(MAKE) TEST=golden_vectors_bitshift-64-32-4
 
+test_golden_vectors_leaky-32-32:
+	$(MAKE) TEST=golden_vectors_leaky-32-32
+
 test_uart_loopback:
 	$(MAKE) TEST=uart_loopback
 
@@ -1394,6 +1459,9 @@ test_cp_integration_bitshift_custom_slow_decay:
 
 test_cp_integration_bitshift-64-32-4:
 	$(MAKE) TEST=cp_integration_bitshift-64-32-4
+
+test_cp_integration_leaky-32-32:
+	$(MAKE) TEST=cp_integration_leaky-32-32
 
 # v3 Optuna study output (seed 44). Same fractional-32-8-8 model with two
 # weight-quantization variants: QS2.13 (16-bit) and QS3.4 (8-bit).
@@ -1459,4 +1527,4 @@ clean::
 	rm -rf __pycache__
 	rm -rf .pytest_cache
 
-.PHONY: clean cycle_breakdown_lif-64-16 cycle_breakdown_lif-32-16 cycle_breakdown_frac-32-4-16 cycle_breakdown_frac-16-4-32 cycle_breakdown_bitshift-custom_slow_decay cycle_breakdown_frac-32-8-8-q2_13 test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_fractional_lif_memory_constant_sweep test_fractional_lif_memory_constant_capture test_fractional_lif_memory_dropout_sweep test_fractional_lif_memory_dropout_capture test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_memory_constant_sweep test_bitshift_lif_memory_constant_capture test_bitshift_lif_memory_dropout_sweep test_bitshift_lif_memory_dropout_capture test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_golden_vectors_lif-64-16 test_golden_vectors_lif-32-16 test_golden_vectors_fractional-16-4-32 test_golden_vectors_fractional-32-4-16 test_golden_vectors_bitshift-custom_slow_decay test_golden_vectors_frac-32-8-8-q2_13 test_golden_vectors_bitshift-64-32-4 test_uart_loopback test_uart_accel_ctrl test_uart_top_wrapper test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_bitshift-64-32-4 test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac-32-8-8-QS2_13 test_cp_integration_frac-32-8-8-QS3_4 test_cp_integration_frac
+.PHONY: clean cycle_breakdown_lif-64-16 cycle_breakdown_lif-32-16 cycle_breakdown_frac-32-4-16 cycle_breakdown_frac-16-4-32 cycle_breakdown_bitshift-custom_slow_decay cycle_breakdown_frac-32-8-8-q2_13 test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_fractional_lif_memory_constant_sweep test_fractional_lif_memory_constant_capture test_fractional_lif_memory_dropout_sweep test_fractional_lif_memory_dropout_capture test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_memory_constant_sweep test_bitshift_lif_memory_constant_capture test_bitshift_lif_memory_dropout_sweep test_bitshift_lif_memory_dropout_capture test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_golden_vectors_lif-64-16 test_golden_vectors_lif-32-16 test_golden_vectors_fractional-16-4-32 test_golden_vectors_fractional-32-4-16 test_golden_vectors_bitshift-custom_slow_decay test_golden_vectors_frac-32-8-8-q2_13 test_golden_vectors_bitshift-64-32-4 test_golden_vectors_leaky-32-32 test_uart_loopback test_uart_accel_ctrl test_uart_top_wrapper test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_bitshift-64-32-4 test_cp_integration_leaky-32-32 test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac-32-8-8-QS2_13 test_cp_integration_frac-32-8-8-QS3_4 test_cp_integration_frac

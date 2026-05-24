@@ -334,6 +334,21 @@ def model_matrix() -> Dict[str, ModelConfig]:
             frac_bits=13,
             weights_dir=base / "lif-32-16",
         ),
+        # v3 Optuna study output (seed 48). Standard LIF ("leaky") with 32 HL1,
+        # 32 HL2, 20 timesteps; QS2.13 weights. See train/configs/leaky-32-32.yaml.
+        "leaky-32-32": ModelConfig(
+            name="leaky-32-32",
+            neuron_type="lif",
+            num_inputs=4,
+            hl1_size=32,
+            hl2_size=32,
+            num_actions=2,
+            num_timesteps=20,
+            threshold=THRESHOLD,
+            fc2_output_width=24,
+            frac_bits=13,
+            weights_dir=base / "leaky-32-32",
+        ),
         "fractional-16-4-32": ModelConfig(
             name="fractional-16-4-32",
             neuron_type="fractional",
@@ -581,7 +596,11 @@ def main() -> int:
     parser.add_argument(
         "--model",
         default="lif-64-16",
-        help="Model name (lif-64-16, lif-32-16, fractional-16-4-32, fractional-32-4-16, frac-32-8-8-q2_13, bitshift-custom_slow_decay, bitshift-64-32-4)",
+        help=(
+            "Model name (lif-64-16, lif-32-16, leaky-32-32, "
+            "fractional-16-4-32, fractional-32-4-16, frac-32-8-8-q2_13, "
+            "bitshift-custom_slow_decay, bitshift-64-32-4)"
+        ),
     )
     parser.add_argument(
         "--obs",
