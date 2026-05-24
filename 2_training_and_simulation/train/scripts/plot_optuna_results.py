@@ -176,7 +176,7 @@ def _plot_scatter(args, study_specs, out_dir: Path) -> Path:
     about pre-convergence average and has to be computed per study; the
     marker-fill encoding tells the same story without those assumptions.
     """
-    fig, ax = plt.subplots(figsize=DEFAULT_FIGSIZE, constrained_layout=True)
+    fig, ax = plt.subplots(figsize=(DEFAULT_FIGSIZE[0], DEFAULT_FIGSIZE[1] + 1.5), constrained_layout=True)
 
     for idx, spec in enumerate(study_specs):
         study_name = spec["name"]
@@ -258,6 +258,8 @@ def _plot_scatter(args, study_specs, out_dir: Path) -> Path:
         handles=auto_handles + status_handles,
         labels=auto_labels + [h.get_label() for h in status_handles],
         fontsize=LEGEND_FONTSIZE, frameon=False,
+        loc="lower center", bbox_to_anchor=(0.5, 1.02),
+        ncol=3, borderaxespad=0,
     )
 
     if args.x_axis == "history_length":
@@ -402,7 +404,8 @@ def _plot_convergence_strip(args, study_specs, out_dir: Path) -> Path:
                label="total episodes"),
     ]
     ax.legend(handles=status_handles, fontsize=LEGEND_FONTSIZE,
-              frameon=False, loc="center left")
+              frameon=False, loc="lower center", bbox_to_anchor=(0.5, 1.02),
+              ncol=4, borderaxespad=0)
 
     return _savefig(fig, out_dir, "optuna_convergence_strip", args.format)
 
