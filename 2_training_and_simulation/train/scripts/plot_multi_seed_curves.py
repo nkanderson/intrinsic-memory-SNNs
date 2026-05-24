@@ -111,7 +111,7 @@ def _discover_base_name(csv_dir: Path) -> str:
     return stem.rsplit("-seed", 1)[0]
 
 
-def load_per_seed_csvs(csv_dir: Path, base_name: str):
+def load_per_seed_csvs(csv_dir: Path, base_name: str, max_seeds: int | None = None):
     """Return (seeds, episodes, running_avg_100_mat, avg_loss_mat, raw_reward_mat).
 
     The matrices are shape (num_seeds, num_episodes). Rows are padded with
@@ -122,11 +122,17 @@ def load_per_seed_csvs(csv_dir: Path, base_name: str):
     reward and is the right signal for measuring single-episode chaos and
     catastrophic-failure events that the 100-ep running average smooths
     away.
+
+    If ``max_seeds`` is given, only the first N files (sorted by seed number)
+    are loaded — use this to align the default-buffer entry with the same
+    seed set used by the other buffer-size variants.
     """
     pattern = f"{base_name}-seed*.csv"
-    files = sorted(csv_dir.glob(pattern))
+    files = sorted(csv_dir.glob(pattern), key=lambda p: int(p.stem.rsplit("-seed", 1)[1]))
     if not files:
         raise FileNotFoundError(f"No per-seed CSVs found at {csv_dir / pattern}")
+    if max_seeds is not None:
+        files = files[:max_seeds]
 
     seeds = []
     runs_running = []
@@ -510,7 +516,7 @@ def plot_convergence_strip(configs, summary_by_cfg, output_dir: Path, fmt: str):
 
 
 def plot_final_bars(configs, summary_by_cfg, output_dir: Path, fmt: str):
-    """Per-config bar plot of final_avg / best_avg IQM with bootstrap CIs.
+    """Per-config bar plot of final_avg IQM with bootstrap CIs.
 
     Bar heights use the Interquartile Mean across seeds (matches the
     Agarwal-style reporting). Asymmetric error bars show the 95% bootstrap
@@ -518,50 +524,32 @@ def plot_final_bars(configs, summary_by_cfg, output_dir: Path, fmt: str):
     """
     fig_w = max(DEFAULT_FIGSIZE[0], 1.5 * len(configs))
     fig, ax = plt.subplots(figsize=(fig_w, DEFAULT_FIGSIZE[1]), constrained_layout=True)
-    width = 0.35
     xs = np.arange(len(configs))
 
     final_iqms, final_err_lo, final_err_hi = [], [], []
-    best_iqms, best_err_lo, best_err_hi = [], [], []
     ks: list[int] = []
     ns: list[int] = []
     for cfg in configs:
         rows = summary_by_cfg[cfg]
         finals = [r["final_avg_reward"] for r in rows]
-        bests = [r["best_avg_reward"] for r in rows]
 
         f_iqm, f_lo, f_hi = bootstrap_ci(finals, statistic=_iqm)
-        b_iqm, b_lo, b_hi = bootstrap_ci(bests, statistic=_iqm)
         final_iqms.append(f_iqm if f_iqm is not None else 0.0)
         final_err_lo.append((f_iqm - f_lo) if f_lo is not None else 0.0)
         final_err_hi.append((f_hi - f_iqm) if f_hi is not None else 0.0)
-        best_iqms.append(b_iqm if b_iqm is not None else 0.0)
-        best_err_lo.append((b_iqm - b_lo) if b_lo is not None else 0.0)
-        best_err_hi.append((b_hi - b_iqm) if b_hi is not None else 0.0)
 
         k, n = _solved_count(rows)
         ks.append(k)
         ns.append(n)
 
-    final_color = OKABE_ITO[0]
-    best_color = OKABE_ITO[2]
     ax.bar(
-        xs - width / 2,
+        xs,
         final_iqms,
-        width,
+        0.5,
         yerr=[final_err_lo, final_err_hi],
         capsize=4,
-        color=final_color,
+        color=OKABE_ITO[0],
         label="final_avg (IQM)",
-    )
-    ax.bar(
-        xs + width / 2,
-        best_iqms,
-        width,
-        yerr=[best_err_lo, best_err_hi],
-        capsize=4,
-        color=best_color,
-        label="best_avg (IQM)",
     )
     ax.axhline(
         SUCCESS_THRESHOLD,
@@ -571,8 +559,8 @@ def plot_final_bars(configs, summary_by_cfg, output_dir: Path, fmt: str):
         label=f"solved ({SUCCESS_THRESHOLD:.0f})",
     )
 
-    # K/N solved annotation above each config's bar pair.
-    y_top = max(final_iqms + best_iqms + [SUCCESS_THRESHOLD]) * 1.06
+    # K/N solved annotation above each bar.
+    y_top = max(final_iqms + [SUCCESS_THRESHOLD]) * 1.06
     for x, k, n in zip(xs, ks, ns):
         ax.text(
             x,
@@ -585,7 +573,7 @@ def plot_final_bars(configs, summary_by_cfg, output_dir: Path, fmt: str):
 
     ax.set_xticks(xs)
     ax.set_xticklabels(configs, rotation=20, ha="right", fontsize=TICK_LABEL_FONTSIZE)
-    ax.set_ylabel("Reward (IQM, 95% bootstrap CI)", fontsize=AXIS_LABEL_FONTSIZE)
+    ax.set_ylabel("Final 100-ep avg reward (IQM, 95% bootstrap CI)", fontsize=AXIS_LABEL_FONTSIZE)
     ax.tick_params(axis="y", labelsize=TICK_LABEL_FONTSIZE)
     ax.set_ylim(0, 520)
     ax.legend(loc="lower right", fontsize=LEGEND_FONTSIZE)
@@ -1079,6 +1067,22 @@ def main():
         "visualize_training_metrics.py. Also applies to the "
         "drawdown-curve plot.",
     )
+    parser.add_argument(
+        "--individual",
+        action="store_true",
+        help="Also produce per-config individual learning-curve and loss-curve "
+        "plots. Off by default — the stacked cross-config plot makes them "
+        "redundant for buffer-size comparisons.",
+    )
+    parser.add_argument(
+        "--seed-limit",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Load only the first N seeds (sorted by seed number) for every "
+        "entry. Use this to align the default-buffer config (which may "
+        "have extra seeds) with the seed set used by the other variants.",
+    )
     args = parser.parse_args()
 
     if not args.config_name and not args.run:
@@ -1093,10 +1097,18 @@ def main():
     # base_name) entries. Label is what appears in legends/filenames;
     # csv_dir/base_name drive IO. Ordering preserves CLI argv order across
     # both flags (config-names first, then run entries).
+    #
+    # --config-name accepts an optional LABEL=NAME prefix (e.g.
+    # --config-name 10k=fractional-32-8-8) so the short label appears in
+    # plots instead of the full config name.
     entries: list[tuple[str, Path, str]] = []
-    for cfg in args.config_name:
+    for cfg_spec in args.config_name:
+        if "=" in cfg_spec:
+            label, cfg = cfg_spec.split("=", 1)
+        else:
+            label = cfg = cfg_spec
         csv_dir = _config_dir(metrics_dir, cfg)
-        entries.append((cfg, csv_dir, cfg))
+        entries.append((label, csv_dir, cfg))
     for label, path in args.run:
         base = _discover_base_name(path)
         entries.append((label, path, base))
@@ -1110,26 +1122,31 @@ def main():
 
     for label, csv_dir, base in entries:
         seeds, episodes, running_mat, loss_mat, raw_mat = load_per_seed_csvs(
-            csv_dir, base
+            csv_dir, base, max_seeds=args.seed_limit
         )
         episodes_by_label[label] = episodes
         running_by_label[label] = running_mat
         raw_by_label[label] = raw_mat
-        summary_by_label[label] = load_summary(csv_dir, base)
+        summary_rows = load_summary(csv_dir, base)
+        if args.seed_limit is not None:
+            seed_set = set(seeds)
+            summary_rows = [r for r in summary_rows if r["seed"] in seed_set]
+        summary_by_label[label] = summary_rows
 
-        out = plot_learning_curve(
-            label,
-            seeds,
-            episodes,
-            running_mat,
-            summary_by_label[label],
-            output_dir,
-            fmt,
-        )
-        print(f"  wrote {out}")
-        out = plot_loss_curves(label, episodes, loss_mat, output_dir, fmt)
-        if out:
+        if args.individual:
+            out = plot_learning_curve(
+                label,
+                seeds,
+                episodes,
+                running_mat,
+                summary_by_label[label],
+                output_dir,
+                fmt,
+            )
             print(f"  wrote {out}")
+            out = plot_loss_curves(label, episodes, loss_mat, output_dir, fmt)
+            if out:
+                print(f"  wrote {out}")
 
     if len(labels) >= 2:
         if args.stacked:
