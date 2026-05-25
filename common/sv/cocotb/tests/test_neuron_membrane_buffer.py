@@ -10,8 +10,17 @@ Interface:
   - write_timestep: Which timestep slot to write to
   - membrane_in: Membrane value to store
   - read_timestep: Which timestep to read
-  - membrane_out: Membrane value for requested timestep (combinational)
+  - membrane_out: Membrane value for requested timestep (registered;
+    valid one clock cycle after read_timestep is driven)
   - full: Asserts when all timesteps have been written
+
+Read pattern (sync semantics): after setting dut.read_timestep.value = t,
+wait TWO clock cycles before sampling membrane_out. The first cycle lets
+cocotb's deferred input assignment commit before the capturing posedge;
+the second cycle is the posedge where membrane_out_reg <= storage[t].
+A single ClockCycles(1) is not enough: under cocotb 2.x the Python-side
+.value assignment commits in the NBA region of the same posedge that
+fires the sync read, so the read captures storage[OLD read_timestep].
 """
 
 import cocotb
@@ -86,7 +95,7 @@ async def test_neuron_membrane_buffer_single_write(dut):
 
     # Read it back (combinational)
     dut.read_timestep.value = 3
-    await ClockCycles(dut.clk, 1)  # Allow combinational logic to settle
+    await ClockCycles(dut.clk, 2)  # Sync read: settle input, then capture at posedge
 
     read_value = int(dut.membrane_out.value)
     assert read_value == test_value, f"Expected {test_value}, got {read_value}"
@@ -124,7 +133,7 @@ async def test_neuron_membrane_buffer_sequential_writes(dut):
     # Verify all values by reading back
     for t, expected_val in enumerate(test_values):
         dut.read_timestep.value = t
-        await ClockCycles(dut.clk, 1)
+        await ClockCycles(dut.clk, 2)  # Sync read: settle input, then capture at posedge
 
         read_value = int(dut.membrane_out.value)
         assert (
@@ -167,7 +176,7 @@ async def test_neuron_membrane_buffer_negative_values(dut):
     # Verify all values
     for t, expected_val in enumerate(test_values):
         dut.read_timestep.value = t
-        await ClockCycles(dut.clk, 1)
+        await ClockCycles(dut.clk, 2)  # Sync read: settle input, then capture at posedge
 
         raw_value = int(dut.membrane_out.value)
         read_value = to_signed(raw_value, MEMBRANE_WIDTH)
@@ -236,7 +245,7 @@ async def test_neuron_membrane_buffer_random_access(dut):
 
     for t in access_order:
         dut.read_timestep.value = t
-        await ClockCycles(dut.clk, 1)
+        await ClockCycles(dut.clk, 2)  # Sync read: settle input, then capture at posedge
 
         read_value = int(dut.membrane_out.value)
         expected = test_values[t]
@@ -270,7 +279,7 @@ async def test_neuron_membrane_buffer_overwrite(dut):
 
     # Read back - should be the new value
     dut.read_timestep.value = 2
-    await ClockCycles(dut.clk, 1)
+    await ClockCycles(dut.clk, 2)  # Sync read: settle input, then capture at posedge
 
     read_value = int(dut.membrane_out.value)
     assert read_value == 2222, f"Expected 2222 after overwrite, got {read_value}"

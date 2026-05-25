@@ -34,9 +34,20 @@
 //
 // Timing:
 //   - Assert 'start' when all neuron membrane buffers are full
-//   - Latency: NUM_TIMESTEPS × (NUM_NEURONS / BATCH_SIZE + 2) + 2 cycles
-//     (+2 per timestep: pipeline warmup cycle + drain cycle for last batch)
+//   - Latency: NUM_TIMESTEPS × (NUM_NEURONS / BATCH_SIZE + 4) + 2 cycles
+//     Per timestep:
+//       +1 READ_WAIT  (sync membrane_buffer read settles)
+//       +1 mem_sel    (DSP A/B input register fills for first batch)
+//       NUM_BATCHES   (issue mem_sel for each batch back-to-back)
+//       +1 products_r (final batch's DSP P-register fills)
+//       +1 NEXT_TIMESTEP transition
 //   - Asserts 'done' when selected_action is valid
+//
+// Pipeline (per batch, in cycles after issue):
+//   t=0: stage0 — register membrane_in[neuron_idx] → mem_sel_r,
+//                 register weights_flat[...] → w_sel_r
+//   t=1: stage1 — products_r <= mem_sel_r * w_sel_r  (DSP A_REG/B_REG → P_REG)
+//   t=2: stage2 — batch_sum (comb) → timestep_accum or q_accum (registered)
 
 module q_accumulator #(
     parameter NUM_NEURONS = 16,          // Number of neurons in final hidden layer
@@ -102,8 +113,9 @@ module q_accumulator #(
     logic signed [TIMESTEP_ACCUM_WIDTH-1:0] timestep_accum [0:NUM_ACTIONS-1];
 
     // State machine
-    typedef enum logic [1:0] {
+    typedef enum logic [2:0] {
         IDLE,
+        READ_WAIT,      // One-cycle wait for sync membrane_buffer to register read_timestep
         PROCESSING,     // Computing weighted sums for current batch
         NEXT_TIMESTEP,  // Move to next timestep
         DONE_STATE      // Compare q_accum directly and emit selected_action
@@ -111,8 +123,15 @@ module q_accumulator #(
 
     state_t state;
 
-    // Batch products - one per (action, batch_neuron) pair
-    // Registered to break the multiply path
+    // --- DSP input registers (stage 0) ---
+    // Synthesis absorbs these into the DSP48E1 A_REG / B_REG, so the multiplier
+    // sees registered inputs and the mux-mux-mult combinational chain is split
+    // into mux → A/B_REG → multiply.
+    logic signed [MEMBRANE_WIDTH-1:0] mem_sel_r [0:NUM_ACTIONS-1][0:BATCH_SIZE-1];
+    logic signed [DATA_WIDTH-1:0]     w_sel_r   [0:NUM_ACTIONS-1][0:BATCH_SIZE-1];
+
+    // --- DSP output register (stage 1) ---
+    // products_r is the DSP P-register.
     (* use_dsp = "yes" *)
     logic signed [MEMBRANE_WIDTH+DATA_WIDTH-1:0] products_r [0:NUM_ACTIONS-1][0:BATCH_SIZE-1];
 
@@ -124,9 +143,17 @@ module q_accumulator #(
     logic signed [TIMESTEP_ACCUM_WIDTH-1:0] full_timestep_sum [0:NUM_ACTIONS-1];
     logic signed [TIMESTEP_ACCUM_WIDTH-1:0] timestep_shifted  [0:NUM_ACTIONS-1];
 
-    // Pipeline control
-    logic batch_valid;
-    logic last_batch_r;
+    // --- Pipeline valid/last signals ---
+    //   sel_valid:  this cycle, mem_sel_r/w_sel_r hold a fresh batch (stage 0 → stage 1)
+    //   sel_last:   the batch landing in mem_sel_r this cycle is the last of the timestep
+    //   prod_valid: this cycle, products_r holds a fresh batch (stage 1 → stage 2)
+    //   prod_last:  the batch landing in products_r this cycle is the last of the timestep
+    //   sel_active: true while stage 0 should issue new batches (clears after last batch issued)
+    logic sel_valid;
+    logic sel_last;
+    logic prod_valid;
+    logic prod_last;
+    logic sel_active;
 
     // Output read_timestep to buffers
     assign read_timestep = timestep_counter;
@@ -158,87 +185,118 @@ module q_accumulator #(
             batch_counter <= '0;
             done <= 1'b0;
             selected_action <= '0;
-            batch_valid <= 1'b0;
-            last_batch_r <= 1'b0;
+            sel_valid <= 1'b0;
+            sel_last <= 1'b0;
+            prod_valid <= 1'b0;
+            prod_last <= 1'b0;
+            sel_active <= 1'b0;
             for (int a = 0; a < NUM_ACTIONS; a++) begin
                 q_accum[a] <= '0;
                 timestep_accum[a] <= '0;
-            end
-            for (int a = 0; a < NUM_ACTIONS; a++) begin
                 for (int b = 0; b < BATCH_SIZE; b++) begin
+                    mem_sel_r[a][b] <= '0;
+                    w_sel_r[a][b]   <= '0;
                     products_r[a][b] <= '0;
                 end
             end
         end else begin
+            // --- Stage 1 → Stage 2 pipeline propagation (always live) ---
+            // products_r is the DSP P-register; whether it's loaded with a
+            // fresh product this cycle depends on sel_valid (the prior cycle).
+            if (sel_valid) begin
+                for (int a = 0; a < NUM_ACTIONS; a++) begin
+                    for (int b = 0; b < BATCH_SIZE; b++) begin
+                        products_r[a][b] <= mem_sel_r[a][b] * w_sel_r[a][b];
+                    end
+                end
+            end
+            prod_valid <= sel_valid;
+            prod_last  <= sel_last;
+
+            // --- Stage 2: accumulate when prod_valid is high ---
+            if (prod_valid) begin
+                for (int a = 0; a < NUM_ACTIONS; a++) begin
+                    if (prod_last) begin
+                        q_accum[a] <= q_accum[a] +
+                            $signed({{(ACCUM_WIDTH-TIMESTEP_ACCUM_WIDTH){
+                                timestep_shifted[a][TIMESTEP_ACCUM_WIDTH-1]}},
+                                timestep_shifted[a]}) +
+                            $signed({{(ACCUM_WIDTH-DATA_WIDTH){
+                                biases[a][DATA_WIDTH-1]}},
+                                biases[a]});
+                        timestep_accum[a] <= '0;
+                    end else begin
+                        timestep_accum[a] <= full_timestep_sum[a];
+                    end
+                end
+            end
+
+            // Default: stage 0 idles unless explicitly issued below.
+            // sel_valid/sel_last are cleared each cycle and re-asserted only
+            // when stage 0 fires.
+            sel_valid <= 1'b0;
+            sel_last  <= 1'b0;
+
             unique case (state)
                 IDLE: begin
                     done <= 1'b0;
                     if (start) begin
-                        // Initialize accumulators
+                        // Initialize accumulators for a fresh inference.
                         for (int a = 0; a < NUM_ACTIONS; a++) begin
                             q_accum[a] <= '0;
                             timestep_accum[a] <= '0;
                         end
                         timestep_counter <= '0;
                         batch_counter <= '0;
-                        batch_valid <= 1'b0;
-                        last_batch_r <= 1'b0;
-                        state <= PROCESSING;
+                        sel_active <= 1'b1;
+                        // Spend one cycle in READ_WAIT so the sync membrane
+                        // buffer can register the new read_timestep before
+                        // stage 0 latches membrane_in.
+                        state <= READ_WAIT;
                     end else begin
                         state <= IDLE;
                     end
                 end
 
-                PROCESSING: begin
-                    // Update accumulators when batch results are valid. On
-                    // the last batch of a timestep, take the full-width
-                    // per-timestep product sum (timestep_accum + batch_sum),
-                    // shift it once by FRAC_BITS, add bias, and accumulate
-                    // into cross-timestep q_accum. Mid-timestep, just grow
-                    // timestep_accum at full width.
-                    if (batch_valid) begin
-                        for (int a = 0; a < NUM_ACTIONS; a++) begin
-                            if (last_batch_r) begin
-                                q_accum[a] <= q_accum[a] +
-                                    $signed({{(ACCUM_WIDTH-TIMESTEP_ACCUM_WIDTH){
-                                        timestep_shifted[a][TIMESTEP_ACCUM_WIDTH-1]}},
-                                        timestep_shifted[a]}) +
-                                    $signed({{(ACCUM_WIDTH-DATA_WIDTH){
-                                        biases[a][DATA_WIDTH-1]}},
-                                        biases[a]});
-                                timestep_accum[a] <= '0;
-                            end else begin
-                                timestep_accum[a] <= full_timestep_sum[a];
-                            end
-                        end
-                    end
+                READ_WAIT: begin
+                    // membrane_in is valid one cycle after read_timestep
+                    // changes (sync buffer). Move on to issuing computes.
+                    state <= PROCESSING;
+                end
 
-                    if (batch_valid && last_batch_r) begin
-                        // Finished all batches for this timestep
-                        batch_counter <= '0;
-                        batch_valid <= 1'b0;
-                        last_batch_r <= 1'b0;
-                        state <= NEXT_TIMESTEP;
-                    end else begin
-                        // Compute next batch products
+                PROCESSING: begin
+                    // Stage 0: while sel_active, issue a new batch each cycle
+                    // by registering the selected operands into mem_sel_r /
+                    // w_sel_r (DSP A_REG/B_REG inputs). Once the last batch's
+                    // operands are latched, clear sel_active and let stage 1
+                    // and stage 2 drain.
+                    if (sel_active) begin
+                        // neuron_idx declared at block scope (Icarus does not
+                        // support per-variable lifetime overrides like
+                        // `automatic int neuron_idx = ...` inside the loop).
                         int neuron_idx;
                         for (int a = 0; a < NUM_ACTIONS; a++) begin
                             for (int b = 0; b < BATCH_SIZE; b++) begin
                                 neuron_idx = base_idx + b;
-                                products_r[a][b] <= membrane_in[neuron_idx] *
-                                                    weights_flat[a * NUM_NEURONS + neuron_idx];
+                                mem_sel_r[a][b] <= membrane_in[neuron_idx];
+                                w_sel_r[a][b]   <= weights_flat[a * NUM_NEURONS + neuron_idx];
                             end
                         end
-                        last_batch_r <= (batch_counter == BATCH_IDX_WIDTH'(NUM_BATCHES - 1));
-                        batch_valid <= 1'b1;
+                        sel_valid <= 1'b1;
+                        sel_last  <= (batch_counter == BATCH_IDX_WIDTH'(NUM_BATCHES - 1));
 
                         if (batch_counter == BATCH_IDX_WIDTH'(NUM_BATCHES - 1)) begin
                             batch_counter <= '0;
+                            sel_active <= 1'b0;  // last batch issued; drain begins
                         end else begin
                             batch_counter <= batch_counter + 1'b1;
                         end
+                    end
 
-                        state <= PROCESSING;
+                    // Advance state once the last batch has flushed through
+                    // stage 2 (q_accum has been updated for prod_last).
+                    if (prod_valid && prod_last) begin
+                        state <= NEXT_TIMESTEP;
                     end
                 end
 
@@ -250,9 +308,8 @@ module q_accumulator #(
                     end else begin
                         timestep_counter <= timestep_counter + 1'b1;
                         batch_counter <= '0;
-                        batch_valid <= 1'b0;
-                        last_batch_r <= 1'b0;
-                        state <= PROCESSING;
+                        sel_active <= 1'b1;
+                        state <= READ_WAIT;
                     end
                 end
 
@@ -273,8 +330,9 @@ module q_accumulator #(
                         end
                         timestep_counter <= '0;
                         batch_counter <= '0;
+                        sel_active <= 1'b1;
                         done <= 1'b0;
-                        state <= PROCESSING;
+                        state <= READ_WAIT;
                     end else begin
                         state <= IDLE;
                     end

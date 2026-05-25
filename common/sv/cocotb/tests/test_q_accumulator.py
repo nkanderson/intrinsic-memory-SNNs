@@ -132,7 +132,7 @@ async def test_q_accumulator_zero_membranes(dut):
     dut.start.value = 0
 
     # Wait for done (with timeout)
-    max_cycles = NUM_TIMESTEPS * (NUM_NEURONS // BATCH_SIZE) + 10
+    max_cycles = NUM_TIMESTEPS * (NUM_NEURONS // BATCH_SIZE + 4) + 10
     for cycle in range(max_cycles):
         await RisingEdge(dut.clk)
         if dut.done.value == 1:
@@ -168,7 +168,7 @@ async def test_q_accumulator_uniform_membranes(dut):
     dut.start.value = 0
 
     # Wait for done
-    max_cycles = NUM_TIMESTEPS * (NUM_NEURONS // BATCH_SIZE) + 10
+    max_cycles = NUM_TIMESTEPS * (NUM_NEURONS // BATCH_SIZE + 4) + 10
     for cycle in range(max_cycles):
         await RisingEdge(dut.clk)
         if dut.done.value == 1:
@@ -257,7 +257,7 @@ async def test_q_accumulator_timing(dut):
     dut.start.value = 0
 
     cycle_count = 0
-    max_cycles = NUM_TIMESTEPS * (NUM_NEURONS // BATCH_SIZE) + 20
+    max_cycles = NUM_TIMESTEPS * (NUM_NEURONS // BATCH_SIZE + 4) + 20
 
     while cycle_count < max_cycles:
         await RisingEdge(dut.clk)
@@ -265,11 +265,14 @@ async def test_q_accumulator_timing(dut):
         if dut.done.value == 1:
             break
 
-    # Expected: NUM_TIMESTEPS * (NUM_NEURONS / BATCH_SIZE + 2) + 2 cycles
-    # +2 accounts for the pipeline warm-up (first product register) and the
-    # DONE transition cycle after the final batch is accumulated.
-    # = 4 * (2 + 2) + 2 = 18 cycles
-    expected_cycles = NUM_TIMESTEPS * ((NUM_NEURONS // BATCH_SIZE) + 2) + 2
+    # Expected: NUM_TIMESTEPS * (NUM_NEURONS / BATCH_SIZE + 4) + 2 cycles
+    # Per-timestep overhead after pipelining the membrane→DSP path:
+    #   +1 READ_WAIT   (sync neuron_membrane_buffer settles)
+    #   +1 mem_sel_r   (DSP A/B input register fills before first multiply)
+    #   +1 products_r  (final batch's DSP P-register fills before accumulate)
+    #   +1 NEXT_TIMESTEP transition
+    # = 4 * (2 + 4) + 2 = 26 cycles for NUM_NEURONS=4, BATCH_SIZE=2, NUM_TIMESTEPS=4.
+    expected_cycles = NUM_TIMESTEPS * ((NUM_NEURONS // BATCH_SIZE) + 4) + 2
 
     # TODO: Make this match precisely rather than adding tolerance
     dut._log.info(f"Completed in {cycle_count} cycles (expected ~{expected_cycles})")
@@ -291,7 +294,7 @@ async def test_q_accumulator_restart(dut):
 
     await reset_dut(dut)
 
-    max_cycles = NUM_TIMESTEPS * (NUM_NEURONS // BATCH_SIZE) + 10
+    max_cycles = NUM_TIMESTEPS * (NUM_NEURONS // BATCH_SIZE + 4) + 10
 
     # First inference with low membrane values
     for i in range(NUM_NEURONS):
@@ -352,7 +355,7 @@ async def test_q_accumulator_negative_membranes(dut):
     await RisingEdge(dut.clk)
     dut.start.value = 0
 
-    max_cycles = NUM_TIMESTEPS * (NUM_NEURONS // BATCH_SIZE) + 10
+    max_cycles = NUM_TIMESTEPS * (NUM_NEURONS // BATCH_SIZE + 4) + 10
     for _ in range(max_cycles):
         await RisingEdge(dut.clk)
         if dut.done.value == 1:

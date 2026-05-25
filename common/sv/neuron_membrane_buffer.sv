@@ -11,7 +11,10 @@
 // Timing:
 //   - Assert 'write_en' each cycle the neuron outputs a valid membrane value
 //   - write_timestep indicates which timestep slot to write
-//   - Read is combinational: provide read_timestep, get membrane_out immediately
+//   - Read is synchronous: drive read_timestep on cycle T; membrane_out
+//     reflects membrane_storage[read_timestep] starting on cycle T+1.
+//     The downstream consumer (q_accumulator) must wait one cycle after
+//     changing read_timestep before sampling membrane_out.
 //   - 'full' asserts when all timesteps have been written
 
 module neuron_membrane_buffer #(
@@ -41,8 +44,17 @@ module neuron_membrane_buffer #(
     // Track which timesteps have been written
     logic [NUM_TIMESTEPS-1:0] written;
 
-    // Combinational read - immediate output
-    assign membrane_out = membrane_storage[read_timestep];
+    // Synchronous read — registers membrane_storage[read_timestep] into
+    // membrane_out so that downstream muxing in q_accumulator does not have
+    // to absorb the storage-array mux delay in the same combinational chunk
+    // as its own neuron-select mux + multiplier.
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            membrane_out <= '0;
+        end else begin
+            membrane_out <= membrane_storage[read_timestep];
+        end
+    end
 
     // Full when all timesteps written
     assign full = (written == {NUM_TIMESTEPS{1'b1}});
