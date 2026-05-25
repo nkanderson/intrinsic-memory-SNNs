@@ -17,10 +17,13 @@ Usage examples:
             --study bitshift-custom-slow-iqm@sqlite:///optuna_studies/bitshift-v3.db
 """
 
+# In the optuna_analysis script, I'd like for it to also print the number of gate-passing trials at each total neural network size. For example, I want to know how many gate-passing trials for the fractional-order network had a size of 40 vs 72, or any other total size, and the same for the other studies.
+
 from __future__ import annotations
 
 import argparse
 import re
+from collections import Counter
 from statistics import mean
 from typing import Any, Dict, Iterable, List, Optional
 import optuna
@@ -411,6 +414,16 @@ def main() -> None:
             print(f"  Avg history length: {out['avg_history']:.1f}")
         else:
             print("  Avg history length: N/A")
+
+        size_counts = Counter(
+            t["total_neurons"]
+            for t in out["trial_summaries"]
+            if t["total_neurons"] is not None
+        )
+        if size_counts:
+            print("\nGate-passing trials by total neuron size (hl1+hl2):")
+            for size in sorted(size_counts):
+                print(f"  {size:4d}: {size_counts[size]} trial(s)")
 
         if args.print_trials:
             print("\nGate-passing trial details:")
