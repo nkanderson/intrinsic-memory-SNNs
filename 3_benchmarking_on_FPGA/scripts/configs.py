@@ -92,11 +92,20 @@ CONFIGS: list[Config] = [
     Config(
         name="bitshift-64-32-4",
         neuron_type="bitshift",
-        cocotb_test_target="cp_integration_bitshift_64_32_4",
+        cocotb_test_target="cp_integration_bitshift-64-32-4",
         board_top="board_top_bitshift_64_32_4",
         xdc="nexys_a7_general.xdc",
         weights_dir="bitshift-64-32-4",
         display_label="Bitshift 64-32-4",
+    ),
+    Config(
+        name="lif-32-32",
+        neuron_type="lif",
+        cocotb_test_target="cp_integration_leaky-32-32",
+        board_top="board_top_lif_32_32",
+        xdc="nexys_a7_general.xdc",
+        weights_dir="leaky-32-32",
+        display_label="LIF 32-32",
     ),
 ]
 
