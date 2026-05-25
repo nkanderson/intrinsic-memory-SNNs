@@ -176,9 +176,27 @@ def _plot_scatter(args, study_specs, out_dir: Path) -> Path:
     about pre-convergence average and has to be computed per study; the
     marker-fill encoding tells the same story without those assumptions.
     """
-    fig, ax = plt.subplots(
-        figsize=(DEFAULT_FIGSIZE[0], DEFAULT_FIGSIZE[1] + 3), constrained_layout=True
-    )
+    show_strip = not args.no_count_strip
+    if show_strip:
+        fig, (ax_main, ax_strip) = plt.subplots(
+            2,
+            1,
+            figsize=(DEFAULT_FIGSIZE[0], DEFAULT_FIGSIZE[1] + 3),
+            sharex=True,
+            constrained_layout=True,
+            gridspec_kw={"height_ratios": [5, 1]},
+        )
+    else:
+        fig, ax_main = plt.subplots(
+            figsize=(DEFAULT_FIGSIZE[0], DEFAULT_FIGSIZE[1] + 3),
+            constrained_layout=True,
+        )
+        ax_strip = None
+
+    # Accumulate gate-passing x-counts for the marginal strip, keyed by label.
+    strip_counts: dict[str, dict[int, int]] = {}
+    strip_styles: dict[str, dict] = {}
+    study_order: list[str] = []
 
     for idx, spec in enumerate(study_specs):
         study_name = spec["name"]
@@ -212,7 +230,7 @@ def _plot_scatter(args, study_specs, out_dir: Path) -> Path:
         # Plot in z-order: never_converged (back), marginal, gate-passing (front).
         if by_status[NEVER_CONVERGED]:
             xs, ys = zip(*by_status[NEVER_CONVERGED])
-            ax.scatter(
+            ax_main.scatter(
                 xs,
                 ys,
                 s=38,
@@ -224,7 +242,7 @@ def _plot_scatter(args, study_specs, out_dir: Path) -> Path:
             )
         if by_status[CONVERGED_MARGINAL]:
             xs, ys = zip(*by_status[CONVERGED_MARGINAL])
-            ax.scatter(
+            ax_main.scatter(
                 xs,
                 ys,
                 s=42,
@@ -239,7 +257,7 @@ def _plot_scatter(args, study_specs, out_dir: Path) -> Path:
         gp_xs, gp_ys = (
             zip(*by_status[GATE_PASSING]) if by_status[GATE_PASSING] else ([], [])
         )
-        ax.scatter(
+        ax_main.scatter(
             gp_xs,
             gp_ys,
             s=48,
@@ -250,6 +268,14 @@ def _plot_scatter(args, study_specs, out_dir: Path) -> Path:
             alpha=0.95,
             label=legend_label,
         )
+
+        # Tally gate-passing counts by x for the marginal strip.
+        counts: dict[int, int] = {}
+        for x in gp_xs:
+            counts[x] = counts.get(x, 0) + 1
+        strip_counts[label] = counts
+        strip_styles[label] = {"color": color, "marker": marker}
+        study_order.append(label)
 
     # Status-key entries (neutral, one per gate state). Drawn as a single
     # extra scatter call each so they appear in the legend.
@@ -292,8 +318,8 @@ def _plot_scatter(args, study_specs, out_dir: Path) -> Path:
         ),
     ]
     # Combine the auto-collected study handles with the status key.
-    auto_handles, auto_labels = ax.get_legend_handles_labels()
-    ax.legend(
+    auto_handles, auto_labels = ax_main.get_legend_handles_labels()
+    ax_main.legend(
         handles=auto_handles + status_handles,
         labels=auto_labels + [h.get_label() for h in status_handles],
         fontsize=LEGEND_FONTSIZE,
@@ -305,13 +331,59 @@ def _plot_scatter(args, study_specs, out_dir: Path) -> Path:
     )
 
     if args.x_axis == "history_length":
-        ax.set_xlabel("History length", fontsize=AXIS_LABEL_FONTSIZE)
-        ax.set_xticks([0, 4, 8, 16, 32, 64, 128])
+        ax_main.set_xticks([0, 4, 8, 16, 32, 64, 128])
+    ax_main.set_ylabel("Tail IQM avg reward", fontsize=AXIS_LABEL_FONTSIZE)
+    ax_main.tick_params(labelsize=TICK_LABEL_FONTSIZE)
+    ax_main.grid(True, linestyle="--", linewidth=0.6, color=COLOR_RAW, alpha=0.35)
+
+    if show_strip:
+        # ── Marginal gate-passing count strip ──────────────────────────────
+        # One row per study; bubble area ∝ count; count printed for > 1.
+        for y_idx, label in enumerate(study_order):
+            color = strip_styles[label]["color"]
+            marker = strip_styles[label]["marker"]
+            for x_val, cnt in strip_counts[label].items():
+                ax_strip.scatter(
+                    x_val,
+                    y_idx,
+                    s=30 + cnt * 28,
+                    marker=marker,
+                    color=color,
+                    edgecolors="black",
+                    linewidths=0.5,
+                    alpha=0.85,
+                    zorder=3,
+                )
+                if cnt > 1:
+                    ax_strip.text(
+                        x_val,
+                        y_idx,
+                        str(cnt),
+                        ha="center",
+                        va="center",
+                        fontsize=LEGEND_FONTSIZE - 1,
+                        color="white",
+                        fontweight="bold",
+                        zorder=4,
+                    )
+
+        ax_strip.set_yticks(range(len(study_order)))
+        ax_strip.set_yticklabels(study_order, fontsize=TICK_LABEL_FONTSIZE)
+        ax_strip.set_ylim(-0.6, len(study_order) - 0.4)
+        ax_strip.tick_params(axis="x", labelsize=TICK_LABEL_FONTSIZE)
+        ax_strip.set_ylabel("Gate-Passing\nCount", fontsize=TICK_LABEL_FONTSIZE)
+        ax_strip.grid(
+            True, axis="x", linestyle="--", linewidth=0.6, color=COLOR_RAW, alpha=0.35
+        )
+
+    if args.x_axis == "history_length":
+        (ax_strip if show_strip else ax_main).set_xlabel(
+            "History length", fontsize=AXIS_LABEL_FONTSIZE
+        )
     else:
-        ax.set_xlabel("Total neurons (hl1 + hl2)", fontsize=AXIS_LABEL_FONTSIZE)
-    ax.set_ylabel("Tail IQM avg reward", fontsize=AXIS_LABEL_FONTSIZE)
-    ax.tick_params(labelsize=TICK_LABEL_FONTSIZE)
-    ax.grid(True, linestyle="--", linewidth=0.6, color=COLOR_RAW, alpha=0.35)
+        (ax_strip if show_strip else ax_main).set_xlabel(
+            "Total neurons (hl1 + hl2)", fontsize=AXIS_LABEL_FONTSIZE
+        )
 
     stem = args.output_stem
     if args.x_axis == "history_length" and stem == "optuna_tail_iqm_vs_size":
@@ -575,6 +647,11 @@ def main() -> None:
         help="Filename stem for the scatter plot. Ignored for the "
         "convergence_strip plot, which always writes to "
         "optuna_convergence_strip.",
+    )
+    parser.add_argument(
+        "--no-count-strip",
+        action="store_true",
+        help="Scatter only: omit the gate-passing count strip below the main plot.",
     )
     parser.add_argument(
         "--format",
