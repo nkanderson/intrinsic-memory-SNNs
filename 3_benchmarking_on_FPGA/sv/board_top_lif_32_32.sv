@@ -48,8 +48,12 @@ module board_top_lif_32_32 (
         .HL2_SIZE         (32),
         .NUM_ACTIONS      (2),
         .NUM_TIMESTEPS    (20),
-        // TODO: Consider optimizations in the q_accumulator that would allow for increased BATCH_SIZE here.
-        .Q_BATCH_SIZE     (1),
+        // BATCH_SIZE=4 (was 1): the q_accumulator now pipelines mem_sel /
+        // multiply / accumulate stages and the neuron_membrane_buffer has a
+        // sync read, so the membrane → DSP critical path is short enough that
+        // BATCH_SIZE=4 closes timing at 100 MHz with HL2=32. Reduces inference
+        // cycles per timestep from 32+ to 8+ (4 batches instead of 32).
+        .Q_BATCH_SIZE     (4),
         .FC2_OUTPUT_WIDTH (24),
         .FC1_WEIGHTS_FILE ("fc1_weights.mem"),
         .FC1_BIAS_FILE    ("fc1_bias.mem"),

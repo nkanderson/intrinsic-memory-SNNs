@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2025.1 (lin64) Build 6140274 Wed May 21 22:58:25 MDT 2025
-| Date         : Mon May 25 09:16:45 2026
+| Date         : Mon May 25 12:31:11 2026
 | Host         : niklas.ece.pdx.edu running 64-bit Pop!_OS 22.04 LTS
 | Command      : report_timing_summary -file /home/stonepine/intrinsic-memory-SNNs/3_benchmarking_on_FPGA/results/lif-32-32/synth_timing_summary.rpt
 | Design       : board_top_lif_32_32
@@ -138,7 +138,7 @@ Table of Contents
 
     WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
     -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-      0.232        0.000                      0                40545        0.137        0.000                      0                40545        4.500        0.000                       0                 20264  
+      0.232        0.000                      0                42336        0.137        0.000                      0                42336        4.500        0.000                       0                 21415  
 
 
 All user specified timing constraints are met.
@@ -161,7 +161,7 @@ sys_clk_pin  {0.000 5.000}      10.000          100.000
 
 Clock             WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
 -----             -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-sys_clk_pin         0.232        0.000                      0                40545        0.137        0.000                      0                40545        4.500        0.000                       0                 20264  
+sys_clk_pin         0.232        0.000                      0                42336        0.137        0.000                      0                42336        4.500        0.000                       0                 21415  
 
 
 ------------------------------------------------------------------------------------------------
@@ -229,7 +229,7 @@ Slack (MET) :             0.232ns  (required time - arrival time)
     E3                   IBUF (Prop_ibuf_I_O)         1.482     1.482 r  CLK100MHZ_IBUF_inst/O
                          net (fo=1, unplaced)         0.803     2.285    CLK100MHZ_IBUF
                          BUFG (Prop_bufg_I_O)         0.096     2.381 r  CLK100MHZ_IBUF_BUFG_inst/O
-                         net (fo=20263, unplaced)     0.584     2.965    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/CLK100MHZ_IBUF_BUFG
+                         net (fo=21414, unplaced)     0.584     2.965    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/CLK100MHZ_IBUF_BUFG
                          FDCE                                         r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[23]/C
   -------------------------------------------------------------------    -------------------
                          FDCE (Prop_fdce_C_Q)         0.478     3.443 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[23]/Q
@@ -237,30 +237,30 @@ Slack (MET) :             0.232ns  (required time - arrival time)
                          DSP48E1 (Prop_dsp48e1_A[29]_P[8])
                                                       4.016     8.262 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential3/P[8]
                          net (fo=2, unplaced)         0.803     9.064    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential2[1]
-                         LUT2 (Prop_lut2_I0_O)        0.124     9.188 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential[3]_i_5__31/O
-                         net (fo=1, unplaced)         0.000     9.188    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential[3]_i_5__31_n_0
+                         LUT2 (Prop_lut2_I0_O)        0.124     9.188 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential[3]_i_5__56/O
+                         net (fo=1, unplaced)         0.000     9.188    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential[3]_i_5__56_n_0
                          CARRY4 (Prop_carry4_S[1]_CO[3])
-                                                      0.533     9.721 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[3]_i_2__31/CO[3]
-                         net (fo=1, unplaced)         0.000     9.721    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[3]_i_2__31_n_0
+                                                      0.533     9.721 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[3]_i_2__56/CO[3]
+                         net (fo=1, unplaced)         0.000     9.721    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[3]_i_2__56_n_0
                          CARRY4 (Prop_carry4_CI_CO[3])
-                                                      0.117     9.838 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[7]_i_2__31/CO[3]
-                         net (fo=1, unplaced)         0.000     9.838    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[7]_i_2__31_n_0
+                                                      0.117     9.838 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[7]_i_2__56/CO[3]
+                         net (fo=1, unplaced)         0.000     9.838    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[7]_i_2__56_n_0
                          CARRY4 (Prop_carry4_CI_CO[3])
-                                                      0.117     9.955 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[11]_i_2__31/CO[3]
-                         net (fo=1, unplaced)         0.000     9.955    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[11]_i_2__31_n_0
+                                                      0.117     9.955 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[11]_i_2__56/CO[3]
+                         net (fo=1, unplaced)         0.000     9.955    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[11]_i_2__56_n_0
                          CARRY4 (Prop_carry4_CI_O[1])
-                                                      0.337    10.292 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[15]_i_2__31/O[1]
+                                                      0.337    10.292 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential_reg[15]_i_2__56/O[1]
                          net (fo=3, unplaced)         0.629    10.921    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/membrane_potential0[13]
-                         LUT2 (Prop_lut2_I0_O)        0.306    11.227 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_i_18__31/O
-                         net (fo=1, unplaced)         0.000    11.227    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_i_18__31_n_0
+                         LUT2 (Prop_lut2_I0_O)        0.306    11.227 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_i_18__56/O
+                         net (fo=1, unplaced)         0.000    11.227    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_i_18__56_n_0
                          CARRY4 (Prop_carry4_S[2]_CO[3])
-                                                      0.380    11.607 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_reg_i_3__31/CO[3]
-                         net (fo=1, unplaced)         0.000    11.607    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_reg_i_3__31_n_0
+                                                      0.380    11.607 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_reg_i_3__56/CO[3]
+                         net (fo=1, unplaced)         0.000    11.607    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_reg_i_3__56_n_0
                          CARRY4 (Prop_carry4_CI_CO[3])
-                                                      0.117    11.724 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_reg_i_2__31/CO[3]
+                                                      0.117    11.724 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_reg_i_2__56/CO[3]
                          net (fo=1, unplaced)         0.748    12.472    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/next_spike
-                         LUT2 (Prop_lut2_I0_O)        0.124    12.596 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_i_1__37/O
-                         net (fo=1, unplaced)         0.000    12.596    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_i_1__37_n_0
+                         LUT2 (Prop_lut2_I0_O)        0.124    12.596 r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_i_1__62/O
+                         net (fo=1, unplaced)         0.000    12.596    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_i_1__62_n_0
                          FDCE                                         r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_reg/D
   -------------------------------------------------------------------    -------------------
 
@@ -271,7 +271,7 @@ Slack (MET) :             0.232ns  (required time - arrival time)
     E3                   IBUF (Prop_ibuf_I_O)         1.411    11.411 r  CLK100MHZ_IBUF_inst/O
                          net (fo=1, unplaced)         0.763    12.174    CLK100MHZ_IBUF
                          BUFG (Prop_bufg_I_O)         0.091    12.265 r  CLK100MHZ_IBUF_BUFG_inst/O
-                         net (fo=20263, unplaced)     0.439    12.704    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/CLK100MHZ_IBUF_BUFG
+                         net (fo=21414, unplaced)     0.439    12.704    u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/CLK100MHZ_IBUF_BUFG
                          FDCE                                         r  u_accel/gen_nn_standard.u_accel/gen_hl1_lif[0].hl1_lif/spike_prev_reg/C
                          clock pessimism              0.116    12.820    
                          clock uncertainty           -0.035    12.784    
@@ -312,13 +312,13 @@ Slack (MET) :             0.137ns  (arrival time - required time)
     E3                   IBUF (Prop_ibuf_I_O)         0.250     0.250 r  CLK100MHZ_IBUF_inst/O
                          net (fo=1, unplaced)         0.338     0.588    CLK100MHZ_IBUF
                          BUFG (Prop_bufg_I_O)         0.026     0.614 r  CLK100MHZ_IBUF_BUFG_inst/O
-                         net (fo=20263, unplaced)     0.114     0.728    u_accel/gen_nn_standard.u_accel/fc2/CLK100MHZ_IBUF_BUFG
+                         net (fo=21414, unplaced)     0.114     0.728    u_accel/gen_nn_standard.u_accel/fc2/CLK100MHZ_IBUF_BUFG
                          FDCE                                         r  u_accel/gen_nn_standard.u_accel/fc2/done_reg/C
   -------------------------------------------------------------------    -------------------
                          FDCE (Prop_fdce_C_Q)         0.147     0.875 r  u_accel/gen_nn_standard.u_accel/fc2/done_reg/Q
                          net (fo=2, unplaced)         0.136     1.011    u_accel/gen_nn_standard.u_accel/fc2/fc2_done
-                         LUT4 (Prop_lut4_I3_O)        0.098     1.109 r  u_accel/gen_nn_standard.u_accel/fc2/done_i_1__1/O
-                         net (fo=1, unplaced)         0.000     1.109    u_accel/gen_nn_standard.u_accel/fc2/done_i_1__1_n_0
+                         LUT4 (Prop_lut4_I3_O)        0.098     1.109 r  u_accel/gen_nn_standard.u_accel/fc2/done_i_1__0/O
+                         net (fo=1, unplaced)         0.000     1.109    u_accel/gen_nn_standard.u_accel/fc2/done_i_1__0_n_0
                          FDCE                                         r  u_accel/gen_nn_standard.u_accel/fc2/done_reg/D
   -------------------------------------------------------------------    -------------------
 
@@ -329,7 +329,7 @@ Slack (MET) :             0.137ns  (arrival time - required time)
     E3                   IBUF (Prop_ibuf_I_O)         0.438     0.438 r  CLK100MHZ_IBUF_inst/O
                          net (fo=1, unplaced)         0.356     0.794    CLK100MHZ_IBUF
                          BUFG (Prop_bufg_I_O)         0.029     0.823 r  CLK100MHZ_IBUF_BUFG_inst/O
-                         net (fo=20263, unplaced)     0.259     1.082    u_accel/gen_nn_standard.u_accel/fc2/CLK100MHZ_IBUF_BUFG
+                         net (fo=21414, unplaced)     0.259     1.082    u_accel/gen_nn_standard.u_accel/fc2/CLK100MHZ_IBUF_BUFG
                          FDCE                                         r  u_accel/gen_nn_standard.u_accel/fc2/done_reg/C
                          clock pessimism             -0.209     0.873    
                          FDCE (Hold_fdce_C_D)         0.099     0.972    u_accel/gen_nn_standard.u_accel/fc2/done_reg

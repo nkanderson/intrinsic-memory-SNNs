@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2025.1 (lin64) Build 6140274 Wed May 21 22:58:25 MDT 2025
-| Date             : Mon May 25 09:21:42 2026
+| Date             : Mon May 25 12:33:01 2026
 | Host             : niklas.ece.pdx.edu running 64-bit Pop!_OS 22.04 LTS
 | Command          : report_power -file board_top_lif_32_32_power_routed.rpt -pb board_top_lif_32_32_power_summary_routed.pb -rpx board_top_lif_32_32_power_routed.rpx
 | Design           : board_top_lif_32_32
@@ -30,14 +30,14 @@ Table of Contents
 ----------
 
 +--------------------------+--------------+
-| Total On-Chip Power (W)  | 0.318        |
+| Total On-Chip Power (W)  | 0.359        |
 | Design Power Budget (W)  | Unspecified* |
 | Power Budget Margin (W)  | NA           |
-| Dynamic (W)              | 0.221        |
+| Dynamic (W)              | 0.261        |
 | Device Static (W)        | 0.098        |
 | Effective TJA (C/W)      | 4.6          |
-| Max Ambient (C)          | 83.5         |
-| Junction Temperature (C) | 26.5         |
+| Max Ambient (C)          | 83.4         |
+| Junction Temperature (C) | 26.6         |
 | Confidence Level         | Medium       |
 | Setting File             | ---          |
 | Simulation Activity File | ---          |
@@ -52,18 +52,18 @@ Table of Contents
 +----------------+-----------+----------+-----------+-----------------+
 | On-Chip        | Power (W) | Used     | Available | Utilization (%) |
 +----------------+-----------+----------+-----------+-----------------+
-| Clocks         |     0.026 |        3 |       --- |             --- |
-| Slice Logic    |     0.045 |    39622 |       --- |             --- |
-|   LUT as Logic |     0.040 |    11713 |     63400 |           18.47 |
-|   CARRY4       |     0.005 |      985 |     15850 |            6.21 |
-|   Register     |    <0.001 |    20457 |    126800 |           16.13 |
-|   F7/F8 Muxes  |    <0.001 |     2386 |     63400 |            3.76 |
-|   Others       |     0.000 |      275 |       --- |             --- |
-| Signals        |     0.056 |    31468 |       --- |             --- |
-| DSPs           |     0.092 |       98 |       240 |           40.83 |
-| I/O            |     0.001 |       20 |       210 |            9.52 |
+| Clocks         |     0.036 |        3 |       --- |             --- |
+| Slice Logic    |     0.056 |    41010 |       --- |             --- |
+|   LUT as Logic |     0.049 |    12575 |     63400 |           19.83 |
+|   CARRY4       |     0.005 |     1033 |     15850 |            6.52 |
+|   Register     |    <0.001 |    21486 |    126800 |           16.94 |
+|   F7/F8 Muxes  |    <0.001 |     1666 |     63400 |            2.63 |
+|   Others       |     0.000 |      307 |       --- |             --- |
+| Signals        |     0.069 |    33394 |       --- |             --- |
+| DSPs           |     0.098 |      104 |       240 |           43.33 |
+| I/O            |     0.002 |       20 |       210 |            9.52 |
 | Static Power   |     0.098 |          |           |                 |
-| Total          |     0.318 |          |           |                 |
+| Total          |     0.359 |          |           |                 |
 +----------------+-----------+----------+-----------+-----------------+
 
 
@@ -73,7 +73,7 @@ Table of Contents
 +-----------+-------------+-----------+-------------+------------+-------------+-------------+------------+
 | Source    | Voltage (V) | Total (A) | Dynamic (A) | Static (A) | Powerup (A) | Budget (A)  | Margin (A) |
 +-----------+-------------+-----------+-------------+------------+-------------+-------------+------------+
-| Vccint    |       1.000 |     0.235 |       0.219 |      0.016 |       NA    | Unspecified | NA         |
+| Vccint    |       1.000 |     0.275 |       0.259 |      0.016 |       NA    | Unspecified | NA         |
 | Vccaux    |       1.800 |     0.018 |       0.000 |      0.018 |       NA    | Unspecified | NA         |
 | Vcco33    |       3.300 |     0.004 |       0.000 |      0.004 |       NA    | Unspecified | NA         |
 | Vcco25    |       2.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
@@ -139,79 +139,112 @@ Table of Contents
 3.1 By Hierarchy
 ----------------
 
-+-------------------------------+-----------+
-| Name                          | Power (W) |
-+-------------------------------+-----------+
-| board_top_lif_32_32           |     0.221 |
-|   u_accel                     |     0.219 |
-|     gen_nn_standard.u_accel   |     0.218 |
-|       fc1                     |     0.032 |
-|       fc2                     |     0.031 |
-|       gen_hl1_lif[0].hl1_lif  |     0.002 |
-|       gen_hl1_lif[10].hl1_lif |     0.002 |
-|       gen_hl1_lif[11].hl1_lif |     0.002 |
-|       gen_hl1_lif[12].hl1_lif |     0.002 |
-|       gen_hl1_lif[13].hl1_lif |     0.002 |
-|       gen_hl1_lif[14].hl1_lif |     0.002 |
-|       gen_hl1_lif[15].hl1_lif |     0.002 |
-|       gen_hl1_lif[16].hl1_lif |     0.002 |
-|       gen_hl1_lif[17].hl1_lif |     0.002 |
-|       gen_hl1_lif[18].hl1_lif |     0.002 |
-|       gen_hl1_lif[19].hl1_lif |     0.002 |
-|       gen_hl1_lif[1].hl1_lif  |     0.002 |
-|       gen_hl1_lif[20].hl1_lif |     0.002 |
-|       gen_hl1_lif[21].hl1_lif |     0.002 |
-|       gen_hl1_lif[22].hl1_lif |     0.002 |
-|       gen_hl1_lif[23].hl1_lif |     0.002 |
-|       gen_hl1_lif[24].hl1_lif |     0.002 |
-|       gen_hl1_lif[25].hl1_lif |     0.002 |
-|       gen_hl1_lif[26].hl1_lif |     0.002 |
-|       gen_hl1_lif[27].hl1_lif |     0.002 |
-|       gen_hl1_lif[28].hl1_lif |     0.002 |
-|       gen_hl1_lif[29].hl1_lif |     0.002 |
-|       gen_hl1_lif[2].hl1_lif  |     0.002 |
-|       gen_hl1_lif[30].hl1_lif |     0.002 |
-|       gen_hl1_lif[31].hl1_lif |     0.002 |
-|       gen_hl1_lif[3].hl1_lif  |     0.002 |
-|       gen_hl1_lif[4].hl1_lif  |     0.002 |
-|       gen_hl1_lif[5].hl1_lif  |     0.002 |
-|       gen_hl1_lif[6].hl1_lif  |     0.002 |
-|       gen_hl1_lif[7].hl1_lif  |     0.002 |
-|       gen_hl1_lif[8].hl1_lif  |     0.002 |
-|       gen_hl1_lif[9].hl1_lif  |     0.002 |
-|       gen_hl2[0].hl2_lif      |     0.002 |
-|       gen_hl2[10].hl2_lif     |     0.002 |
-|       gen_hl2[11].hl2_lif     |     0.002 |
-|       gen_hl2[12].hl2_lif     |     0.002 |
-|       gen_hl2[13].hl2_lif     |     0.002 |
-|       gen_hl2[14].hl2_lif     |     0.002 |
-|       gen_hl2[15].hl2_lif     |     0.002 |
-|       gen_hl2[16].hl2_lif     |     0.002 |
-|       gen_hl2[17].hl2_lif     |     0.002 |
-|       gen_hl2[18].hl2_lif     |     0.002 |
-|       gen_hl2[19].hl2_lif     |     0.002 |
-|       gen_hl2[1].hl2_lif      |     0.002 |
-|       gen_hl2[20].hl2_lif     |     0.002 |
-|       gen_hl2[21].hl2_lif     |     0.002 |
-|       gen_hl2[22].hl2_lif     |     0.002 |
-|       gen_hl2[23].hl2_lif     |     0.002 |
-|       gen_hl2[24].hl2_lif     |     0.002 |
-|       gen_hl2[25].hl2_lif     |     0.002 |
-|       gen_hl2[26].hl2_lif     |     0.002 |
-|       gen_hl2[27].hl2_lif     |     0.002 |
-|       gen_hl2[28].hl2_lif     |     0.002 |
-|       gen_hl2[29].hl2_lif     |     0.002 |
-|       gen_hl2[2].hl2_lif      |     0.002 |
-|       gen_hl2[30].hl2_lif     |     0.002 |
-|       gen_hl2[31].hl2_lif     |     0.002 |
-|       gen_hl2[3].hl2_lif      |     0.002 |
-|       gen_hl2[4].hl2_lif      |     0.002 |
-|       gen_hl2[5].hl2_lif      |     0.002 |
-|       gen_hl2[6].hl2_lif      |     0.002 |
-|       gen_hl2[7].hl2_lif      |     0.002 |
-|       gen_hl2[8].hl2_lif      |     0.002 |
-|       gen_hl2[9].hl2_lif      |     0.002 |
-|       q_accum                 |     0.008 |
-+-------------------------------+-----------+
++--------------------------------+-----------+
+| Name                           | Power (W) |
++--------------------------------+-----------+
+| board_top_lif_32_32            |     0.261 |
+|   u_accel                      |     0.259 |
+|     gen_nn_standard.u_accel    |     0.257 |
+|       fc1                      |     0.032 |
+|       fc2                      |     0.029 |
+|       gen_hl1_lif[0].hl1_lif   |     0.002 |
+|       gen_hl1_lif[10].hl1_lif  |     0.002 |
+|       gen_hl1_lif[11].hl1_lif  |     0.002 |
+|       gen_hl1_lif[12].hl1_lif  |     0.002 |
+|       gen_hl1_lif[13].hl1_lif  |     0.002 |
+|       gen_hl1_lif[14].hl1_lif  |     0.002 |
+|       gen_hl1_lif[15].hl1_lif  |     0.002 |
+|       gen_hl1_lif[16].hl1_lif  |     0.002 |
+|       gen_hl1_lif[17].hl1_lif  |     0.002 |
+|       gen_hl1_lif[18].hl1_lif  |     0.002 |
+|       gen_hl1_lif[19].hl1_lif  |     0.002 |
+|       gen_hl1_lif[1].hl1_lif   |     0.002 |
+|       gen_hl1_lif[20].hl1_lif  |     0.002 |
+|       gen_hl1_lif[21].hl1_lif  |     0.002 |
+|       gen_hl1_lif[22].hl1_lif  |     0.002 |
+|       gen_hl1_lif[23].hl1_lif  |     0.002 |
+|       gen_hl1_lif[24].hl1_lif  |     0.002 |
+|       gen_hl1_lif[25].hl1_lif  |     0.002 |
+|       gen_hl1_lif[26].hl1_lif  |     0.002 |
+|       gen_hl1_lif[27].hl1_lif  |     0.002 |
+|       gen_hl1_lif[28].hl1_lif  |     0.002 |
+|       gen_hl1_lif[29].hl1_lif  |     0.002 |
+|       gen_hl1_lif[2].hl1_lif   |     0.002 |
+|       gen_hl1_lif[30].hl1_lif  |     0.002 |
+|       gen_hl1_lif[31].hl1_lif  |     0.002 |
+|       gen_hl1_lif[3].hl1_lif   |     0.002 |
+|       gen_hl1_lif[4].hl1_lif   |     0.002 |
+|       gen_hl1_lif[5].hl1_lif   |     0.002 |
+|       gen_hl1_lif[6].hl1_lif   |     0.002 |
+|       gen_hl1_lif[7].hl1_lif   |     0.002 |
+|       gen_hl1_lif[8].hl1_lif   |     0.002 |
+|       gen_hl1_lif[9].hl1_lif   |     0.002 |
+|       gen_hl2[0].hl2_lif       |     0.002 |
+|       gen_hl2[0].membrane_buf  |     0.001 |
+|       gen_hl2[10].hl2_lif      |     0.002 |
+|       gen_hl2[10].membrane_buf |     0.001 |
+|       gen_hl2[11].hl2_lif      |     0.002 |
+|       gen_hl2[11].membrane_buf |     0.001 |
+|       gen_hl2[12].hl2_lif      |     0.002 |
+|       gen_hl2[12].membrane_buf |     0.001 |
+|       gen_hl2[13].hl2_lif      |     0.002 |
+|       gen_hl2[13].membrane_buf |     0.001 |
+|       gen_hl2[14].hl2_lif      |     0.002 |
+|       gen_hl2[14].membrane_buf |     0.001 |
+|       gen_hl2[15].hl2_lif      |     0.002 |
+|       gen_hl2[15].membrane_buf |     0.001 |
+|       gen_hl2[16].hl2_lif      |     0.002 |
+|       gen_hl2[16].membrane_buf |     0.001 |
+|       gen_hl2[17].hl2_lif      |     0.002 |
+|       gen_hl2[17].membrane_buf |     0.001 |
+|       gen_hl2[18].hl2_lif      |     0.002 |
+|       gen_hl2[18].membrane_buf |     0.001 |
+|       gen_hl2[19].hl2_lif      |     0.002 |
+|       gen_hl2[19].membrane_buf |     0.001 |
+|       gen_hl2[1].hl2_lif       |     0.002 |
+|       gen_hl2[1].membrane_buf  |     0.001 |
+|       gen_hl2[20].hl2_lif      |     0.002 |
+|       gen_hl2[20].membrane_buf |     0.001 |
+|       gen_hl2[21].hl2_lif      |     0.002 |
+|       gen_hl2[21].membrane_buf |     0.001 |
+|       gen_hl2[22].hl2_lif      |     0.002 |
+|       gen_hl2[22].membrane_buf |     0.001 |
+|       gen_hl2[23].hl2_lif      |     0.002 |
+|       gen_hl2[23].membrane_buf |     0.001 |
+|       gen_hl2[24].hl2_lif      |     0.002 |
+|       gen_hl2[24].membrane_buf |     0.001 |
+|       gen_hl2[25].hl2_lif      |     0.002 |
+|       gen_hl2[25].membrane_buf |     0.001 |
+|       gen_hl2[26].hl2_lif      |     0.002 |
+|       gen_hl2[26].membrane_buf |     0.001 |
+|       gen_hl2[27].hl2_lif      |     0.002 |
+|       gen_hl2[27].membrane_buf |     0.001 |
+|       gen_hl2[28].hl2_lif      |     0.002 |
+|       gen_hl2[28].membrane_buf |     0.001 |
+|       gen_hl2[29].hl2_lif      |     0.002 |
+|       gen_hl2[29].membrane_buf |     0.001 |
+|       gen_hl2[2].hl2_lif       |     0.002 |
+|       gen_hl2[2].membrane_buf  |     0.001 |
+|       gen_hl2[30].hl2_lif      |     0.002 |
+|       gen_hl2[30].membrane_buf |     0.001 |
+|       gen_hl2[31].hl2_lif      |     0.002 |
+|       gen_hl2[31].membrane_buf |     0.001 |
+|       gen_hl2[3].hl2_lif       |     0.002 |
+|       gen_hl2[3].membrane_buf  |     0.001 |
+|       gen_hl2[4].hl2_lif       |     0.002 |
+|       gen_hl2[4].membrane_buf  |     0.001 |
+|       gen_hl2[5].hl2_lif       |     0.002 |
+|       gen_hl2[5].membrane_buf  |     0.001 |
+|       gen_hl2[6].hl2_lif       |     0.002 |
+|       gen_hl2[6].membrane_buf  |     0.001 |
+|       gen_hl2[7].hl2_lif       |     0.002 |
+|       gen_hl2[7].membrane_buf  |     0.001 |
+|       gen_hl2[8].hl2_lif       |     0.002 |
+|       gen_hl2[8].membrane_buf  |     0.001 |
+|       gen_hl2[9].hl2_lif       |     0.002 |
+|       gen_hl2[9].membrane_buf  |     0.001 |
+|       q_accum                  |     0.030 |
+|     u_ctrl                     |     0.001 |
++--------------------------------+-----------+
 
 
