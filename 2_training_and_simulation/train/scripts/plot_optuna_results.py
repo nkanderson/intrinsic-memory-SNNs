@@ -176,7 +176,9 @@ def _plot_scatter(args, study_specs, out_dir: Path) -> Path:
     about pre-convergence average and has to be computed per study; the
     marker-fill encoding tells the same story without those assumptions.
     """
-    fig, ax = plt.subplots(figsize=(DEFAULT_FIGSIZE[0], DEFAULT_FIGSIZE[1] + 1.5), constrained_layout=True)
+    fig, ax = plt.subplots(
+        figsize=(DEFAULT_FIGSIZE[0], DEFAULT_FIGSIZE[1] + 3), constrained_layout=True
+    )
 
     for idx, spec in enumerate(study_specs):
         study_name = spec["name"]
@@ -211,26 +213,40 @@ def _plot_scatter(args, study_specs, out_dir: Path) -> Path:
         if by_status[NEVER_CONVERGED]:
             xs, ys = zip(*by_status[NEVER_CONVERGED])
             ax.scatter(
-                xs, ys,
-                s=38, marker=marker,
-                facecolors="none", edgecolors=color, linewidths=1.0,
+                xs,
+                ys,
+                s=38,
+                marker=marker,
+                facecolors="none",
+                edgecolors=color,
+                linewidths=1.0,
                 alpha=0.7,
             )
         if by_status[CONVERGED_MARGINAL]:
             xs, ys = zip(*by_status[CONVERGED_MARGINAL])
             ax.scatter(
-                xs, ys,
-                s=42, marker=marker,
-                color=color, edgecolors="black", linewidths=0.4,
+                xs,
+                ys,
+                s=42,
+                marker=marker,
+                color=color,
+                edgecolors="black",
+                linewidths=0.4,
                 alpha=0.35,
             )
         # The gate-passing scatter carries the per-study legend label so the
         # legend uses the same marker style as the headline points.
-        gp_xs, gp_ys = zip(*by_status[GATE_PASSING]) if by_status[GATE_PASSING] else ([], [])
+        gp_xs, gp_ys = (
+            zip(*by_status[GATE_PASSING]) if by_status[GATE_PASSING] else ([], [])
+        )
         ax.scatter(
-            gp_xs, gp_ys,
-            s=48, marker=marker,
-            color=color, edgecolors="black", linewidths=0.5,
+            gp_xs,
+            gp_ys,
+            s=48,
+            marker=marker,
+            color=color,
+            edgecolors="black",
+            linewidths=0.5,
             alpha=0.95,
             label=legend_label,
         )
@@ -238,28 +254,54 @@ def _plot_scatter(args, study_specs, out_dir: Path) -> Path:
     # Status-key entries (neutral, one per gate state). Drawn as a single
     # extra scatter call each so they appear in the legend.
     from matplotlib.lines import Line2D
+
     status_handles = [
-        Line2D([0], [0], marker="o", linestyle="none",
-               markerfacecolor="0.4", markeredgecolor="black",
-               markersize=7, markeredgewidth=0.5,
-               label="gate-passing"),
-        Line2D([0], [0], marker="o", linestyle="none",
-               markerfacecolor="0.4", markeredgecolor="black",
-               markersize=7, markeredgewidth=0.5, alpha=0.35,
-               label="converged, sub-K-buffer"),
-        Line2D([0], [0], marker="o", linestyle="none",
-               markerfacecolor="none", markeredgecolor="0.4",
-               markersize=7, markeredgewidth=1.0,
-               label="never converged"),
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            linestyle="none",
+            markerfacecolor="0.4",
+            markeredgecolor="black",
+            markersize=7,
+            markeredgewidth=0.5,
+            label="gate-passing",
+        ),
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            linestyle="none",
+            markerfacecolor="0.4",
+            markeredgecolor="black",
+            markersize=7,
+            markeredgewidth=0.5,
+            alpha=0.35,
+            label="converged, sub-K-buffer",
+        ),
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            linestyle="none",
+            markerfacecolor="none",
+            markeredgecolor="0.4",
+            markersize=7,
+            markeredgewidth=1.0,
+            label="never converged",
+        ),
     ]
     # Combine the auto-collected study handles with the status key.
     auto_handles, auto_labels = ax.get_legend_handles_labels()
     ax.legend(
         handles=auto_handles + status_handles,
         labels=auto_labels + [h.get_label() for h in status_handles],
-        fontsize=LEGEND_FONTSIZE, frameon=False,
-        loc="lower center", bbox_to_anchor=(0.5, 1.02),
-        ncol=3, borderaxespad=0,
+        fontsize=LEGEND_FONTSIZE,
+        frameon=False,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1.02),
+        ncol=3,
+        borderaxespad=0,
     )
 
     if args.x_axis == "history_length":
@@ -307,7 +349,9 @@ def _plot_convergence_strip(args, study_specs, out_dir: Path) -> Path:
         column_labels.append(label)
         style = NEURON_STYLE.get(label, {})
         color = style.get("color", OKABE_ITO[x_idx % len(OKABE_ITO)])
-        marker = style.get("marker", COMPARISON_MARKERS[x_idx % len(COMPARISON_MARKERS)])
+        marker = style.get(
+            "marker", COMPARISON_MARKERS[x_idx % len(COMPARISON_MARKERS)]
+        )
 
         gate_ys = []
         marg_ys = []
@@ -337,46 +381,66 @@ def _plot_convergence_strip(args, study_specs, out_dir: Path) -> Path:
             ax.plot(
                 [x_idx - 0.3, x_idx + 0.3],
                 [total - K, total - K],
-                color=color, linewidth=1.4, alpha=0.6,
+                color=color,
+                linewidth=1.4,
+                alpha=0.6,
             )
             # Top-of-training reference (thin dotted)
             ax.plot(
                 [x_idx - 0.3, x_idx + 0.3],
                 [total, total],
-                color=color, linewidth=0.8, linestyle=":", alpha=0.5,
+                color=color,
+                linewidth=0.8,
+                linestyle=":",
+                alpha=0.5,
             )
 
         if gate_ys:
             xs = x_idx + rng.uniform(-0.1, 0.1, size=len(gate_ys))
             ax.scatter(
-                xs, gate_ys,
-                s=52, marker=marker,
-                color=color, edgecolors="black", linewidths=0.5,
+                xs,
+                gate_ys,
+                s=52,
+                marker=marker,
+                color=color,
+                edgecolors="black",
+                linewidths=0.5,
                 alpha=0.95,
             )
         if marg_ys:
             xs = x_idx + rng.uniform(-0.1, 0.1, size=len(marg_ys))
             ax.scatter(
-                xs, marg_ys,
-                s=46, marker=marker,
-                color=color, edgecolors="black", linewidths=0.4,
+                xs,
+                marg_ys,
+                s=46,
+                marker=marker,
+                color=color,
+                edgecolors="black",
+                linewidths=0.4,
                 alpha=0.35,
             )
 
         n_total = len(gate_ys) + len(marg_ys) + n_never
         ax.text(
-            x_idx, 0.02,
+            x_idx,
+            0.02,
             f"gate {len(gate_ys)}/{n_total}\nno-conv {n_never}",
-            ha="center", va="bottom",
+            ha="center",
+            va="bottom",
             fontsize=LEGEND_FONTSIZE,
             transform=ax.get_xaxis_transform(),
-            bbox=dict(boxstyle="round,pad=0.25", facecolor="white",
-                      edgecolor="none", alpha=0.9),
+            bbox=dict(
+                boxstyle="round,pad=0.25",
+                facecolor="white",
+                edgecolor="none",
+                alpha=0.9,
+            ),
         )
 
     ax.set_xticks(range(len(column_labels)))
-    ax.set_xticklabels(column_labels, rotation=20, ha="right",
-                       fontsize=TICK_LABEL_FONTSIZE)
+    ax.set_xticklabels(
+        column_labels, rotation=20, ha="right", fontsize=TICK_LABEL_FONTSIZE
+    )
     ax.set_ylabel("Convergence episode", fontsize=AXIS_LABEL_FONTSIZE)
     ax.tick_params(axis="y", labelsize=TICK_LABEL_FONTSIZE)
     ax.grid(True, alpha=0.3, axis="y")
@@ -389,23 +453,58 @@ def _plot_convergence_strip(args, study_specs, out_dir: Path) -> Path:
 
     # Status key — same marker semantics as the scatter plot.
     from matplotlib.lines import Line2D
+
     status_handles = [
-        Line2D([0], [0], marker="o", linestyle="none",
-               markerfacecolor="0.4", markeredgecolor="black",
-               markersize=7, markeredgewidth=0.5,
-               label="gate-passing"),
-        Line2D([0], [0], marker="o", linestyle="none",
-               markerfacecolor="0.4", markeredgecolor="black",
-               markersize=7, markeredgewidth=0.4, alpha=0.35,
-               label="converged, sub-K-buffer"),
-        Line2D([0], [0], color="0.4", linewidth=1.4, alpha=0.6,
-               label=f"K-buffer cutoff (K={K})"),
-        Line2D([0], [0], color="0.4", linewidth=0.8, linestyle=":", alpha=0.5,
-               label="total episodes"),
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            linestyle="none",
+            markerfacecolor="0.4",
+            markeredgecolor="black",
+            markersize=7,
+            markeredgewidth=0.5,
+            label="gate-passing",
+        ),
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            linestyle="none",
+            markerfacecolor="0.4",
+            markeredgecolor="black",
+            markersize=7,
+            markeredgewidth=0.4,
+            alpha=0.35,
+            label="converged, sub-K-buffer",
+        ),
+        Line2D(
+            [0],
+            [0],
+            color="0.4",
+            linewidth=1.4,
+            alpha=0.6,
+            label=f"K-buffer cutoff (K={K})",
+        ),
+        Line2D(
+            [0],
+            [0],
+            color="0.4",
+            linewidth=0.8,
+            linestyle=":",
+            alpha=0.5,
+            label="total episodes",
+        ),
     ]
-    ax.legend(handles=status_handles, fontsize=LEGEND_FONTSIZE,
-              frameon=False, loc="lower center", bbox_to_anchor=(0.5, 1.02),
-              ncol=4, borderaxespad=0)
+    ax.legend(
+        handles=status_handles,
+        fontsize=LEGEND_FONTSIZE,
+        frameon=False,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1.02),
+        ncol=4,
+        borderaxespad=0,
+    )
 
     return _savefig(fig, out_dir, "optuna_convergence_strip", args.format)
 
