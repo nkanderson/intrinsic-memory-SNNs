@@ -24,6 +24,14 @@
 //
 // Fixed-point format: QS2.13 (16-bit signed, 2 integer bits, 13 fractional bits)
 //
+// Truncation ordering: per-timestep products are summed at the full
+// MEMBRANE_WIDTH+DATA_WIDTH product width into a per-timestep accumulator,
+// then right-shifted by FRAC_BITS once at the end of the timestep before
+// bias-add. This matches qs213_reference.q_accumulate exactly. An earlier
+// version shifted every product individually inside batch_sum, which
+// disagreed with the reference by up to ~NUM_NEURONS LSBs per timestep and
+// could flip the chosen action when Q-margins were small.
+//
 // Timing:
 //   - Assert 'start' when all neuron membrane buffers are full
 //   - Latency: NUM_TIMESTEPS × (NUM_NEURONS / BATCH_SIZE + 2) + 2 cycles
@@ -79,14 +87,19 @@ module q_accumulator #(
         $readmemh(BIAS_FILE, biases);
     end
 
-    // Accumulator width: needs headroom for sum across neurons and timesteps
-    // membrane (24-bit) × weight (16-bit) = 40-bit product
-    // Sum across NUM_NEURONS: +log2(NUM_NEURONS) bits
-    // Sum across NUM_TIMESTEPS: +log2(NUM_TIMESTEPS) bits
+    // Per-timestep accumulator width: holds the un-shifted sum of full-width
+    // (MEMBRANE_WIDTH+DATA_WIDTH) products across all neurons in one timestep,
+    // before the FRAC_BITS shift. +2 bits of safety headroom.
+    localparam TIMESTEP_ACCUM_WIDTH = MEMBRANE_WIDTH + DATA_WIDTH + $clog2(NUM_NEURONS) + 2;
+
+    // Cross-timestep accumulator width: sum of shifted+biased per-timestep
+    // results across NUM_TIMESTEPS. Sized conservatively at the legacy width.
     localparam ACCUM_WIDTH = MEMBRANE_WIDTH + DATA_WIDTH + $clog2(NUM_NEURONS) + $clog2(NUM_TIMESTEPS) + 2;
 
-    // Q-value accumulators (one per action)
-    logic signed [ACCUM_WIDTH-1:0] q_accum [0:NUM_ACTIONS-1];
+    // Q-value accumulators (one per action) and per-timestep product-sum
+    // accumulators (cleared at each timestep boundary).
+    logic signed [ACCUM_WIDTH-1:0]          q_accum        [0:NUM_ACTIONS-1];
+    logic signed [TIMESTEP_ACCUM_WIDTH-1:0] timestep_accum [0:NUM_ACTIONS-1];
 
     // State machine
     typedef enum logic [1:0] {
@@ -103,8 +116,13 @@ module q_accumulator #(
     (* use_dsp = "yes" *)
     logic signed [MEMBRANE_WIDTH+DATA_WIDTH-1:0] products_r [0:NUM_ACTIONS-1][0:BATCH_SIZE-1];
 
-    // Batch sums per action
-    logic signed [ACCUM_WIDTH-1:0] batch_sum [0:NUM_ACTIONS-1];
+    // Batch sums per action: sum of full-width products within the current
+    // batch (NOT shifted; shift happens once at end-of-timestep).
+    logic signed [TIMESTEP_ACCUM_WIDTH-1:0] batch_sum [0:NUM_ACTIONS-1];
+
+    // Combinational helpers for the end-of-timestep shift+bias path.
+    logic signed [TIMESTEP_ACCUM_WIDTH-1:0] full_timestep_sum [0:NUM_ACTIONS-1];
+    logic signed [TIMESTEP_ACCUM_WIDTH-1:0] timestep_shifted  [0:NUM_ACTIONS-1];
 
     // Pipeline control
     logic batch_valid;
@@ -114,14 +132,22 @@ module q_accumulator #(
     assign read_timestep = timestep_counter;
     assign base_idx = batch_counter * BATCH_SIZE;
 
-    // Combinational: compute batch sums from registered products
+    // Combinational: sum full-width products into batch_sum (no per-product
+    // shift), then compute the running per-timestep sum and its FRAC_BITS-
+    // shifted value for the end-of-timestep path.
     always_comb begin
         for (int a = 0; a < NUM_ACTIONS; a++) begin
             batch_sum[a] = '0;
             for (int b = 0; b < BATCH_SIZE; b++) begin
-                // Scale and add to batch sum
-                batch_sum[a] = batch_sum[a] + (products_r[a][b] >>> FRAC_BITS);
+                // Sign-extend the MEMBRANE+DATA-wide product to
+                // TIMESTEP_ACCUM_WIDTH and accumulate without any shift.
+                batch_sum[a] = batch_sum[a] +
+                    $signed({{(TIMESTEP_ACCUM_WIDTH-(MEMBRANE_WIDTH+DATA_WIDTH)){
+                        products_r[a][b][MEMBRANE_WIDTH+DATA_WIDTH-1]}},
+                        products_r[a][b]});
             end
+            full_timestep_sum[a] = timestep_accum[a] + batch_sum[a];
+            timestep_shifted[a]  = full_timestep_sum[a] >>> FRAC_BITS;
         end
     end
 
@@ -136,6 +162,7 @@ module q_accumulator #(
             last_batch_r <= 1'b0;
             for (int a = 0; a < NUM_ACTIONS; a++) begin
                 q_accum[a] <= '0;
+                timestep_accum[a] <= '0;
             end
             for (int a = 0; a < NUM_ACTIONS; a++) begin
                 for (int b = 0; b < BATCH_SIZE; b++) begin
@@ -150,6 +177,7 @@ module q_accumulator #(
                         // Initialize accumulators
                         for (int a = 0; a < NUM_ACTIONS; a++) begin
                             q_accum[a] <= '0;
+                            timestep_accum[a] <= '0;
                         end
                         timestep_counter <= '0;
                         batch_counter <= '0;
@@ -162,14 +190,25 @@ module q_accumulator #(
                 end
 
                 PROCESSING: begin
-                    // Add batch sums to accumulators when valid
+                    // Update accumulators when batch results are valid. On
+                    // the last batch of a timestep, take the full-width
+                    // per-timestep product sum (timestep_accum + batch_sum),
+                    // shift it once by FRAC_BITS, add bias, and accumulate
+                    // into cross-timestep q_accum. Mid-timestep, just grow
+                    // timestep_accum at full width.
                     if (batch_valid) begin
                         for (int a = 0; a < NUM_ACTIONS; a++) begin
                             if (last_batch_r) begin
-                                q_accum[a] <= q_accum[a] + batch_sum[a] +
-                                             $signed({{(ACCUM_WIDTH-DATA_WIDTH){biases[a][DATA_WIDTH-1]}}, biases[a]});
+                                q_accum[a] <= q_accum[a] +
+                                    $signed({{(ACCUM_WIDTH-TIMESTEP_ACCUM_WIDTH){
+                                        timestep_shifted[a][TIMESTEP_ACCUM_WIDTH-1]}},
+                                        timestep_shifted[a]}) +
+                                    $signed({{(ACCUM_WIDTH-DATA_WIDTH){
+                                        biases[a][DATA_WIDTH-1]}},
+                                        biases[a]});
+                                timestep_accum[a] <= '0;
                             end else begin
-                                q_accum[a] <= q_accum[a] + batch_sum[a];
+                                timestep_accum[a] <= full_timestep_sum[a];
                             end
                         end
                     end
@@ -230,6 +269,7 @@ module q_accumulator #(
                     if (start) begin
                         for (int a = 0; a < NUM_ACTIONS; a++) begin
                             q_accum[a] <= '0;
+                            timestep_accum[a] <= '0;
                         end
                         timestep_counter <= '0;
                         batch_counter <= '0;
