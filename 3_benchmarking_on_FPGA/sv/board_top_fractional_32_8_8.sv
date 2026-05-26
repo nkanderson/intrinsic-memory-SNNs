@@ -50,7 +50,7 @@ module board_top_fractional_32_8_8 (
         .HL2_SIZE         (8),
         .NUM_ACTIONS      (2),
         .NUM_TIMESTEPS    (10),
-        .Q_BATCH_SIZE     (1),
+        .Q_BATCH_SIZE     (4),
         .FC2_OUTPUT_WIDTH (24),
         .HISTORY_LENGTH   (8),
         .COEFF_WIDTH      (16),

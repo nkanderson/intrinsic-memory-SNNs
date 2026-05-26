@@ -183,7 +183,7 @@ module linear_layer #(
         end
     end
 
-    // Per-lane MAC term and next-accumulator value (combinational).
+    // Per-lane MAC term and next-accumulator value (combinational)
     logic signed [2*DATA_WIDTH-1:0] mac_term      [0:PARALLELISM-1];
     logic signed [ACCUM_WIDTH-1:0]  mac_term_ext  [0:PARALLELISM-1];
     logic signed [ACCUM_WIDTH-1:0]  accum_next    [0:PARALLELISM-1];

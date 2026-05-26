@@ -50,7 +50,7 @@ module board_top_bitshift_64_32_4 (
         .HL2_SIZE         (32),
         .NUM_ACTIONS      (2),
         .NUM_TIMESTEPS    (20),
-        .Q_BATCH_SIZE     (1),
+        .Q_BATCH_SIZE     (4),
         .FC2_OUTPUT_WIDTH (24),
         .HISTORY_LENGTH   (4),
         .SHIFT_WIDTH      (8),
