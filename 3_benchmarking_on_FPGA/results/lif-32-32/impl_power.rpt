@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2025.1 (lin64) Build 6140274 Wed May 21 22:58:25 MDT 2025
-| Date             : Mon May 25 12:33:01 2026
+| Date             : Mon May 25 18:17:14 2026
 | Host             : niklas.ece.pdx.edu running 64-bit Pop!_OS 22.04 LTS
 | Command          : report_power -file board_top_lif_32_32_power_routed.rpt -pb board_top_lif_32_32_power_summary_routed.pb -rpx board_top_lif_32_32_power_routed.rpx
 | Design           : board_top_lif_32_32
@@ -30,10 +30,10 @@ Table of Contents
 ----------
 
 +--------------------------+--------------+
-| Total On-Chip Power (W)  | 0.359        |
+| Total On-Chip Power (W)  | 0.358        |
 | Design Power Budget (W)  | Unspecified* |
 | Power Budget Margin (W)  | NA           |
-| Dynamic (W)              | 0.261        |
+| Dynamic (W)              | 0.260        |
 | Device Static (W)        | 0.098        |
 | Effective TJA (C/W)      | 4.6          |
 | Max Ambient (C)          | 83.4         |
@@ -53,17 +53,17 @@ Table of Contents
 | On-Chip        | Power (W) | Used     | Available | Utilization (%) |
 +----------------+-----------+----------+-----------+-----------------+
 | Clocks         |     0.036 |        3 |       --- |             --- |
-| Slice Logic    |     0.056 |    41010 |       --- |             --- |
-|   LUT as Logic |     0.049 |    12575 |     63400 |           19.83 |
-|   CARRY4       |     0.005 |     1033 |     15850 |            6.52 |
-|   Register     |    <0.001 |    21486 |    126800 |           16.94 |
-|   F7/F8 Muxes  |    <0.001 |     1666 |     63400 |            2.63 |
+| Slice Logic    |     0.056 |    41023 |       --- |             --- |
+|   LUT as Logic |     0.049 |    12578 |     63400 |           19.84 |
+|   CARRY4       |     0.005 |     1030 |     15850 |            6.50 |
+|   Register     |    <0.001 |    21498 |    126800 |           16.95 |
+|   F7/F8 Muxes  |    <0.001 |     1669 |     63400 |            2.63 |
 |   Others       |     0.000 |      307 |       --- |             --- |
-| Signals        |     0.069 |    33394 |       --- |             --- |
+| Signals        |     0.069 |    33447 |       --- |             --- |
 | DSPs           |     0.098 |      104 |       240 |           43.33 |
 | I/O            |     0.002 |       20 |       210 |            9.52 |
 | Static Power   |     0.098 |          |           |                 |
-| Total          |     0.359 |          |           |                 |
+| Total          |     0.358 |          |           |                 |
 +----------------+-----------+----------+-----------+-----------------+
 
 
@@ -73,7 +73,7 @@ Table of Contents
 +-----------+-------------+-----------+-------------+------------+-------------+-------------+------------+
 | Source    | Voltage (V) | Total (A) | Dynamic (A) | Static (A) | Powerup (A) | Budget (A)  | Margin (A) |
 +-----------+-------------+-----------+-------------+------------+-------------+-------------+------------+
-| Vccint    |       1.000 |     0.275 |       0.259 |      0.016 |       NA    | Unspecified | NA         |
+| Vccint    |       1.000 |     0.274 |       0.259 |      0.016 |       NA    | Unspecified | NA         |
 | Vccaux    |       1.800 |     0.018 |       0.000 |      0.018 |       NA    | Unspecified | NA         |
 | Vcco33    |       3.300 |     0.004 |       0.000 |      0.004 |       NA    | Unspecified | NA         |
 | Vcco25    |       2.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
@@ -142,11 +142,11 @@ Table of Contents
 +--------------------------------+-----------+
 | Name                           | Power (W) |
 +--------------------------------+-----------+
-| board_top_lif_32_32            |     0.261 |
-|   u_accel                      |     0.259 |
+| board_top_lif_32_32            |     0.260 |
+|   u_accel                      |     0.258 |
 |     gen_nn_standard.u_accel    |     0.257 |
 |       fc1                      |     0.032 |
-|       fc2                      |     0.029 |
+|       fc2                      |     0.028 |
 |       gen_hl1_lif[0].hl1_lif   |     0.002 |
 |       gen_hl1_lif[10].hl1_lif  |     0.002 |
 |       gen_hl1_lif[11].hl1_lif  |     0.002 |
