@@ -325,7 +325,7 @@ else ifeq ($(TEST),cp_integration_bitshift-64-32-4)
     TOPLEVEL = neural_network_bitshift
     MODULE = test_cartpole_integration
 else ifeq ($(TEST),cp_integration_leaky-32-32)
-    # v3 Optuna study LIF model (seed 48): 32 HL1, 32 HL2, 20 timesteps, QS2.13.
+    # v3 Optuna study LIF model (seed 52 of rank 2 trial): 32 HL1, 32 HL2, 10 timesteps, QS2.13.
     VERILOG_SOURCES = $(SV_DIR)/neural_network.sv \
                       $(SV_DIR)/linear_layer.sv \
                       $(COMMON_NEURON_DIR)/lif.sv \
@@ -795,11 +795,11 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pneural_network_bitshift.FC_OUT_BIAS_FILE=\"$(PWD)/weights/bitshift-custom_slow_decay/fc_out_bias.mem\"
     endif
     ifeq ($(TEST),cp_integration_leaky-32-32)
-        # v3 Optuna study LIF model (seed 48). See train/configs/leaky-32-32.yaml.
-        # QS2.13 weights, HL1=32, HL2=32, 20 timesteps.
+        # v3 Optuna study LIF model (seed 52 of rank 2 trial). See train/configs/leaky-32-32.yaml.
+        # QS2.13 weights, HL1=32, HL2=32, 10 timesteps.
         COMPILE_ARGS += -Pneural_network.NUM_INPUTS=4 -Pneural_network.HL1_SIZE=32
         COMPILE_ARGS += -Pneural_network.HL2_SIZE=32 -Pneural_network.NUM_ACTIONS=2
-        COMPILE_ARGS += -Pneural_network.NUM_TIMESTEPS=20 -Pneural_network.Q_BATCH_SIZE=4
+        COMPILE_ARGS += -Pneural_network.NUM_TIMESTEPS=10 -Pneural_network.Q_BATCH_SIZE=4
         COMPILE_ARGS += -Pneural_network.FC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -Pneural_network.FC1_WEIGHTS_FILE=\"$(PWD)/weights/leaky-32-32/fc1_weights.mem\"
         COMPILE_ARGS += -Pneural_network.FC1_BIAS_FILE=\"$(PWD)/weights/leaky-32-32/fc1_bias.mem\"
@@ -1152,10 +1152,10 @@ ifeq ($(SIM),verilator)
     endif
     ifeq ($(TEST),cp_integration_leaky-32-32)
         # Keep these parameters in sync with the Icarus block above.
-        # v3 Optuna study LIF model (seed 48); 32 HL1, 32 HL2, 20 timesteps, QS2.13.
+        # v3 Optuna study LIF model (seed 52 of rank 2 trial); 32 HL1, 32 HL2, 10 timesteps, QS2.13.
         COMPILE_ARGS += -GNUM_INPUTS=4 -GHL1_SIZE=32
         COMPILE_ARGS += -GHL2_SIZE=32 -GNUM_ACTIONS=2
-        COMPILE_ARGS += -GNUM_TIMESTEPS=20 -GQ_BATCH_SIZE=4
+        COMPILE_ARGS += -GNUM_TIMESTEPS=10 -GQ_BATCH_SIZE=4
         COMPILE_ARGS += -GFC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -GFC1_WEIGHTS_FILE=\"$(PWD)/weights/leaky-32-32/fc1_weights.mem\"
         COMPILE_ARGS += -GFC1_BIAS_FILE=\"$(PWD)/weights/leaky-32-32/fc1_bias.mem\"
