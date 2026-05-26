@@ -653,12 +653,10 @@ ifeq ($(SIM),icarus)
     endif
     ifeq ($(TEST),golden_vectors_frac-32-8-8-q2_13)
         # v3 Optuna study fractional-32-8-8 model, QS2.13 quantization.
-        # Q_BATCH_SIZE=1 to match the FPGA board_top (the FPGA accepts one
-        # observation at a time over UART). Other params mirror the
-        # cp_integration_frac-32-8-8-QS2_13 block above.
+        # Params mirror the cp_integration_frac-32-8-8-QS2_13 block above.
         COMPILE_ARGS += -Pneural_network_fractional.NUM_INPUTS=4 -Pneural_network_fractional.HL1_SIZE=32
         COMPILE_ARGS += -Pneural_network_fractional.HL2_SIZE=8 -Pneural_network_fractional.NUM_ACTIONS=2
-        COMPILE_ARGS += -Pneural_network_fractional.NUM_TIMESTEPS=10 -Pneural_network_fractional.Q_BATCH_SIZE=1
+        COMPILE_ARGS += -Pneural_network_fractional.NUM_TIMESTEPS=10 -Pneural_network_fractional.Q_BATCH_SIZE=4
         COMPILE_ARGS += -Pneural_network_fractional.FC2_OUTPUT_WIDTH=24
         COMPILE_ARGS += -Pneural_network_fractional.HISTORY_LENGTH=8
         COMPILE_ARGS += -Pneural_network_fractional.COEFF_WIDTH=16 -Pneural_network_fractional.COEFF_FRAC_BITS=16
@@ -1522,6 +1520,16 @@ cycle_breakdown_frac-32-8-8-q2_13:
 	$(MAKE) TEST=cp_integration_frac-32-8-8-QS2_13 MODULE=test_inference_cycles \
 	        CONFIG_NAME=frac-32-8-8-q2_13 \
 	        CYCLES_CSV=$(RESULTS_DIR)/frac-32-8-8-q2_13/cycles.csv
+
+cycle_breakdown_bitshift-64-32-4:
+	$(MAKE) TEST=cp_integration_bitshift-64-32-4 MODULE=test_inference_cycles \
+	        CONFIG_NAME=bitshift-64-32-4 \
+	        CYCLES_CSV=$(RESULTS_DIR)/bitshift-64-32-4/cycles.csv
+
+cycle_breakdown_leaky-32-32:
+	$(MAKE) TEST=cp_integration_leaky-32-32 MODULE=test_inference_cycles \
+	        CONFIG_NAME=lif-32-32 \
+	        CYCLES_CSV=$(RESULTS_DIR)/lif-32-32/cycles.csv
 
 # Clean up generated files
 clean::
