@@ -1301,6 +1301,11 @@ endif
 RESULTS_DIR = ../results
 SIM_BUILD = $(RESULTS_DIR)/sim_build
 
+# Output directory for per-FSM-stage cycle CSVs. Lives outside RESULTS_DIR so
+# that `make clean` (which wipes RESULTS_DIR/*) does NOT delete prior cycle
+# measurements. The companion docker-compose.yml mounts this path read-write.
+CYCLE_RESULTS_DIR = ../cycle_results
+
 # Export variables for cocotb
 export COCOTB_RESULTS_FILE = $(RESULTS_DIR)/results.xml
 export COCOTB_TEST_MODULES = $(MODULE)
@@ -1518,18 +1523,24 @@ cycle_breakdown_bitshift-custom_slow_decay:
 
 cycle_breakdown_frac-32-8-8-q2_13:
 	$(MAKE) TEST=cp_integration_frac-32-8-8-QS2_13 MODULE=test_inference_cycles \
-	        CONFIG_NAME=frac-32-8-8-q2_13 \
-	        CYCLES_CSV=$(RESULTS_DIR)/frac-32-8-8-q2_13/cycles.csv
+	        CONFIG_NAME=frac-32-8-8-q2_13 NEURON_TYPE=fractional \
+	        CYCLES_CSV=$(CYCLE_RESULTS_DIR)/frac-32-8-8-q2_13/cycles.csv
 
 cycle_breakdown_bitshift-64-32-4:
 	$(MAKE) TEST=cp_integration_bitshift-64-32-4 MODULE=test_inference_cycles \
-	        CONFIG_NAME=bitshift-64-32-4 \
-	        CYCLES_CSV=$(RESULTS_DIR)/bitshift-64-32-4/cycles.csv
+	        CONFIG_NAME=bitshift-64-32-4 NEURON_TYPE=bitshift \
+	        CYCLES_CSV=$(CYCLE_RESULTS_DIR)/bitshift-64-32-4/cycles.csv
 
 cycle_breakdown_leaky-32-32:
 	$(MAKE) TEST=cp_integration_leaky-32-32 MODULE=test_inference_cycles \
-	        CONFIG_NAME=lif-32-32 \
-	        CYCLES_CSV=$(RESULTS_DIR)/lif-32-32/cycles.csv
+	        CONFIG_NAME=lif-32-32 NEURON_TYPE=lif \
+	        CYCLES_CSV=$(CYCLE_RESULTS_DIR)/lif-32-32/cycles.csv
+
+# Run all three reference-model cycle breakdowns in sequence. Each writes a
+# cycles.csv into $(CYCLE_RESULTS_DIR)/<config>/ which is preserved across
+# `make clean`. After the run, copy each CSV into the appropriate
+# 3_benchmarking_on_FPGA/results/<config>/<profile>/ directory on the host.
+cycle_breakdown_all: cycle_breakdown_leaky-32-32 cycle_breakdown_bitshift-64-32-4 cycle_breakdown_frac-32-8-8-q2_13
 
 # Clean up generated files
 clean::
@@ -1537,4 +1548,4 @@ clean::
 	rm -rf __pycache__
 	rm -rf .pytest_cache
 
-.PHONY: clean cycle_breakdown_lif-64-16 cycle_breakdown_lif-32-16 cycle_breakdown_frac-32-4-16 cycle_breakdown_frac-16-4-32 cycle_breakdown_bitshift-custom_slow_decay cycle_breakdown_frac-32-8-8-q2_13 test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_fractional_lif_memory_constant_sweep test_fractional_lif_memory_constant_capture test_fractional_lif_memory_dropout_sweep test_fractional_lif_memory_dropout_capture test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_memory_constant_sweep test_bitshift_lif_memory_constant_capture test_bitshift_lif_memory_dropout_sweep test_bitshift_lif_memory_dropout_capture test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_golden_vectors_lif-64-16 test_golden_vectors_lif-32-16 test_golden_vectors_fractional-16-4-32 test_golden_vectors_fractional-32-4-16 test_golden_vectors_bitshift-custom_slow_decay test_golden_vectors_frac-32-8-8-q2_13 test_golden_vectors_bitshift-64-32-4 test_golden_vectors_leaky-32-32 test_uart_loopback test_uart_accel_ctrl test_uart_top_wrapper test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_bitshift-64-32-4 test_cp_integration_leaky-32-32 test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac-32-8-8-QS2_13 test_cp_integration_frac-32-8-8-QS3_4 test_cp_integration_frac
+.PHONY: clean cycle_breakdown_all cycle_breakdown_lif-64-16 cycle_breakdown_lif-32-16 cycle_breakdown_frac-32-4-16 cycle_breakdown_frac-16-4-32 cycle_breakdown_bitshift-custom_slow_decay cycle_breakdown_frac-32-8-8-q2_13 test_lif test_fractional_lif test_fractional_lif_hist64 test_fractional_lif_memory test_fractional_lif_memory_constant_sweep test_fractional_lif_memory_constant_capture test_fractional_lif_memory_dropout_sweep test_fractional_lif_memory_dropout_capture test_bitshift_lif test_bitshift_lif_memory test_bitshift_lif_memory_constant_sweep test_bitshift_lif_memory_constant_capture test_bitshift_lif_memory_dropout_sweep test_bitshift_lif_memory_dropout_capture test_bitshift_lif_mode0 test_bitshift_lif_mode1 test_bitshift_lif_mode2 test_bitshift_lif_mode3 test_lif_timestep test_linear_layer test_spike_buffer test_spike_buffer_staggered test_membrane_buffer test_neuron_membrane_buffer test_q_accumulator test_neural_network test_golden_vectors_lif-64-16 test_golden_vectors_lif-32-16 test_golden_vectors_fractional-16-4-32 test_golden_vectors_fractional-32-4-16 test_golden_vectors_bitshift-custom_slow_decay test_golden_vectors_frac-32-8-8-q2_13 test_golden_vectors_bitshift-64-32-4 test_golden_vectors_leaky-32-32 test_uart_loopback test_uart_accel_ctrl test_uart_top_wrapper test_cp_integration test_cp_integration_frac-32-16-64 test_cp_integration_frac-32-16-8 test_cp_integration_frac-16-4-256 test_cp_integration_bitshift_custom_slow_decay test_cp_integration_bitshift-64-32-4 test_cp_integration_leaky-32-32 test_cp_integration_frac-16-4-32 test_cp_integration_frac-32-4-16 test_cp_integration_lif-32-16 test_cp_integration_lif-64-16 test_cp_integration_frac-32-8-8-QS2_13 test_cp_integration_frac-32-8-8-QS3_4 test_cp_integration_frac

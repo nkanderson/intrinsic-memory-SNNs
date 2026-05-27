@@ -2,7 +2,13 @@
 
 Run from repo root:
     python 3_benchmarking_on_FPGA/scripts/build_config.py <config_name>
+    python 3_benchmarking_on_FPGA/scripts/build_config.py <config_name> --profile onehot_top_fsm
     python 3_benchmarking_on_FPGA/scripts/build_config.py --all
+    python 3_benchmarking_on_FPGA/scripts/build_config.py --all --profile onehot_top_fsm
+
+The Vivado project lives at results/<config>/vivado_project/ (shared across
+profiles); reports + bitstream land in results/<config>/<profile>/. Default
+profile is "baseline".
 
 Requires `vivado` on PATH.
 """
@@ -16,11 +22,11 @@ import sys
 
 from configs import CONFIGS, REPO_ROOT, Config
 
-
 TCL = REPO_ROOT / "3_benchmarking_on_FPGA" / "scripts" / "build_config.tcl"
+DEFAULT_PROFILE = "baseline"
 
 
-def build(cfg: Config) -> int:
+def build(cfg: Config, profile: str) -> int:
     if not cfg.has_synth_artifacts:
         print(f"SKIP {cfg.name}: missing board_top or xdc", file=sys.stderr)
         return 0
@@ -29,8 +35,17 @@ def build(cfg: Config) -> int:
         return 2
 
     cmd = [
-        "vivado", "-mode", "batch", "-source", str(TCL),
-        "-tclargs", cfg.name, cfg.board_top, cfg.xdc, cfg.weights_dir,
+        "vivado",
+        "-mode",
+        "batch",
+        "-source",
+        str(TCL),
+        "-tclargs",
+        cfg.name,
+        cfg.board_top,
+        cfg.xdc,
+        cfg.weights_dir,
+        profile,
     ]
     print(f"+ {' '.join(cmd)}", flush=True)
     rc = subprocess.call(cmd, cwd=str(REPO_ROOT))
@@ -40,13 +55,14 @@ def build(cfg: Config) -> int:
     # Post-synth sanity: scan the synth log for memory-init failures that
     # Vivado treats as non-fatal CRITICAL WARNINGs. A bitstream with
     # uninitialized memories programs cleanly but produces garbage results.
+    # The synth log lives under the shared (config-level) project dir, not
+    # the profile-scoped reports dir.
     results_dir = REPO_ROOT / "3_benchmarking_on_FPGA" / "results" / cfg.name
-    synth_log = next(
-        (p for p in results_dir.rglob("synth_1/runme.log")), None
-    )
+    synth_log = next((p for p in results_dir.rglob("synth_1/runme.log")), None)
     if synth_log is not None:
         bad_lines = [
-            line for line in synth_log.read_text(errors="ignore").splitlines()
+            line
+            for line in synth_log.read_text(errors="ignore").splitlines()
             if "could not open $readmem data file" in line
         ]
         if bad_lines:
@@ -70,7 +86,15 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     g = parser.add_mutually_exclusive_group(required=True)
     g.add_argument("config", nargs="?", help="Config name to build")
-    g.add_argument("--all", action="store_true", help="Build every config with synth artifacts")
+    g.add_argument(
+        "--all", action="store_true", help="Build every config with synth artifacts"
+    )
+    parser.add_argument(
+        "--profile",
+        default=DEFAULT_PROFILE,
+        help=f"Profile subdir for reports + bitstream (default: {DEFAULT_PROFILE!r}). "
+        "The Vivado project dir is shared across profiles.",
+    )
     args = parser.parse_args()
 
     if args.all:
@@ -84,7 +108,7 @@ def main() -> int:
 
     rc = 0
     for cfg in targets:
-        r = build(cfg)
+        r = build(cfg, args.profile)
         if r != 0:
             print(f"FAIL {cfg.name} (exit {r})", file=sys.stderr)
             rc = rc or r

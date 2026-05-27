@@ -1,0 +1,4 @@
+config,profile,display_label,fmax_est_mhz,clock_period_ns,wns_ns,tns_ns,whs_ns
+frac-32-8-8-q2_13,baseline,Frac 32-8-8,101.16337885685383,10.0,0.115,0.0,0.032
+bitshift-64-32-4,baseline,Bitshift 64-32-4,100.9387301907742,10.0,0.093,0.0,0.024
+lif-32-32,baseline,LIF 32-32,100.05002501250627,10.0,0.005,0.0,0.027

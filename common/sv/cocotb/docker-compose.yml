@@ -24,6 +24,11 @@ services:
       # Mount results directory for test outputs, VCD/FST waveforms, and build artifacts
       # Read-write needed for container to write test results
       - ./results:/workspace/results:rw
+      # Mount cycle_results directory for per-FSM-stage cycle CSVs that must
+      # survive `make clean` (which wipes ./results). The cycle_breakdown_*
+      # Makefile targets write here; the host then copies each CSV into the
+      # appropriate 3_benchmarking_on_FPGA/results/<config>/<profile>/ dir.
+      - ./cycle_results:/workspace/cycle_results:rw
     working_dir: /workspace/tests
     environment:
       # Cocotb configuration

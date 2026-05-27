@@ -2,23 +2,29 @@
 #
 # Invoke via the build_config.py wrapper (which resolves paths from configs.py):
 #     python 3_benchmarking_on_FPGA/scripts/build_config.py <config_name>
+#     python 3_benchmarking_on_FPGA/scripts/build_config.py <config_name> --profile onehot_top_fsm
 #
 # Or directly:
 #     vivado -mode batch -source build_config.tcl -tclargs \
-#            <config_name> <board_top_module> <xdc_filename> <weights_subdir>
+#            <config_name> <board_top_module> <xdc_filename> <weights_subdir> [<profile>]
 #
 # All paths are interpreted relative to the repo root, which is the current
 # working directory when invoked by the wrapper.
 #
-# Produces reports under 3_benchmarking_on_FPGA/results/<config_name>/ with
-# canonical filenames:
+# The Vivado project dir stays at the config level
+# (3_benchmarking_on_FPGA/results/<config_name>/vivado_project/) regardless of
+# profile — re-running with a different profile reuses and overwrites the same
+# project. Reports land in the profile-scoped subdir:
+#     3_benchmarking_on_FPGA/results/<config_name>/<profile>/
+# with canonical filenames:
 #     synth_utilization.rpt    synth_timing_summary.rpt
 #     impl_utilization.rpt     impl_timing_summary.rpt
 #     impl_power.rpt           bitstream.bit
+# Default profile is "baseline".
 
 if {[llength $argv] < 4} {
     puts stderr "Usage: vivado -mode batch -source build_config.tcl -tclargs"
-    puts stderr "       <config_name> <board_top_module> <xdc_filename> <weights_subdir>"
+    puts stderr "       <config_name> <board_top_module> <xdc_filename> <weights_subdir> \[<profile>\]"
     exit 1
 }
 
@@ -26,16 +32,24 @@ set config_name      [lindex $argv 0]
 set board_top_module [lindex $argv 1]
 set xdc_filename     [lindex $argv 2]
 set weights_subdir   [lindex $argv 3]
+if {[llength $argv] >= 5} {
+    set profile [lindex $argv 4]
+} else {
+    set profile "baseline"
+}
 
 set repo_root      [pwd]
 set stage3_root    [file join $repo_root 3_benchmarking_on_FPGA]
 set common_sv_root [file join $repo_root common sv]
 set weights_root   [file join $common_sv_root cocotb tests weights]
 
-set results_dir [file join $stage3_root results $config_name]
+set config_dir [file join $stage3_root results $config_name]
+set results_dir [file join $config_dir $profile]
 file mkdir $results_dir
 
-set project_dir [file join $results_dir vivado_project]
+# Project lives at the config level (not under the profile dir) so SV-only
+# changes can be re-built incrementally without per-profile project re-creation.
+set project_dir [file join $config_dir vivado_project]
 set project_name "board_top_${config_name}"
 if {[file exists $project_dir]} {
     puts "INFO: removing existing project dir $project_dir"
@@ -168,6 +182,6 @@ copy_first_match $impl_run_dir \
     [list "${board_top_module}.bit" "*.bit"] \
     [file join $results_dir bitstream.bit]
 
-puts "BUILD OK: $config_name"
+puts "BUILD OK: $config_name (profile=$profile)"
 puts "  Reports + bitstream in $results_dir"
 exit 0

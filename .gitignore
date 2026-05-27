@@ -10,6 +10,10 @@ sim_build/
 **/cocotb/**/dump.fst
 **/cocotb/**/results.xml
 **/cocotb/results/
+# cycle_results: keep the directory (so docker-compose can bind-mount it on
+# fresh clones) but ignore generated CSVs inside.
+common/sv/cocotb/cycle_results/*
+!common/sv/cocotb/cycle_results/.gitkeep
 # large files
 fractional_lif_constant_current.vcd
 

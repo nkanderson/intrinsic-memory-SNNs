@@ -1,0 +1,2 @@
+config,total_cycles,cycles_idle,cycles_load_hl1,cycles_run_timesteps,cycles_finish_q,cycles_done_state,num_timesteps,cycles_per_timestep,hl1_size,hl2_size,history_length
+bitshift-64-32-4,3187,1,22,2920,243,1,20,146.0000,64,32,4

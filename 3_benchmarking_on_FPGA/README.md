@@ -167,66 +167,137 @@ lists this as MISMATCH; treat as expected drift unless that ever changes.
 ### 2. Build bitstreams + extract Vivado reports
 
 ```bash
-# Build one config
+# Build one config (writes reports to results/<config>/baseline/)
 python 3_benchmarking_on_FPGA/scripts/build_config.py lif-64-16
+
+# Build the same config under a different profile (e.g. after switching the
+# top-FSM encoding directive in the SV and re-synthesizing)
+python 3_benchmarking_on_FPGA/scripts/build_config.py lif-64-16 --profile onehot_top_fsm
 
 # Or every config that has a board_top + XDC
 python 3_benchmarking_on_FPGA/scripts/build_config.py --all
+python 3_benchmarking_on_FPGA/scripts/build_config.py --all --profile onehot_top_fsm
 ```
 
 The wrapper invokes `vivado -mode batch -source build_config.tcl` with the
 right paths and copies the synth/impl/power reports plus the bitstream to
-`results/<config>/` with canonical filenames (see
+`results/<config>/<profile>/` with canonical filenames (see
 [docs/vivado_bringup_lif_64_16.md](docs/vivado_bringup_lif_64_16.md) §10
-for the table). GUI-driven runs still work; you just need to copy the
-reports to the canonical names manually after each run.
+for the table). The default profile is `baseline`.
+
+**Vivado project location.** The Vivado project itself lives at
+`results/<config>/vivado_project/` — at the config level, not under any
+profile. All profiles for a given config share that project: re-running
+`build_config.py` with a different `--profile` deletes and re-creates the
+project from the current SV / XDC / weights, then writes the reports into
+the new profile subdir. This means you can iterate on FSM encoding
+changes by editing the SV, running `build_config.py <cfg> --profile foo`,
+and getting a fresh report set without touching the existing baseline
+reports. Alternative profiles live in sibling subdirs and are compared
+automatically by the aggregate + plot scripts — see §4. GUI-driven runs
+still work; you just need to copy the reports to the canonical names
+manually after each run, into the profile dir of your choice.
 
 Parse one config's reports without rebuilding (handy after a GUI run):
 
 ```bash
 python 3_benchmarking_on_FPGA/scripts/synth_metrics.py --config lif-64-16
+python 3_benchmarking_on_FPGA/scripts/synth_metrics.py --config lif-64-16 --profile onehot_top_fsm
 ```
 
 ### 3. Measure inference cycles per FSM stage (cocotb)
 
 The cycle test reuses each `cp_integration_<config>` parameter block so
-there's zero duplication of `HL1_SIZE` / `INV_DENOM` / weights paths.
-Per-config Make wrappers live alongside the existing cocotb targets:
+there's zero duplication of `HL1_SIZE` / `INV_DENOM` / weights paths. In
+addition to the top-level FSM (LOAD_HL1 / RUN_TIMESTEPS / FINISH_Q) it
+samples the per-timestep substate FSM (`ts_state`) so the cycles spent in
+each of HL1_STEP / FC2_START / FC2_WAIT / HL2_STEP / HL2_WAIT / NEXT can
+be broken out per inference. The `NEURON_TYPE` env var (set by each
+`cycle_breakdown_*` target) selects the right substate enum mapping for
+the variant under test.
 
 ```bash
 # Inside the cocotb Docker container (common/sv/cocotb/docker-compose.yml)
 cd /workspace/tests
-make cycle_breakdown_lif-64-16
-make cycle_breakdown_frac-32-4-16
-make cycle_breakdown_bitshift-custom_slow_decay
-# ...etc, one per config in configs.py
+
+# Run all three reference-model breakdowns in sequence (recommended):
+make cycle_breakdown_all
+
+# Or one at a time:
+make cycle_breakdown_leaky-32-32
+make cycle_breakdown_bitshift-64-32-4
+make cycle_breakdown_frac-32-8-8-q2_13
 ```
 
 Each writes a one-row CSV to
-`common/sv/cocotb/results/<config>/cycles.csv` with columns:
-`total_cycles, cycles_idle, cycles_load_hl1, cycles_run_timesteps,
-cycles_finish_q, cycles_done_state, num_timesteps, cycles_per_timestep,
-hl1_size, hl2_size, history_length`.
+`common/sv/cocotb/cycle_results/<config>/cycles.csv` (a sibling of the
+generic `results/` dir that is **preserved across `make clean`**, so prior
+measurements survive subsequent simulation runs). Columns:
+
+```
+config, neuron_type, total_cycles, cycles_idle, cycles_load_hl1,
+cycles_run_timesteps, cycles_finish_q, cycles_done_state,
+cycles_ts_hl1_step, cycles_ts_fc2_start, cycles_ts_fc2_wait,
+cycles_ts_hl2_step, cycles_ts_hl2_wait, cycles_ts_next,
+num_timesteps, cycles_per_timestep, hl1_size, hl2_size, history_length
+```
+
+The six `cycles_ts_*` columns sum to `cycles_run_timesteps` (the LIF
+variant has no `TS_HL2_WAIT` state, so `cycles_ts_hl2_wait` is `0` there).
+
+After the container run, copy each cycles.csv into the corresponding
+profile directory on the host so it joins the per-(config × profile) row
+emitted by `aggregate_ppa.py`:
+
+```bash
+for cfg in lif-32-32 bitshift-64-32-4 frac-32-8-8-q2_13; do
+    mkdir -p 3_benchmarking_on_FPGA/results/$cfg/baseline
+    cp common/sv/cocotb/cycle_results/$cfg/cycles.csv \
+       3_benchmarking_on_FPGA/results/$cfg/baseline/cycles.csv
+done
+```
+
+For a non-baseline profile (e.g. `onehot_top_fsm`), copy into that
+profile's directory instead — the aggregate script only auto-discovers
+cycle CSVs at the canonical `results/<config>/<profile>/cycles.csv` path
+for non-baseline profiles.
 
 ### 4. Aggregate + visualize
 
 ```bash
 # Join PPA + cycles into a single CSV; compute latency, throughput, energy/inference
 python 3_benchmarking_on_FPGA/scripts/aggregate_ppa.py
-# -> results/summary/ppa_cycles_combined.csv
+# -> results/summary/ppa_cycles_combined.csv  (one row per (config, profile))
 
-# Plots use common/scripts/plot_styles.py (Okabe-Ito palette, LaTeX-sized figs)
-python 3_benchmarking_on_FPGA/scripts/plot_ppa.py                # PNG (default)
-python 3_benchmarking_on_FPGA/scripts/plot_ppa.py --format svg   # SVG
+# Plots + CSV tables use common/scripts/plot_styles.py (Okabe-Ito palette)
+python 3_benchmarking_on_FPGA/scripts/plot_ppa.py                # PNG plots (default) + CSV tables
+python 3_benchmarking_on_FPGA/scripts/plot_ppa.py --format svg   # SVG plots + CSV tables
 ```
 
-Plots emitted:
-- `area.{png,svg}` — grouped bars: LUT/FF/DSP/BRAM per config (log scale)
-- `performance_fmax.{png,svg}` — bars colored by neuron type with 100 MHz target line
-- `power_stacked.{png,svg}` — static + dynamic, total annotated
-- `cycles_per_stage.{png,svg}` — LOAD_HL1 / RUN_TIMESTEPS / FINISH_Q stacked
-- `figures_of_merit.{png,svg}` — three small bars: latency_us, throughput_hz, energy_per_inference_uj
+Output layout:
 
-Configs without synth artifacts yet (e.g. `frac-32-8-8-q2_13`, which has a
-cocotb target but no `board_top_*` / XDC) appear in the master CSV with
-cycle data only; PPA columns stay blank until those files are authored.
+```
+results/summary/
+    ppa_cycles_combined.csv     # one row per (config × profile)
+    plots/
+        area.{png,svg}                              # LUT/FF/DSP/BRAM grouped bars
+                                                    # — LUTs split into Logic (solid)
+                                                    #   + Memory (hatched) sub-bars
+        power_stacked.{png,svg}                     # static + dynamic, total annotated
+        cycles_per_stage.{png,svg}                  # LOAD_HL1 / RUN_TIMESTEPS / FINISH_Q
+        cycles_per_ts_substate.{png,svg}            # HL1_STEP / FC2_* / HL2_* / NEXT (total)
+        cycles_per_ts_substate_per_timestep.{png,svg}  # same, divided by num_timesteps
+        figures_of_merit.{png,svg}                  # latency / throughput / energy
+    tables/
+        performance_timing.csv      # fmax, clock period, WNS, TNS, WHS per (config, profile)
+        ppa_summary.csv             # one-stop LUT/FF/DSP/BRAM/fmax/power/latency/throughput/energy
+```
+
+When more than one profile exists for a config, the plots switch to a
+grouped-bar layout: bars within a config cluster are distinguished by
+hatch pattern, with `baseline` always rendered solid. A profile→hatch
+legend appears to the right of each affected plot.
+
+Configs without synth artifacts yet (e.g. `lif-64-16`'s sibling models in
+`configs.py` that have a cocotb target but no `board_top_*` / XDC) appear
+in the master CSV with blank PPA columns until those files are authored.
