@@ -42,7 +42,7 @@
 // processing two sequential batches of 32 outputs.
 //
 // =========================================================================
-// Synthesis considerations (read before first Vivado run on Artix-7 100T)
+// Synthesis considerations
 // =========================================================================
 // 1. weights_flat fan-out (HIGHEST PRIORITY)
 //    Every COMPUTING cycle, P lanes simultaneously read weights_flat at P

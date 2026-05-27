@@ -420,13 +420,18 @@ module neural_network_bitshift #(
                         TS_HL1_STEP: begin
                             // Pulse all HL1 bitshift_lifs synchronously.
                             // They run their multi-cycle FSM in parallel with
-                            // fc2 (started below); HL1 finishes well before
-                            // fc2 (HL1 = ~6 cyc, fc2 = ~HL1_SIZE+2 cyc).
+                            // fc2 (started below).
                             hl1_enable <= 1'b1;
                             ts_state <= TS_FC2_START;
                         end
 
                         TS_FC2_START: begin
+                            // May consider gating this start pulse on hl1_output_valid[0] signal,
+                            // or ~hl1_busy[0], to ensure fc2 doesn't start until HL1 LIFs have
+                            // produced a valid spike vector. The current offset for multi-cycle
+                            // calculations has not produced noticeable performance degradation
+                            // across the cart-pole task, and gating here adds multiple cycles
+                            // of latency for every timestep.
                             fc2_start <= 1'b1;
                             membrane_write_timestep <= current_timestep;
                             ts_state <= TS_FC2_WAIT;
