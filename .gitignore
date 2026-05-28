@@ -35,6 +35,8 @@ __pycache__/
 
 !3_benchmarking_on_FPGA/results
 
+# Drawio
+*.drawio.bkp
 
 # Claude
 .claude/
