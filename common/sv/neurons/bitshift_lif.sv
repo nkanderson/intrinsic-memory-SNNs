@@ -75,18 +75,18 @@ module bitshift_lif #(
   // shifted result) gives DSP a directly-registered multiply target,
   // matching fractional_lif's structure which does map to DSPs.
   // Cost: +1 cycle of multi-cycle latency per neuron. Values unchanged.
-  typedef enum logic [6:0] {
-    ST_IDLE      = 7'b0000001,
-    ST_ACCUM     = 7'b0000010,
-    ST_PREP_NUM  = 7'b0000100,
-    ST_MUL_RECIP = 7'b0001000,
-    ST_SHIFT_DIV = 7'b0010000,
-    ST_POST      = 7'b0100000,
-    ST_WRITEBACK = 7'b1000000
+  typedef enum logic [2:0] {
+    ST_IDLE      = 3'b000,
+    ST_ACCUM     = 3'b001,
+    ST_PREP_NUM  = 3'b010,
+    ST_MUL_RECIP = 3'b011,
+    ST_SHIFT_DIV = 3'b100,
+    ST_POST      = 3'b101,
+    ST_WRITEBACK = 3'b110
   } state_t;
 
   // Internal state
-  (* fsm_encoding = "one_hot" *) state_t state;
+  state_t state;
   logic signed [MEMBRANE_WIDTH-1:0] membrane_potential;
   logic spike_prev;
 

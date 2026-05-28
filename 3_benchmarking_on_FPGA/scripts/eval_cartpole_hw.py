@@ -2,10 +2,11 @@
 
 Runs CartPole-v1 episodes with actions selected by the FPGA over UART and
 writes per-episode results to:
-    3_benchmarking_on_FPGA/results/<config>/hw_eval_seed<N>_ep<M>.csv
+    3_benchmarking_on_FPGA/results/<config>/<profile>/hw_eval_seed<N>_ep<M>.csv
 
 Usage:
     python eval_cartpole_hw.py --config lif-64-16 --episodes 100 --seed 0
+    python eval_cartpole_hw.py --config lif-64-16 --profile baseline
 """
 from __future__ import annotations
 
@@ -61,6 +62,11 @@ def main() -> int:
         "--config", default="lif-64-16",
         help="Model config name (e.g. lif-64-16, frac-32-4-16); used for results subdir",
     )
+    parser.add_argument(
+        "--profile",
+        default="baseline",
+        help="Profile subdir for results (default: baseline)",
+    )
     parser.add_argument("--port", default="/dev/ttyUSB1")
     parser.add_argument("--baud", type=int, default=921_600)
     parser.add_argument("--timeout", type=float, default=1.0,
@@ -70,7 +76,7 @@ def main() -> int:
     args = parser.parse_args()
 
     results_dir = (
-        Path(__file__).resolve().parents[1] / "results" / args.config
+        Path(__file__).resolve().parents[1] / "results" / args.config / args.profile
     )
     results_dir.mkdir(parents=True, exist_ok=True)
     results_file = (

@@ -19,11 +19,108 @@ import argparse
 import shutil
 import subprocess
 import sys
+from pathlib import Path
+import re
 
 from configs import CONFIGS, REPO_ROOT, Config
 
 TCL = REPO_ROOT / "3_benchmarking_on_FPGA" / "scripts" / "build_config.tcl"
 DEFAULT_PROFILE = "baseline"
+
+FSM_ENCODE_RE = re.compile(
+    r"INFO: \[Synth 8-3354\] encoded FSM with state register '([^']+)' "
+    r"using encoding '([^']+)' in module '([^']+)'"
+)
+
+
+def _is_separator(line: str) -> bool:
+    stripped = line.strip()
+    return bool(stripped) and set(stripped) == {"-"}
+
+
+def parse_fsm_encodings(log_path: Path) -> list[dict[str, object]]:
+    try:
+        lines = log_path.read_text(errors="ignore").splitlines()
+    except OSError:
+        return []
+
+    entries: list[dict[str, object]] = []
+    last_table: list[tuple[str, str, str]] | None = None
+    in_table = False
+    saw_data = False
+    rows: list[tuple[str, str, str]] = []
+
+    for line in lines:
+        if "State" in line and "New Encoding" in line and "Previous Encoding" in line:
+            in_table = True
+            saw_data = False
+            rows = []
+            continue
+
+        if in_table:
+            if _is_separator(line):
+                if saw_data:
+                    last_table = rows
+                    in_table = False
+                continue
+            if "|" in line:
+                parts = [p.strip() for p in line.split("|")]
+                if len(parts) >= 3:
+                    state, new_enc, prev_enc = parts[0], parts[1], parts[2]
+                    if state and state != "State":
+                        rows.append((state, new_enc, prev_enc))
+                        saw_data = True
+                continue
+
+        match = FSM_ENCODE_RE.search(line)
+        if match:
+            state_reg, encoding, module = match.groups()
+            entries.append(
+                {
+                    "module": module,
+                    "state_reg": state_reg,
+                    "encoding": encoding,
+                    "states": last_table,
+                }
+            )
+            last_table = None
+
+    return entries
+
+
+def write_fsm_encodings(log_path: Path, profile_dir: Path) -> None:
+    entries = parse_fsm_encodings(log_path)
+    profile_dir.mkdir(parents=True, exist_ok=True)
+    out_path = profile_dir / "fsm_encodings.txt"
+
+    if not entries:
+        out_path.write_text(
+            f"No FSM encoding entries found in {log_path}\n", encoding="utf-8"
+        )
+        return
+
+    lines: list[str] = [
+        f"FSM encodings extracted from: {log_path}",
+        "",
+    ]
+    for entry in entries:
+        module = entry["module"]
+        state_reg = entry["state_reg"]
+        encoding = entry["encoding"]
+        states = entry.get("states")
+        lines.append(f"Module: {module}")
+        lines.append(f"State register: {state_reg}")
+        lines.append(f"Encoding: {encoding}")
+        lines.append("States:")
+        if states:
+            lines.append("  State | New Encoding (Vivado) | Previous Encoding (RTL)")
+            for state, new_enc, prev_enc in states:
+                lines.append(f"  {state} | {new_enc} | {prev_enc}")
+        else:
+            lines.append("  (state table not found in log)")
+        lines.append("")
+
+    out_path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
 
 
 def build(cfg: Config, profile: str) -> int:
@@ -58,6 +155,7 @@ def build(cfg: Config, profile: str) -> int:
     # The synth log lives under the shared (config-level) project dir, not
     # the profile-scoped reports dir.
     results_dir = REPO_ROOT / "3_benchmarking_on_FPGA" / "results" / cfg.name
+    profile_dir = results_dir / profile
     synth_log = next((p for p in results_dir.rglob("synth_1/runme.log")), None)
     if synth_log is not None:
         bad_lines = [
@@ -79,6 +177,7 @@ def build(cfg: Config, profile: str) -> int:
                 file=sys.stderr,
             )
             return 1
+        write_fsm_encodings(synth_log, profile_dir)
     return 0
 
 

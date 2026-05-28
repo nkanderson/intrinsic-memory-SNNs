@@ -86,17 +86,17 @@ module fractional_lif #(
     localparam signed [MEMBRANE_WIDTH-1:0] MEMBRANE_MAX = {1'b0, {(MEMBRANE_WIDTH-1){1'b1}}};
     localparam signed [MEMBRANE_WIDTH-1:0] MEMBRANE_MIN = {1'b1, {(MEMBRANE_WIDTH-1){1'b0}}};
 
-    typedef enum logic [5:0] {
-        ST_IDLE         = 6'b000001,
-        ST_MAC          = 6'b000010,
-        ST_PREP_NUM     = 6'b000100,
-        ST_MUL_RECIP    = 6'b001000,
-        ST_SHIFT_DIV    = 6'b010000,
-        ST_FINALIZE     = 6'b100000
+    typedef enum logic [2:0] {
+        ST_IDLE         = 3'b000,
+        ST_MAC          = 3'b001,
+        ST_PREP_NUM     = 3'b010,
+        ST_MUL_RECIP    = 3'b011,
+        ST_SHIFT_DIV    = 3'b100,
+        ST_FINALIZE     = 3'b101
     } state_t;
 
     // Internal state
-    (* fsm_encoding = "one_hot" *) state_t state;
+    state_t state;
     logic signed [MEMBRANE_WIDTH-1:0] membrane_potential;
     logic spike_prev;
 

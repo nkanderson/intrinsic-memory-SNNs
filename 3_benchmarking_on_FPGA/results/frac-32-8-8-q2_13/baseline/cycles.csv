@@ -1,2 +1,2 @@
-config,total_cycles,cycles_idle,cycles_load_hl1,cycles_run_timesteps,cycles_finish_q,cycles_done_state,num_timesteps,cycles_per_timestep,hl1_size,hl2_size,history_length
-frac-32-8-8-q2_13,592,1,7,520,63,1,10,52.0000,32,8,8
+config,neuron_type,total_cycles,cycles_idle,cycles_load_hl1,cycles_run_timesteps,cycles_finish_q,cycles_done_state,cycles_ts_hl1_step,cycles_ts_fc2_start,cycles_ts_fc2_wait,cycles_ts_hl2_step,cycles_ts_hl2_wait,cycles_ts_next,num_timesteps,cycles_per_timestep,hl1_size,hl2_size,history_length
+frac-32-8-8-q2_13,fractional,592,1,7,520,63,1,10,10,350,10,130,10,10,52.0000,32,8,8

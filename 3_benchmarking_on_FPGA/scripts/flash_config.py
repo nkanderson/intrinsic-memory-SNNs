@@ -1,10 +1,11 @@
 """Program a built bitstream onto the Nexys A7-100T via Vivado batch mode.
 
 Looks up the bitstream from configs.py:
-    results/<config>/bitstream.bit
+    results/<config>/<profile>/bitstream.bit
 
 Usage:
     python 3_benchmarking_on_FPGA/scripts/flash_config.py lif-64-16
+    python 3_benchmarking_on_FPGA/scripts/flash_config.py lif-64-16 --profile baseline
 
 Requires `vivado` on PATH. The board must be connected via the FT2232 USB-JTAG
 bridge (Digilent driver / hw_server reachable at localhost:3121).
@@ -21,6 +22,8 @@ import tempfile
 from pathlib import Path
 
 from configs import CONFIGS, RESULTS_ROOT, Config
+
+DEFAULT_PROFILE = "baseline"
 
 
 # FT2232H on the Nexys A7-100T (Digilent JTAG interface)
@@ -47,8 +50,8 @@ close_hw_manager
 """
 
 
-def find_bitstream(cfg: Config) -> Path | None:
-    path = RESULTS_ROOT / cfg.name / "bitstream.bit"
+def find_bitstream(cfg: Config, profile: str) -> Path | None:
+    path = RESULTS_ROOT / cfg.name / profile / "bitstream.bit"
     return path if path.exists() else None
 
 
@@ -63,17 +66,17 @@ def board_attached() -> bool | None:
     return NEXYS_FT2232_USB_ID in result.stdout
 
 
-def flash(cfg: Config, force: bool = False) -> int:
+def flash(cfg: Config, profile: str, force: bool = False) -> int:
     if shutil.which("vivado") is None:
         print("ERROR: vivado not on PATH", file=sys.stderr)
         return 2
 
-    bit = find_bitstream(cfg)
+    bit = find_bitstream(cfg, profile)
     if bit is None:
         print(
             f"ERROR: bitstream not found at "
-            f"{RESULTS_ROOT / cfg.name / 'bitstream.bit'}. "
-            f"Run build_config.py {cfg.name} first.",
+            f"{RESULTS_ROOT / cfg.name / profile / 'bitstream.bit'}. "
+            f"Run build_config.py {cfg.name} --profile {profile} first.",
             file=sys.stderr,
         )
         return 2
@@ -142,6 +145,11 @@ def flash(cfg: Config, force: bool = False) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("config", help="Config name to flash")
+    parser.add_argument(
+        "--profile",
+        default=DEFAULT_PROFILE,
+        help=f"Profile subdir for reports + bitstream (default: {DEFAULT_PROFILE!r}).",
+    )
     parser.add_argument("--force", action="store_true",
                         help="Flash even if lsusb does not see the FT2232")
     args = parser.parse_args()
@@ -152,7 +160,7 @@ def main() -> int:
         print(f"Unknown config {args.config!r}", file=sys.stderr)
         return 2
 
-    return flash(cfg, force=args.force)
+    return flash(cfg, profile=args.profile, force=args.force)
 
 
 if __name__ == "__main__":

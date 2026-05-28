@@ -12,7 +12,7 @@ module uart_rx #(
     localparam integer CLKS_PER_BIT = CLOCK_HZ / BAUD;
     localparam integer CTR_W = (CLKS_PER_BIT > 1) ? $clog2(CLKS_PER_BIT) : 1;
 
-    typedef enum logic [2:0] {
+    typedef enum logic [1:0] {
         RX_IDLE,
         RX_START,
         RX_DATA,
