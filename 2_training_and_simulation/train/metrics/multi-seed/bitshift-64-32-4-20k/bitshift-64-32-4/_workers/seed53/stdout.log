@@ -1,0 +1,56 @@
+Multi-seed training for: bitshift-64-32-4
+  device       : cpu
+  num_seeds    : 1
+  base_seed    : 53
+  num_episodes : 1500
+  output_dir   : metrics/multi-seed/bitshift-64-32-4-20k/bitshift-64-32-4/_workers/seed53
+
+============================================================
+Seed 53 (1/1)
+============================================================
+  Episode 50/1500  avg(100): 16.7
+  Episode 100/1500  avg(100): 20.1
+  Episode 150/1500  avg(100): 52.9
+  Episode 200/1500  avg(100): 95.3
+  Episode 250/1500  avg(100): 130.3
+  Episode 300/1500  avg(100): 138.9
+  Episode 350/1500  avg(100): 132.4
+  Episode 400/1500  avg(100): 186.9
+  Episode 450/1500  avg(100): 344.4
+  Episode 500/1500  avg(100): 303.7
+  Episode 550/1500  avg(100): 178.0
+  Episode 600/1500  avg(100): 176.2
+  Episode 650/1500  avg(100): 148.9
+  Episode 700/1500  avg(100): 119.9
+  Episode 750/1500  avg(100): 189.8
+  Episode 800/1500  avg(100): 318.5
+  Episode 850/1500  avg(100): 406.3
+  Episode 900/1500  avg(100): 448.8
+  Episode 950/1500  avg(100): 459.4
+  Episode 1000/1500  avg(100): 490.9
+  Episode 1050/1500  avg(100): 387.6
+  Episode 1100/1500  avg(100): 334.3
+  Episode 1150/1500  avg(100): 367.7
+  Episode 1200/1500  avg(100): 300.0
+  Episode 1250/1500  avg(100): 265.2
+  Episode 1300/1500  avg(100): 354.2
+  Episode 1350/1500  avg(100): 439.3
+  Episode 1400/1500  avg(100): 414.0
+  Episode 1450/1500  avg(100): 441.1
+  Episode 1500/1500  avg(100): 500.0
+Model saved to models/bitshift-64-32-4-seed53-final.pth
+  per-episode CSV streamed to: metrics/multi-seed/bitshift-64-32-4-20k/bitshift-64-32-4/_workers/seed53/bitshift-64-32-4-seed53.csv
+
+Summary CSV: metrics/multi-seed/bitshift-64-32-4-20k/bitshift-64-32-4/_workers/seed53/bitshift-64-32-4-summary.csv
+
+Results across 1 seeds:
+  solved (final_avg >= 475) : 1/1 seeds
+  final_avg_reward  : 500.00 ± 0.00  (primary metric: CartPole-v1 standard)
+  best_avg_reward   : 500.00 ± 0.00
+  tail_iqm_reward   : 380.05 ± 0.00  (diagnostic: matches Optuna selection metric)
+  convergence_ep    : 1467.0 ± 0.0  (1/1 seeds converged)
+
+Robust reporting (final_avg_reward across seeds, 95% bootstrap CI):
+  IQM   : 500.00  [95% CI: 500.00, 500.00]
+  Mean  : 500.00  [95% CI: 500.00, 500.00]
+  (note: with N < 10, bootstrap CIs and IQM are necessarily wide; per Colas et al. 2018 consider increasing --num-seeds.)

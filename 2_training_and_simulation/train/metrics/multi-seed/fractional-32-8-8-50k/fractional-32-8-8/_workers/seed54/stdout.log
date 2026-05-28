@@ -1,0 +1,56 @@
+Multi-seed training for: fractional-32-8-8
+  device       : cpu
+  num_seeds    : 1
+  base_seed    : 54
+  num_episodes : 1500
+  output_dir   : metrics/multi-seed/fractional-32-8-8-50k/fractional-32-8-8/_workers/seed54
+
+============================================================
+Seed 54 (1/1)
+============================================================
+  Episode 50/1500  avg(100): 15.2
+  Episode 100/1500  avg(100): 14.4
+  Episode 150/1500  avg(100): 14.6
+  Episode 200/1500  avg(100): 25.9
+  Episode 250/1500  avg(100): 83.6
+  Episode 300/1500  avg(100): 135.6
+  Episode 350/1500  avg(100): 130.7
+  Episode 400/1500  avg(100): 167.2
+  Episode 450/1500  avg(100): 270.8
+  Episode 500/1500  avg(100): 179.5
+  Episode 550/1500  avg(100): 20.6
+  Episode 600/1500  avg(100): 10.2
+  Episode 650/1500  avg(100): 9.7
+  Episode 700/1500  avg(100): 9.5
+  Episode 750/1500  avg(100): 9.5
+  Episode 800/1500  avg(100): 9.4
+  Episode 850/1500  avg(100): 9.4
+  Episode 900/1500  avg(100): 9.4
+  Episode 950/1500  avg(100): 9.4
+  Episode 1000/1500  avg(100): 9.5
+  Episode 1050/1500  avg(100): 9.5
+  Episode 1100/1500  avg(100): 9.4
+  Episode 1150/1500  avg(100): 9.5
+  Episode 1200/1500  avg(100): 9.5
+  Episode 1250/1500  avg(100): 9.5
+  Episode 1300/1500  avg(100): 10.3
+  Episode 1350/1500  avg(100): 11.9
+  Episode 1400/1500  avg(100): 14.1
+  Episode 1450/1500  avg(100): 15.1
+  Episode 1500/1500  avg(100): 14.5
+Model saved to models/fractional-32-8-8-seed54-final.pth
+  per-episode CSV streamed to: metrics/multi-seed/fractional-32-8-8-50k/fractional-32-8-8/_workers/seed54/fractional-32-8-8-seed54.csv
+
+Summary CSV: metrics/multi-seed/fractional-32-8-8-50k/fractional-32-8-8/_workers/seed54/fractional-32-8-8-summary.csv
+
+Results across 1 seeds:
+  solved (final_avg >= 475) : 0/1 seeds
+  final_avg_reward  : 14.50 ± 0.00  (primary metric: CartPole-v1 standard)
+  best_avg_reward   : 274.42 ± 0.00
+  tail_iqm_reward   : 11.11 ± 0.00  (diagnostic: matches Optuna selection metric)
+  convergence_ep    : never reached threshold in any seed
+
+Robust reporting (final_avg_reward across seeds, 95% bootstrap CI):
+  IQM   : 14.50  [95% CI: 14.50, 14.50]
+  Mean  : 14.50  [95% CI: 14.50, 14.50]
+  (note: with N < 10, bootstrap CIs and IQM are necessarily wide; per Colas et al. 2018 consider increasing --num-seeds.)
