@@ -1540,7 +1540,13 @@ cycle_breakdown_leaky-32-32:
 # cycles.csv into $(CYCLE_RESULTS_DIR)/<config>/ which is preserved across
 # `make clean`. After the run, copy each CSV into the appropriate
 # 3_benchmarking_on_FPGA/results/<config>/<profile>/ directory on the host.
-cycle_breakdown_all: cycle_breakdown_leaky-32-32 cycle_breakdown_bitshift-64-32-4 cycle_breakdown_frac-32-8-8-q2_13
+cycle_breakdown_all:
+	$(MAKE) clean
+	$(MAKE) cycle_breakdown_leaky-32-32
+	$(MAKE) clean
+	$(MAKE) cycle_breakdown_bitshift-64-32-4
+	$(MAKE) clean
+	$(MAKE) cycle_breakdown_frac-32-8-8-q2_13
 
 # Clean up generated files
 clean::
