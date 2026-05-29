@@ -39,7 +39,6 @@ module neuron_membrane_buffer #(
 );
 
     // Storage for all timesteps
-    (* ram_style = "block" *)
     logic signed [MEMBRANE_WIDTH-1:0] membrane_storage [0:NUM_TIMESTEPS-1];
 
     // Track which timesteps have been written
@@ -64,10 +63,15 @@ module neuron_membrane_buffer #(
         if (reset) begin
             written <= '0;
             // Parallel writes do not allow for usage of LUTRAM, which
-            // would be more space-efficient than flops.
-            // for (int t = 0; t < NUM_TIMESTEPS; t++) begin
-            //     membrane_storage[t] <= '0;
-            // end
+            // would be more space-efficient than flops. But with this
+            // change along with the directive above, Vivado does not infer
+            // LUTRAM and instead uses registers, due to the sync read.
+            // We want the registered, synchronous read to break up the
+            // long combinational path in q_accumulator, and the cost of
+            // the registers isn't prohibitive.
+            for (int t = 0; t < NUM_TIMESTEPS; t++) begin
+                membrane_storage[t] <= '0;
+            end
         end else if (clear) begin
             written <= '0;
             // Don't need to clear storage - will be overwritten
