@@ -86,17 +86,17 @@ module fractional_lif #(
     localparam signed [MEMBRANE_WIDTH-1:0] MEMBRANE_MAX = {1'b0, {(MEMBRANE_WIDTH-1){1'b1}}};
     localparam signed [MEMBRANE_WIDTH-1:0] MEMBRANE_MIN = {1'b1, {(MEMBRANE_WIDTH-1){1'b0}}};
 
-    typedef enum logic [5:0] {
-        ST_IDLE         = 6'b000001,
-        ST_MAC          = 6'b000010,
-        ST_PREP_NUM     = 6'b000100,
-        ST_MUL_RECIP    = 6'b001000,
-        ST_SHIFT_DIV    = 6'b010000,
-        ST_FINALIZE     = 6'b100000
+    typedef enum logic [2:0] {
+        ST_IDLE         = 3'b001,
+        ST_MAC          = 3'b010,
+        ST_PREP_NUM     = 3'b011,
+        ST_MUL_RECIP    = 3'b100,
+        ST_SHIFT_DIV    = 3'b101,
+        ST_FINALIZE     = 3'b110
     } state_t;
 
     // Internal state
-    (* fsm_encoding = "one_hot" *) state_t state;
+    state_t state;
     logic signed [MEMBRANE_WIDTH-1:0] membrane_potential;
     logic spike_prev;
 
@@ -236,16 +236,8 @@ module fractional_lif #(
             end
         end else begin
             output_valid <= 1'b0;
-            // Reverse case ("case (1'b1)") on the one-hot state vector. Each
-            // branch is gated by a single state bit, so synthesis maps each
-            // branch enable to a direct wire-per-state instead of decoding
-            // the full state vector through a comparator. State-bit indices
-            // match the one-hot literals declared in state_t above:
-            //   state[0] = ST_IDLE       state[3] = ST_MUL_RECIP
-            //   state[1] = ST_MAC        state[4] = ST_SHIFT_DIV
-            //   state[2] = ST_PREP_NUM   state[5] = ST_FINALIZE
-            unique case (1'b1)
-                state[0]: begin // ST_IDLE
+            unique case (state)
+                ST_IDLE: begin
                     // Start a new timestep when enabled.
                     if (enable) begin
                         current_latched <= {{(MEMBRANE_WIDTH-DATA_WIDTH){current[DATA_WIDTH-1]}}, current};
@@ -260,7 +252,7 @@ module fractional_lif #(
                     end
                 end
 
-                state[1]: begin // ST_MAC
+                ST_MAC: begin
                     history_sum_acc <= mac_acc_next;
                     if (mac_index == ADDR_WIDTH'(HISTORY_LENGTH - 2)) begin
                         state <= ST_PREP_NUM;
@@ -269,22 +261,22 @@ module fractional_lif #(
                     end
                 end
 
-                state[2]: begin // ST_PREP_NUM
+                ST_PREP_NUM: begin
                     numerator_reg <= prep_numerator;
                     state <= ST_MUL_RECIP;
                 end
 
-                state[3]: begin // ST_MUL_RECIP
+                ST_MUL_RECIP: begin
                     mul_scaled_result_reg <= mul_scaled_result;
                     state <= ST_SHIFT_DIV;
                 end
 
-                state[4]: begin // ST_SHIFT_DIV
+                ST_SHIFT_DIV: begin
                     membrane_pre_reset_reg <= div_membrane_pre_reset;
                     state <= ST_FINALIZE;
                 end
 
-                state[5]: begin // ST_FINALIZE
+                ST_FINALIZE: begin
                     // Store newly computed membrane in history buffer
                     history_buffer[history_ptr] <= finalize_membrane;
                     history_ptr <= (history_ptr == ADDR_WIDTH'(HISTORY_LENGTH - 1)) ? '0 : history_ptr + 1'b1;
@@ -299,7 +291,6 @@ module fractional_lif #(
                 end
 
                 default: begin
-                    // Illegal state (no one-hot bit set) — recover to IDLE.
                     state <= ST_IDLE;
                 end
             endcase

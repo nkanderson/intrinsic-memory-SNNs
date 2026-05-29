@@ -75,18 +75,18 @@ module bitshift_lif #(
   // shifted result) gives DSP a directly-registered multiply target,
   // matching fractional_lif's structure which does map to DSPs.
   // Cost: +1 cycle of multi-cycle latency per neuron. Values unchanged.
-  typedef enum logic [6:0] {
-    ST_IDLE      = 7'b0000001,
-    ST_ACCUM     = 7'b0000010,
-    ST_PREP_NUM  = 7'b0000100,
-    ST_MUL_RECIP = 7'b0001000,
-    ST_SHIFT_DIV = 7'b0010000,
-    ST_POST      = 7'b0100000,
-    ST_WRITEBACK = 7'b1000000
+  typedef enum logic [2:0] {
+    ST_IDLE      = 3'b000,
+    ST_ACCUM     = 3'b001,
+    ST_PREP_NUM  = 3'b010,
+    ST_MUL_RECIP = 3'b011,
+    ST_SHIFT_DIV = 3'b100,
+    ST_POST      = 3'b101,
+    ST_WRITEBACK = 3'b110
   } state_t;
 
   // Internal state
-  (* fsm_encoding = "one_hot" *) state_t state;
+  state_t state;
   logic signed [MEMBRANE_WIDTH-1:0] membrane_potential;
   logic spike_prev;
 
@@ -308,17 +308,8 @@ module bitshift_lif #(
     end else begin
       output_valid <= 1'b0;
 
-      // Reverse case ("case (1'b1)") on the one-hot state vector. Each
-      // branch is gated by a single state bit, so synthesis maps each
-      // branch enable to a direct wire-per-state instead of decoding the
-      // full state vector through a comparator. State-bit indices match
-      // the one-hot literals declared in state_t above:
-      //   state[0] = ST_IDLE       state[4] = ST_SHIFT_DIV
-      //   state[1] = ST_ACCUM      state[5] = ST_POST
-      //   state[2] = ST_PREP_NUM   state[6] = ST_WRITEBACK
-      //   state[3] = ST_MUL_RECIP
-      unique case (1'b1)
-        state[0]: begin // ST_IDLE
+      unique case (state)
+        ST_IDLE: begin
           if (enable) begin
             current_latched <= {{(MEMBRANE_WIDTH-DATA_WIDTH){current[DATA_WIDTH-1]}}, current};
             history_sum_acc <= '0;
@@ -332,7 +323,7 @@ module bitshift_lif #(
           end
         end
 
-        state[1]: begin // ST_ACCUM
+        ST_ACCUM: begin
           history_sum_acc <= accum_next;
           if (accum_index == ADDR_WIDTH'(HISTORY_LENGTH - 2)) begin
             state <= ST_PREP_NUM;
@@ -341,12 +332,12 @@ module bitshift_lif #(
           end
         end
 
-        state[2]: begin // ST_PREP_NUM
+        ST_PREP_NUM: begin
           numerator_reg <= prep_numerator;
           state <= ST_MUL_RECIP;
         end
 
-        state[3]: begin // ST_MUL_RECIP
+        ST_MUL_RECIP: begin
           // Register the raw multiply output. Vivado packs this into the
           // DSP48E1 M-register (with the prior numerator_reg as A-input
           // and INV_DENOM as B-input). Without this register, the
@@ -355,7 +346,7 @@ module bitshift_lif #(
           state <= ST_SHIFT_DIV;
         end
 
-        state[4]: begin // ST_SHIFT_DIV
+        ST_SHIFT_DIV: begin
           // Shift the registered multiply output to undo the INV_DENOM
           // scaling, then register the result. Constant shift is free in
           // routing.
@@ -363,13 +354,13 @@ module bitshift_lif #(
           state <= ST_POST;
         end
 
-        state[5]: begin // ST_POST
+        ST_POST: begin
           finalize_membrane_reg <= post_finalize_membrane;
           finalize_spike_reg <= post_finalize_spike;
           state <= ST_WRITEBACK;
         end
 
-        state[6]: begin // ST_WRITEBACK
+        ST_WRITEBACK: begin
           // Store newly computed membrane in history
           history_buffer[history_ptr] <= finalize_membrane_reg;
           history_ptr <= (history_ptr == ADDR_WIDTH'(HISTORY_LENGTH - 1)) ? '0 : history_ptr + 1'b1;
@@ -384,7 +375,6 @@ module bitshift_lif #(
         end
 
         default: begin
-          // Illegal state (no one-hot bit set) — recover to IDLE.
           state <= ST_IDLE;
         end
       endcase
