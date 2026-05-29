@@ -199,7 +199,7 @@ module neural_network #(
         .WEIGHTS_FILE(FC2_WEIGHTS_FILE),
         .BIAS_FILE(FC2_BIAS_FILE),
         // PARALLELISM defaults to NUM_OUTPUTS = HL2_SIZE
-        .PARALLELISM(16)
+        .PARALLELISM(8)
     ) fc2 (
         .clk(clk),
         .reset(reset),

@@ -208,7 +208,7 @@ module neural_network_bitshift #(
         .WEIGHTS_FILE(FC2_WEIGHTS_FILE),
         .BIAS_FILE(FC2_BIAS_FILE),
         // PARALLELISM defaults to NUM_OUTPUTS = HL2_SIZE (full per-output parallel)
-        .PARALLELISM(16)
+        .PARALLELISM(8)
     ) fc2 (
         .clk(clk),
         .reset(reset),
