@@ -126,7 +126,7 @@ module neural_network_bitshift #(
         // For DSP-tight configs (e.g., bitshift HL1=64), override to a
         // lower P here without affecting the per-timestep critical path,
         // since fc1 only runs once per inference.
-        .PARALLELISM(8)
+        .PARALLELISM(16)
     ) fc1 (
         .clk(clk),
         .reset(reset),

@@ -121,7 +121,7 @@ module neural_network #(
         .WEIGHTS_FILE(FC1_WEIGHTS_FILE),
         .BIAS_FILE(FC1_BIAS_FILE),
         // PARALLELISM defaults to NUM_OUTPUTS = HL1_SIZE (full per-output parallel)
-        .PARALLELISM(8)
+        .PARALLELISM(16)
     ) fc1 (
         .clk(clk),
         .reset(reset),
