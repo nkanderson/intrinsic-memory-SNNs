@@ -39,7 +39,7 @@ module neuron_membrane_buffer #(
 );
 
     // Storage for all timesteps
-    (* ram_style = "distributed" *)
+    (* ram_style = "block" *)
     logic signed [MEMBRANE_WIDTH-1:0] membrane_storage [0:NUM_TIMESTEPS-1];
 
     // Track which timesteps have been written

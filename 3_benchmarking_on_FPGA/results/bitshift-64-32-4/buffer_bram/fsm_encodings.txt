@@ -1,0 +1,99 @@
+FSM encodings extracted from: /home/stonepine/intrinsic-memory-SNNs/3_benchmarking_on_FPGA/results/bitshift-64-32-4/vivado_project/board_top_bitshift-64-32-4.runs/synth_1/runme.log
+
+Module: bitshift_lif
+State register: state_reg
+Encoding: sequential
+States:
+  State | New Encoding (Vivado) | Previous Encoding (RTL)
+  ST_IDLE | 000 | 000
+  ST_ACCUM | 001 | 001
+  ST_PREP_NUM | 010 | 010
+  ST_MUL_RECIP | 011 | 011
+  ST_SHIFT_DIV | 100 | 100
+  ST_POST | 101 | 101
+  ST_WRITEBACK | 110 | 110
+
+Module: bitshift_lif__parameterized0
+State register: state_reg
+Encoding: sequential
+States:
+  State | New Encoding (Vivado) | Previous Encoding (RTL)
+  ST_IDLE | 000 | 000
+  ST_ACCUM | 001 | 001
+  ST_PREP_NUM | 010 | 010
+  ST_MUL_RECIP | 011 | 011
+  ST_SHIFT_DIV | 100 | 100
+  ST_POST | 101 | 101
+  ST_WRITEBACK | 110 | 110
+
+Module: linear_layer
+State register: state_reg
+Encoding: one-hot
+States:
+  State | New Encoding (Vivado) | Previous Encoding (RTL)
+  IDLE | 001 | 00
+  COMPUTING | 010 | 01
+  EMIT | 100 | 10
+
+Module: linear_layer__parameterized0
+State register: state_reg
+Encoding: one-hot
+States:
+  State | New Encoding (Vivado) | Previous Encoding (RTL)
+  IDLE | 001 | 00
+  COMPUTING | 010 | 01
+  EMIT | 100 | 10
+
+Module: q_accumulator
+State register: state_reg
+Encoding: sequential
+States:
+  State | New Encoding (Vivado) | Previous Encoding (RTL)
+  IDLE | 000 | 000
+  READ_WAIT | 001 | 001
+  PROCESSING | 010 | 010
+  NEXT_TIMESTEP | 011 | 011
+  DONE_STATE | 100 | 100
+
+Module: neural_network_bitshift
+State register: state_reg
+Encoding: one-hot
+States:
+  State | New Encoding (Vivado) | Previous Encoding (RTL)
+  IDLE | 00001 | 000
+  LOAD_HL1 | 00010 | 001
+  RUN_TIMESTEPS | 00100 | 010
+  FINISH_Q | 01000 | 011
+  DONE_STATE | 10000 | 100
+
+Module: uart_rx
+State register: state_reg
+Encoding: sequential
+States:
+  State | New Encoding (Vivado) | Previous Encoding (RTL)
+  RX_IDLE | 00 | 00
+  RX_START | 01 | 01
+  RX_DATA | 10 | 10
+  RX_STOP | 11 | 11
+
+Module: uart_tx
+State register: state_reg
+Encoding: sequential
+States:
+  State | New Encoding (Vivado) | Previous Encoding (RTL)
+  TX_IDLE | 00 | 000
+  TX_START | 01 | 001
+  TX_DATA | 10 | 010
+  TX_STOP | 11 | 011
+
+Module: uart_accel_ctrl
+State register: rx_state_reg
+Encoding: sequential
+States:
+  State | New Encoding (Vivado) | Previous Encoding (RTL)
+  RX_WAIT_SOF | 000 | 000
+  RX_GET_OPCODE | 001 | 001
+  RX_GET_ADDR | 010 | 010
+  RX_GET_LEN | 011 | 011
+  RX_GET_PAYLOAD | 100 | 100
+  RX_GET_CSUM | 101 | 101
