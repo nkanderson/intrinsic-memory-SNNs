@@ -326,7 +326,7 @@ module neural_network_fractional #(
         .NUM_NEURONS(HL2_SIZE),
         .NUM_TIMESTEPS(NUM_TIMESTEPS),
         .NUM_ACTIONS(NUM_ACTIONS),
-        .BATCH_SIZE(1),
+        .BATCH_SIZE(Q_BATCH_SIZE),
         .DATA_WIDTH(DATA_WIDTH),
         .MEMBRANE_WIDTH(MEMBRANE_WIDTH),
         .FRAC_BITS(FRAC_BITS),
