@@ -39,7 +39,7 @@ module neuron_membrane_buffer #(
 );
 
     // Storage for all timesteps
-    // (* ram_style = "distributed" *)
+    (* ram_style = "distributed" *)
     logic signed [MEMBRANE_WIDTH-1:0] membrane_storage [0:NUM_TIMESTEPS-1];
 
     // Track which timesteps have been written
@@ -65,9 +65,9 @@ module neuron_membrane_buffer #(
             written <= '0;
             // Parallel writes do not allow for usage of LUTRAM, which
             // would be more space-efficient than flops.
-            for (int t = 0; t < NUM_TIMESTEPS; t++) begin
-                membrane_storage[t] <= '0;
-            end
+            // for (int t = 0; t < NUM_TIMESTEPS; t++) begin
+            //     membrane_storage[t] <= '0;
+            // end
         end else if (clear) begin
             written <= '0;
             // Don't need to clear storage - will be overwritten
