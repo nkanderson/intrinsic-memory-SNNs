@@ -121,7 +121,8 @@ module neural_network_fractional #(
         .DATA_WIDTH(DATA_WIDTH),
         .FRAC_BITS(FRAC_BITS),
         .WEIGHTS_FILE(FC1_WEIGHTS_FILE),
-        .BIAS_FILE(FC1_BIAS_FILE)
+        .BIAS_FILE(FC1_BIAS_FILE),
+        .PARALLELISM(8)
         // PARALLELISM defaults to NUM_OUTPUTS = HL1_SIZE
     ) fc1 (
         .clk(clk),
@@ -202,9 +203,8 @@ module neural_network_fractional #(
         .OUTPUT_WIDTH(FC2_OUTPUT_WIDTH),
         .FRAC_BITS(FRAC_BITS),
         .WEIGHTS_FILE(FC2_WEIGHTS_FILE),
-        .BIAS_FILE(FC2_BIAS_FILE),
+        .BIAS_FILE(FC2_BIAS_FILE)
         // PARALLELISM defaults to NUM_OUTPUTS = HL2_SIZE
-        .PARALLELISM(8)
     ) fc2 (
         .clk(clk),
         .reset(reset),

@@ -126,7 +126,7 @@ module neural_network_bitshift #(
         // For DSP-tight configs (e.g., bitshift HL1=64), override to a
         // lower P here without affecting the per-timestep critical path,
         // since fc1 only runs once per inference.
-        .PARALLELISM(16)
+        .PARALLELISM(8)
     ) fc1 (
         .clk(clk),
         .reset(reset),
@@ -208,7 +208,7 @@ module neural_network_bitshift #(
         .WEIGHTS_FILE(FC2_WEIGHTS_FILE),
         .BIAS_FILE(FC2_BIAS_FILE),
         // PARALLELISM defaults to NUM_OUTPUTS = HL2_SIZE (full per-output parallel)
-        .PARALLELISM(8)
+        .PARALLELISM(16)
     ) fc2 (
         .clk(clk),
         .reset(reset),
