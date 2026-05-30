@@ -337,24 +337,29 @@ All intermediate widths derive from `MEMBRANE_WIDTH`, `COEFF_WIDTH`, `COEFF_FRAC
 
 #### Prep numerator
 `prep_scaled_history_mult`
-- 61 bits, QS24.36
+- With C_SCALED: 61 bits, QS24.36
 - Result of C_SCALED (signed) * `history_sum_acc`, which is QS8.8 * QS15.28.
+- Without C_SCALED, removed
 
 `prep_scaled_history`
-- Drops 23 fractional bits to become QS47.13
+- Without C_SCALED: Just a right shift by COEFF_FRAC_BITS (16 for most, rather than the default of 15) of history_sum_acc, resulting in QS15.13.
+- With C_SCALED: Drops 23 fractional bits to become QS47.13
 - The shift discards 15 LSBs of fractional precision (28 → 13 frac bits). Sub-LSB relative to the final QS_.13 scale, so benign for output, but the MAC's extra precision is intentionally collapsed here. Pure-fractional drop — cannot cause overflow.
 
 `prep_numerator`
-- QS48.13
+- Without C_SCALED: 45 bits (maybe QS31.13? Should have 13 fractional bits in any case.).
+- With C_SCALED: QS48.13
 
 #### Reciprocal multiply
 `mul_scaled_result`
-- QS49.29
-- Result of `numerator_reg` (registered result of `prep_numerator`, which is QS48.13) * `INV_DENOM` (signed) (Q0.16 + sign bit)
+- Without C_SCALED: Result of QS31.13 * Q0.16, so QS31.29
+- With C_SCALED: QS49.29
+  - Result of `numerator_reg` (registered result of `prep_numerator`, which is QS48.13) * `INV_DENOM` (signed) (Q0.16 + sign bit)
 
 #### Shift to divide-by-scale
 `div_membrane_pre_reset`
-- QS65.13
+- Without C_SCALED: Should be QS44.13
+- With C_SCALED: QS65.13
 - Result of `mul_scaled_result_reg` (registered result of `mul_scaled_result`, which is QS49.29) with a right arithmetic shift by the number of fractional bits in `INV_DENOM`
 - Same character as the `>>> 23` above: drops 16 LSBs of fractional precision (29 → 13). Pure-fractional drop, sub-LSB at QS_.13 scale.
 
