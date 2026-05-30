@@ -33,6 +33,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import numpy as np
 
 # Repo root is parents[2] of this file: 3_benchmarking_on_FPGA/scripts/plot_ppa.py
@@ -74,17 +75,25 @@ TS_SUBSTATE_LABELS = [
     ("next", "NEXT"),
 ]
 
-# Hatch patterns (retained for potential use; no longer applied by default).
-PROFILE_HATCHES = ["", "//", "xx", "..", "++", "\\\\"]
-
-# Human-readable labels for known profile names, used as per-bar tick labels.
+# Human-readable labels for known profile names used in legends.
 PROFILE_DISPLAY_LABELS: dict[str, str] = {
     "baseline": "baseline",
     "fc1_8": "fc1 batch 8",
     "fc2_8": "fc2 batch 8",
-    "q_1_fc2_8": "Q batch 1,\nfc2 batch 8",
+    "q_1_fc2_8": "Q batch 1, fc2 batch 8",
     "q_batch_size_1": "Q batch 1",
-    "reverse_case_neurons": "One-hot\nreverse case",
+    "reverse_case_neurons": "One-hot reverse case",
+}
+
+# Per-profile colors used when color encodes the synthesis profile.
+# Black for baseline (the reference); distinct Okabe-Ito hues for variants.
+PROFILE_COLORS: dict[str, str] = {
+    "baseline": OKABE_ITO[7],  # black
+    "fc1_8": OKABE_ITO[0],  # blue
+    "fc2_8": OKABE_ITO[2],  # bluish green
+    "q_1_fc2_8": OKABE_ITO[3],  # reddish purple
+    "q_batch_size_1": OKABE_ITO[4],  # sky blue
+    "reverse_case_neurons": OKABE_ITO[1],  # vermillion
 }
 
 # Profiles excluded from plots by default. These were synthesis experiments
@@ -92,6 +101,15 @@ PROFILE_DISPLAY_LABELS: dict[str, str] = {
 # buffer_lutram memory-style hints), so they carry no useful comparison
 # signal. Re-include any of them with --include <name>.
 DEFAULT_EXCLUDED_PROFILES = ("buffer_bram", "buffer_lutram")
+
+# Neuron type colors matching plot_optuna_results.py ("leaky" maps to "lif" here).
+NEURON_TYPE_COLORS: dict[str, str] = {
+    "lif": OKABE_ITO[0],  # blue
+    "fractional": OKABE_ITO[2],  # bluish green
+    "bitshift": OKABE_ITO[5],  # orange
+}
+
+STATIC_POWER_COLOR = "#aaaaaa"  # medium gray; keeps black edge visible in stacked bars
 
 # Output resolution for raster plots. 150 DPI at 7" → ~1050 px wide, matching
 # the range produced by the other project plotting scripts (150-180 DPI).
@@ -167,6 +185,20 @@ def _rows_with(rows: list[dict], key: str) -> list[dict]:
     return [r for r in rows if _f(r.get(key)) is not None]
 
 
+def _neuron_color(neuron_type: str) -> str:
+    return NEURON_TYPE_COLORS.get(neuron_type, OKABE_ITO[7])
+
+
+_CONFIG_NEURON_ORDER = {"lif": 0, "frac": 1, "bitshift": 2}
+
+
+def _config_sort_order(config_name: str) -> int:
+    for prefix, order in _CONFIG_NEURON_ORDER.items():
+        if config_name.startswith(prefix):
+            return order
+    return 99
+
+
 def _group_by_config(
     rows: list[dict],
 ) -> tuple[list[str], list[str], list[list[Optional[dict]]]]:
@@ -184,6 +216,8 @@ def _group_by_config(
             by_config[cfg] = {}
             order.append(cfg)
         by_config[cfg][r["profile"]] = r
+
+    order.sort(key=_config_sort_order)
 
     all_profiles = set()
     for cfg in order:
@@ -211,72 +245,51 @@ def _bar_positions(
     return centers, bar_width
 
 
-def _profile_alpha(j: int) -> float:
-    """Alpha opacity for profile bar index j. Baseline (j=0) is fully opaque."""
-    return max(0.45, 1.0 - j * 0.18)
-
-
-def _add_profile_legend(fig: plt.Figure, profile_names: list[str]) -> None:
-    """Add a figure-level legend mapping alpha shade -> profile when N_profiles > 1.
-
-    Placed below the axes so it doesn't collide with per-axes legends. No-op
-    for the single-profile case (the visual collapses to the original layout).
-    """
-    if len(profile_names) <= 1:
-        return
-    handles = [
-        plt.Rectangle(
-            (0, 0), 1, 1,
-            facecolor="dimgray",
-            edgecolor="black",
-            alpha=_profile_alpha(i),
+def _profile_legend_handles(profiles: list[str]) -> list[mpatches.Patch]:
+    """Legend patch handles mapping profile color → display label."""
+    return [
+        mpatches.Patch(
+            facecolor=PROFILE_COLORS.get(p, OKABE_ITO[7]),
+            label=PROFILE_DISPLAY_LABELS.get(p, p),
         )
-        for i in range(len(profile_names))
+        for p in profiles
     ]
-    fig.subplots_adjust(bottom=0.28)
-    fig.legend(
-        handles,
-        profile_names,
-        fontsize=LEGEND_FONTSIZE,
-        loc="lower center",
-        bbox_to_anchor=(0.5, 0.0),
-        ncol=min(len(profile_names), 4),
-        title="Profile",
-        frameon=True,
-    )
 
 
-def _set_two_level_xticks(
+def _set_numbered_xticks(
     ax: plt.Axes,
     x: np.ndarray,
     offsets: np.ndarray,
     profiles: list[str],
     config_labels: list[str],
-    rotation: int = 38,
 ) -> None:
-    """Angled per-bar profile tick labels with bold config group labels below.
-
-    Used for multi-profile bar charts where the x-axis has a two-level
-    hierarchy: individual profile bars (labeled by name) within config clusters
-    (labeled by config display name).
-    """
+    """Number labels (1, 2, …) at each bar position; bold config group labels below."""
     n_cfg = len(x)
     n_prof = len(offsets)
-    bar_positions = [float(x[i] + offsets[j]) for i in range(n_cfg) for j in range(n_prof)]
-    bar_labels = [
-        PROFILE_DISPLAY_LABELS.get(profiles[j], profiles[j])
-        for _ in range(n_cfg)
-        for j in range(n_prof)
+    bar_positions = [
+        float(x[i] + offsets[j]) for i in range(n_cfg) for j in range(n_prof)
     ]
+    bar_labels = [str(j + 1) for _ in range(n_cfg) for j in range(n_prof)]
     ax.set_xticks(bar_positions)
-    ax.set_xticklabels(bar_labels, rotation=rotation, ha="right",
-                       fontsize=TICK_LABEL_FONTSIZE - 1)
-    # Config group labels: centered under each cluster, below the profile labels.
-    # get_xaxis_transform maps (data_x, axes_fraction_y); negative y is below the axes.
+    ax.set_xticklabels(bar_labels, fontsize=TICK_LABEL_FONTSIZE - 1)
     for xi, cfg_label in zip(x, config_labels):
-        ax.text(xi, -0.40, cfg_label, ha="center", va="top",
-                transform=ax.get_xaxis_transform(),
-                fontsize=TICK_LABEL_FONTSIZE, fontweight="bold")
+        ax.text(
+            xi,
+            -0.09,
+            cfg_label,
+            ha="center",
+            va="top",
+            transform=ax.get_xaxis_transform(),
+            fontsize=TICK_LABEL_FONTSIZE,
+            fontweight="bold",
+        )
+
+
+def _profile_mapping_text(profiles: list[str]) -> str:
+    """'1 = baseline    2 = fc1 batch 8    …' for the figure annotation."""
+    return "    ".join(
+        f"{i + 1} = {PROFILE_DISPLAY_LABELS.get(p, p)}" for i, p in enumerate(profiles)
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -295,11 +308,15 @@ def plot_area(rows: list[dict], out_dir: Path, fmt: str) -> None:
 
     any_bram = any(
         (_f(grid[i][j].get("bram_tiles")) or 0) > 0
-        for i in range(n_cfg) for j in range(n_prof) if grid[i][j]
+        for i in range(n_cfg)
+        for j in range(n_prof)
+        if grid[i][j]
     )
     any_lut_memory = any(
         (_f(grid[i][j].get("lut_as_memory")) or 0) > 0
-        for i in range(n_cfg) for j in range(n_prof) if grid[i][j]
+        for i in range(n_cfg)
+        for j in range(n_prof)
+        if grid[i][j]
     )
 
     # Build list of resources to show, suppressing any that are all-zero.
@@ -311,83 +328,157 @@ def plot_area(rows: list[dict], out_dir: Path, fmt: str) -> None:
     if any_bram:
         resources_abs.append(("bram_tiles", OKABE_ITO[2], "BRAM"))
 
+    cfg_neuron_types = [
+        next(
+            (grid[i][j].get("neuron_type", "") for j in range(n_prof) if grid[i][j]), ""
+        )
+        for i in range(n_cfg)
+    ]
+
+    resources = [("slice_luts", "LUTs"), ("slice_registers", "FFs"), ("dsp", "DSPs")]
+    if any_bram:
+        resources.append(("bram_tiles", "BRAM"))
+    n_res = len(resources)
+
     if n_prof == 1:
-        # ── Single profile: absolute grouped bar chart (log scale). ──────────
-        n_res = len(resources_abs)
-        x = np.arange(n_cfg)
-        inner_offsets, inner_w = _bar_positions(n_cfg, n_res, group_width=0.8)
+        # ── Single profile: x = resource type, bars = neuron-type-colored configs ──
+        x = np.arange(n_res)
+        cfg_offsets, bar_w = _bar_positions(n_res, n_cfg, group_width=0.8)
 
         fig, ax = plt.subplots(figsize=_figsize(width_scale=1.2))
-        for k, (res_key, color, label) in enumerate(resources_abs):
-            xs = x + inner_offsets[k]
-            if res_key == "slice_luts":
-                logic = [(_f(grid[i][0]["lut_as_logic"]) or 0) if grid[i][0] else 0 for i in range(n_cfg)]
-                memory = [(_f(grid[i][0]["lut_as_memory"]) or 0) if grid[i][0] else 0 for i in range(n_cfg)]
-                ax.bar(xs, logic, inner_w, color=color, edgecolor="black", linewidth=0.5, label=label)
-                if any_lut_memory:
-                    ax.bar(xs, memory, inner_w, bottom=logic, color=color, edgecolor="black",
-                           linewidth=0.5, alpha=0.55, hatch="**", label="LUTs (Memory)")
-            else:
-                vals = [(_f(grid[i][0].get(res_key)) or 0) if grid[i][0] else 0 for i in range(n_cfg)]
-                ax.bar(xs, vals, inner_w, color=color, edgecolor="black", linewidth=0.5, label=label)
+        for i_cfg, (ntype, lbl) in enumerate(zip(cfg_neuron_types, labels)):
+            color = _neuron_color(ntype)
+            for k, (res_key, _) in enumerate(resources):
+                xi = x[k] + cfg_offsets[i_cfg]
+                row = grid[i_cfg][0]
+                if res_key == "slice_luts":
+                    logic = (_f(row["lut_as_logic"]) or 0) if row else 0
+                    memory = (_f(row["lut_as_memory"]) or 0) if row else 0
+                    ax.bar(
+                        xi,
+                        logic,
+                        bar_w,
+                        color=color,
+                        edgecolor="black",
+                        linewidth=0.5,
+                        label=lbl if k == 0 else None,
+                    )
+                    if any_lut_memory and memory > 0:
+                        ax.bar(
+                            xi,
+                            memory,
+                            bar_w,
+                            bottom=logic,
+                            color=color,
+                            edgecolor="black",
+                            linewidth=0.5,
+                            alpha=0.55,
+                            hatch="//",
+                        )
+                else:
+                    val = (_f(row.get(res_key)) or 0) if row else 0
+                    ax.bar(
+                        xi,
+                        val,
+                        bar_w,
+                        color=color,
+                        edgecolor="black",
+                        linewidth=0.5,
+                        label=lbl if k == 0 else None,
+                    )
 
         ax.set_xticks(x)
-        ax.set_xticklabels(labels, rotation=20, ha="right")
+        ax.set_xticklabels([res_label for _, res_label in resources])
         ax.set_ylabel("Resource count")
         ax.set_yscale("log")
-        ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper right")
+        legend_handles = [
+            mpatches.Patch(
+                facecolor=_neuron_color(nt), edgecolor="black", linewidth=0.5, label=lbl
+            )
+            for nt, lbl in zip(cfg_neuron_types, labels)
+        ]
+        if any_lut_memory:
+            legend_handles.append(
+                mpatches.Patch(
+                    facecolor="#888888",
+                    alpha=0.55,
+                    hatch="//",
+                    edgecolor="black",
+                    linewidth=0.5,
+                    label="LUT (Memory, hatched)",
+                )
+            )
+        ax.legend(handles=legend_handles, fontsize=LEGEND_FONTSIZE, loc="upper right")
         _style_axes(ax)
         _save(fig, out_dir, "area", fmt)
 
     else:
         # ── Multi-profile: % change from baseline, one panel per resource. ───
-        baseline_idx = next((j for j, p in enumerate(profiles) if p == "baseline"), None)
+        baseline_idx = next(
+            (j for j, p in enumerate(profiles) if p == "baseline"), None
+        )
         non_baseline = [(j, p) for j, p in enumerate(profiles) if p != "baseline"]
         n_nbp = len(non_baseline)
         if n_nbp == 0 or baseline_idx is None:
-            print("  area: cannot render % change (need a 'baseline' profile + at least one other); skipping")
+            print(
+                "  area: cannot render % change (need a 'baseline' profile + at least one other); skipping"
+            )
             return
 
-        # Only include resources that have a nonzero baseline for at least one config
-        # (avoids divide-by-zero and meaningless panels).
         resources_pct = [
-            (label, res_key) for res_key, _, label in resources_abs
-            if any((_f(grid[i][baseline_idx].get(res_key)) or 0) > 0 for i in range(n_cfg) if grid[i][baseline_idx])
+            (res_label, res_key)
+            for res_key, res_label in resources
+            if any(
+                (_f(grid[i][baseline_idx].get(res_key)) or 0) > 0
+                for i in range(n_cfg)
+                if grid[i][baseline_idx]
+            )
         ]
         n_panels = len(resources_pct)
         if n_panels == 0:
             print("  area: no nonzero resources to compare; skipping")
             return
 
-        fig, axes = plt.subplots(1, n_panels, figsize=_figsize(width_scale=0.55 + 0.45 * n_panels))
+        fig, axes = plt.subplots(
+            1, n_panels, figsize=_figsize(width_scale=0.55 + 0.45 * n_panels)
+        )
         if n_panels == 1:
             axes = [axes]
 
         x = np.arange(n_nbp)
         cfg_offsets, bar_w = _bar_positions(n_nbp, n_cfg)
-        cfg_colors = [OKABE_ITO[i % len(OKABE_ITO)] for i in range(n_cfg)]
+        # Non-baseline profiles numbered 1, 2, … (baseline is the reference, not shown).
+        nb_nums = list(range(1, n_nbp + 1))
 
         for panel_idx, (res_label, res_key) in enumerate(resources_pct):
             ax = axes[panel_idx]
-            for i_cfg in range(n_cfg):
+            for i_cfg, ntype in enumerate(cfg_neuron_types):
                 base_row = grid[i_cfg][baseline_idx]
                 base_val = (_f(base_row.get(res_key)) or 0) if base_row else None
                 pcts = []
                 for j, _ in non_baseline:
                     row = grid[i_cfg][j]
                     if row and base_val and base_val > 0:
-                        pcts.append(((_f(row.get(res_key)) or 0) - base_val) / base_val * 100)
+                        pcts.append(
+                            ((_f(row.get(res_key)) or 0) - base_val) / base_val * 100
+                        )
                     else:
                         pcts.append(float("nan"))
                 xs = x + cfg_offsets[i_cfg]
-                ax.bar(xs, pcts, bar_w, color=cfg_colors[i_cfg], edgecolor="black",
-                       linewidth=0.5, label=labels[i_cfg] if panel_idx == 0 else None)
+                ax.bar(
+                    xs,
+                    pcts,
+                    bar_w,
+                    color=_neuron_color(ntype),
+                    edgecolor="black",
+                    linewidth=0.5,
+                    label=labels[i_cfg] if panel_idx == 0 else None,
+                )
 
             ax.axhline(0, color="black", linewidth=0.8, zorder=3)
             ax.set_xticks(x)
             ax.set_xticklabels(
-                [PROFILE_DISPLAY_LABELS.get(p, p) for _, p in non_baseline],
-                rotation=35, ha="right", fontsize=TICK_LABEL_FONTSIZE - 1,
+                [str(n) for n in nb_nums], fontsize=TICK_LABEL_FONTSIZE - 1
             )
             ax.set_title(res_label, fontsize=AXIS_LABEL_FONTSIZE)
             if panel_idx == 0:
@@ -395,7 +486,26 @@ def plot_area(rows: list[dict], out_dir: Path, fmt: str) -> None:
             _style_axes(ax)
 
         axes[0].legend(fontsize=LEGEND_FONTSIZE, loc="best")
+        # Mapping: only non-baseline profiles numbered from 1; wrap at 3 per line.
+        nb_parts = [
+            f"{k + 1} = {PROFILE_DISPLAY_LABELS.get(p, p)}"
+            for k, (_, p) in enumerate(non_baseline)
+        ]
+        mapping_lines = [
+            "    ".join(nb_parts[i : i + 3]) for i in range(0, len(nb_parts), 3)
+        ]
+        n_map_lines = len(mapping_lines)
+        bottom_frac = 0.12 + n_map_lines * 0.10
         fig.tight_layout()
+        fig.subplots_adjust(bottom=min(bottom_frac, 0.32))
+        fig.text(
+            0.5,
+            0.16,
+            "\n".join(mapping_lines),
+            ha="center",
+            va="bottom",
+            fontsize=AXIS_LABEL_FONTSIZE,
+        )
         _save(fig, out_dir, "area", fmt)
 
 
@@ -410,91 +520,164 @@ def plot_power(rows: list[dict], out_dir: Path, fmt: str) -> None:
     x = np.arange(n_cfg)
     offsets, bar_w = _bar_positions(n_cfg, n_prof)
 
-    fig, ax = plt.subplots(figsize=_figsize())
+    fig, ax = plt.subplots(figsize=_figsize(height_scale=1.0 if n_prof == 1 else 1.2))
     for j, prof in enumerate(profiles):
         xs = x + offsets[j]
-        static = [(_f(grid[i][j]["power_static_w"]) or 0) if grid[i][j] else 0 for i in range(n_cfg)]
-        dyn = [(_f(grid[i][j]["power_dynamic_w"]) or 0) if grid[i][j] else 0 for i in range(n_cfg)]
-        total = [(_f(grid[i][j]["power_total_w"]) or 0) if grid[i][j] else 0 for i in range(n_cfg)]
-        ax.bar(xs, static, bar_w, color=OKABE_ITO[7], edgecolor="black",
-               linewidth=0.5, label="Static" if j == 0 else None)
-        ax.bar(xs, dyn, bar_w, bottom=static, color=OKABE_ITO[5],
-               edgecolor="black", linewidth=0.5, label="Dynamic" if j == 0 else None)
+        static = [
+            (_f(grid[i][j]["power_static_w"]) or 0) if grid[i][j] else 0
+            for i in range(n_cfg)
+        ]
+        dyn = [
+            (_f(grid[i][j]["power_dynamic_w"]) or 0) if grid[i][j] else 0
+            for i in range(n_cfg)
+        ]
+        total = [
+            (_f(grid[i][j]["power_total_w"]) or 0) if grid[i][j] else 0
+            for i in range(n_cfg)
+        ]
+        ax.bar(
+            xs,
+            static,
+            bar_w,
+            color=STATIC_POWER_COLOR,
+            edgecolor="black",
+            linewidth=0.5,
+            label="Static" if j == 0 else None,
+        )
+        ax.bar(
+            xs,
+            dyn,
+            bar_w,
+            bottom=static,
+            color=OKABE_ITO[5],
+            edgecolor="black",
+            linewidth=0.5,
+            label="Dynamic" if j == 0 else None,
+        )
         if n_prof == 1:
             for xi, t in zip(xs, total):
                 if t > 0:
-                    ax.text(xi, t, f"{t:.3f}", ha="center", va="bottom",
-                            fontsize=TICK_LABEL_FONTSIZE)
+                    ax.text(
+                        xi,
+                        t,
+                        f"{t:.3f}",
+                        ha="center",
+                        va="bottom",
+                        fontsize=TICK_LABEL_FONTSIZE,
+                    )
 
     ax.set_ylabel("On-chip power (W)")
-    ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper right")
-    if n_prof == 1:
-        ax.set_xticks(x)
-        ax.set_xticklabels(labels, rotation=20, ha="right")
-    else:
-        _set_two_level_xticks(ax, x, offsets, profiles, labels)
-        fig.subplots_adjust(bottom=0.48)
-    _style_axes(ax)
-    _save(fig, out_dir, "power_stacked", fmt)
-
-
-def plot_cycles_per_stage(rows: list[dict], out_dir: Path, fmt: str) -> None:
-    rows = _rows_with(rows, "total_cycles")
-    if not rows:
-        print("  cycles per stage: no cycle data; skipping")
-        return
-    labels, profiles, grid = _group_by_config(rows)
-    n_cfg = len(labels)
-    n_prof = len(profiles)
-    x = np.arange(n_cfg)
-    offsets, bar_w = _bar_positions(n_cfg, n_prof)
-
-    fig, ax = plt.subplots(figsize=_figsize())
-    for j in range(n_prof):
-        xs = x + offsets[j]
-        load = [(_f(grid[i][j]["cycles_load_hl1"]) or 0) if grid[i][j] else 0 for i in range(n_cfg)]
-        run = [(_f(grid[i][j]["cycles_run_timesteps"]) or 0) if grid[i][j] else 0 for i in range(n_cfg)]
-        finish = [(_f(grid[i][j]["cycles_finish_q"]) or 0) if grid[i][j] else 0 for i in range(n_cfg)]
-        ax.bar(xs, load, bar_w, color=STAGE_COLORS["load_hl1"], edgecolor="black",
-               linewidth=0.5, label="LOAD_HL1" if j == 0 else None)
-        ax.bar(xs, run, bar_w, bottom=load, color=STAGE_COLORS["run_timesteps"],
-               edgecolor="black", linewidth=0.5, label="RUN_TIMESTEPS" if j == 0 else None)
-        bot2 = [a + b for a, b in zip(load, run)]
-        ax.bar(xs, finish, bar_w, bottom=bot2, color=STAGE_COLORS["finish_q"],
-               edgecolor="black", linewidth=0.5, label="FINISH_Q" if j == 0 else None)
-
-    ax.set_ylabel("Cycles per inference")
     ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper left")
     if n_prof == 1:
         ax.set_xticks(x)
         ax.set_xticklabels(labels, rotation=20, ha="right")
     else:
-        _set_two_level_xticks(ax, x, offsets, profiles, labels)
-        fig.subplots_adjust(bottom=0.48)
+        _set_numbered_xticks(ax, x, offsets, profiles, labels)
+        fig.tight_layout()
+        fig.subplots_adjust(bottom=0.18)
+        fig.text(
+            0.5,
+            0.04,
+            _profile_mapping_text(profiles),
+            ha="center",
+            va="bottom",
+            fontsize=LEGEND_FONTSIZE,
+        )
     _style_axes(ax)
-    _save(fig, out_dir, "cycles_per_stage", fmt)
+    _save(fig, out_dir, "power_stacked", fmt)
 
 
-def plot_cycles_per_ts_substate(
+def plot_cycles_stage_pct(rows: list[dict], out_dir: Path, fmt: str) -> None:
+    """100% stacked bar: proportion of each top-level FSM stage, all profiles."""
+    rows = _rows_with(rows, "total_cycles")
+    if not rows:
+        print("  cycles stage %: no cycle data; skipping")
+        return
+    labels, profiles, grid = _group_by_config(rows)
+    n_cfg = len(labels)
+    n_prof = len(profiles)
+    x = np.arange(n_cfg)
+    offsets, bar_w = _bar_positions(n_cfg, n_prof)
+
+    fig, ax = plt.subplots(figsize=_figsize(height_scale=1.0 if n_prof == 1 else 1.2))
+    for j in range(n_prof):
+        xs = x + offsets[j]
+        load_pct, run_pct, finish_pct = [], [], []
+        for i in range(n_cfg):
+            r = grid[i][j]
+            total = (_f(r.get("total_cycles")) or 0) if r else 0
+            if total > 0:
+                load_pct.append((_f(r.get("cycles_load_hl1")) or 0) / total * 100)
+                run_pct.append((_f(r.get("cycles_run_timesteps")) or 0) / total * 100)
+                finish_pct.append((_f(r.get("cycles_finish_q")) or 0) / total * 100)
+            else:
+                load_pct.append(0)
+                run_pct.append(0)
+                finish_pct.append(0)
+        ax.bar(
+            xs,
+            load_pct,
+            bar_w,
+            color=STAGE_COLORS["load_hl1"],
+            label="LOAD_HL1" if j == 0 else None,
+            edgecolor="white",
+            linewidth=0.3,
+        )
+        ax.bar(
+            xs,
+            run_pct,
+            bar_w,
+            bottom=load_pct,
+            color=STAGE_COLORS["run_timesteps"],
+            label="RUN_TIMESTEPS" if j == 0 else None,
+            edgecolor="white",
+            linewidth=0.3,
+        )
+        bot2 = [a + b for a, b in zip(load_pct, run_pct)]
+        ax.bar(
+            xs,
+            finish_pct,
+            bar_w,
+            bottom=bot2,
+            color=STAGE_COLORS["finish_q"],
+            label="FINISH_Q" if j == 0 else None,
+            edgecolor="white",
+            linewidth=0.3,
+        )
+
+    ax.set_ylabel("Cycles (% of total per inference)")
+    ax.set_ylim(0, 105)
+    ax.legend(fontsize=LEGEND_FONTSIZE, loc="center right")
+    if n_prof == 1:
+        ax.set_xticks(x)
+        ax.set_xticklabels(labels, rotation=20, ha="right")
+    else:
+        _set_numbered_xticks(ax, x, offsets, profiles, labels)
+        fig.tight_layout()
+        fig.subplots_adjust(bottom=0.20)
+        fig.text(
+            0.5,
+            0.06,
+            _profile_mapping_text(profiles),
+            ha="center",
+            va="bottom",
+            fontsize=LEGEND_FONTSIZE,
+        )
+    _style_axes(ax)
+    _save(fig, out_dir, "cycles_stage_pct", fmt)
+
+
+def _plot_cycles_bars(
     rows: list[dict],
     out_dir: Path,
     fmt: str,
-    normalize: bool,
+    col: str,
+    ylabel: str,
+    stem: str,
 ) -> None:
-    """Stacked bar of cycles in each TS substate.
-
-    normalize=False: total cycles across all timesteps (sum equals cycles_run_timesteps).
-    normalize=True:  divided by num_timesteps so configs with different timestep counts compare directly.
-    """
-    rows = [
-        r
-        for r in rows
-        if _f(r.get("cycles_ts_hl1_step")) is not None
-        or _f(r.get("cycles_ts_next")) is not None
-    ]
+    rows = _rows_with(rows, col)
     if not rows:
-        suffix = "per timestep" if normalize else "total"
-        print(f"  cycles per ts-substate ({suffix}): no ts-state data; skipping")
+        print(f"  {stem}: no cycle data; skipping")
         return
     labels, profiles, grid = _group_by_config(rows)
     n_cfg = len(labels)
@@ -503,35 +686,65 @@ def plot_cycles_per_ts_substate(
     offsets, bar_w = _bar_positions(n_cfg, n_prof)
 
     fig, ax = plt.subplots(figsize=_figsize())
-    for j in range(n_prof):
-        alpha = _profile_alpha(j)
+    for j, prof in enumerate(profiles):
+        color = PROFILE_COLORS.get(prof, OKABE_ITO[7])
         xs = x + offsets[j]
-        bottom = np.zeros(n_cfg)
-        for key, ts_label in TS_SUBSTATE_LABELS:
-            vals = np.zeros(n_cfg)
-            for i in range(n_cfg):
-                if grid[i][j] is None:
-                    continue
-                raw = _f(grid[i][j].get(f"cycles_ts_{key}")) or 0
-                if normalize:
-                    nts = _f(grid[i][j].get("num_timesteps")) or 0
-                    raw = raw / nts if nts > 0 else 0
-                vals[i] = raw
-            ax.bar(xs, vals, bar_w, bottom=bottom, color=TS_SUBSTATE_COLORS[key],
-                   edgecolor="black", linewidth=0.5, alpha=alpha,
-                   label=ts_label if j == 0 else None)
-            bottom = bottom + vals
+        vals = [
+            (_f(grid[i][j].get(col)) or 0) if grid[i][j] else 0 for i in range(n_cfg)
+        ]
+        ax.bar(xs, vals, bar_w, color=color, edgecolor="white", linewidth=0.5)
 
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels, rotation=20, ha="right")
-    ax.set_ylabel("Cycles per timestep" if normalize else "Cycles in RUN_TIMESTEPS")
-    ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper left", ncol=2)
-    _add_profile_legend(fig, profiles)
+    ax.set_ylabel(ylabel)
+    if n_prof == 1:
+        ax.set_xticks(x)
+        ax.set_xticklabels(labels, rotation=20, ha="right")
+        ax.legend(
+            handles=_profile_legend_handles(profiles),
+            fontsize=LEGEND_FONTSIZE,
+            loc="upper left",
+        )
+    else:
+        _set_numbered_xticks(ax, x, offsets, profiles, labels)
+        fig.tight_layout()
+        fig.subplots_adjust(bottom=0.20)
+        fig.text(
+            0.5,
+            0.04,
+            _profile_mapping_text(profiles),
+            ha="center",
+            va="bottom",
+            fontsize=LEGEND_FONTSIZE,
+        )
     _style_axes(ax)
-    stem = (
-        "cycles_per_ts_substate_per_timestep" if normalize else "cycles_per_ts_substate"
-    )
     _save(fig, out_dir, stem, fmt)
+
+
+def plot_cycles_total(rows: list[dict], out_dir: Path, fmt: str) -> None:
+    _plot_cycles_bars(
+        rows, out_dir, fmt, "total_cycles", "Cycles per inference", "cycles_total"
+    )
+
+
+def plot_cycles_run_timesteps(rows: list[dict], out_dir: Path, fmt: str) -> None:
+    _plot_cycles_bars(
+        rows,
+        out_dir,
+        fmt,
+        "cycles_run_timesteps",
+        "Cycles in RUN_TIMESTEPS",
+        "cycles_run_timesteps",
+    )
+
+
+def plot_cycles_per_timestep(rows: list[dict], out_dir: Path, fmt: str) -> None:
+    _plot_cycles_bars(
+        rows,
+        out_dir,
+        fmt,
+        "cycles_per_timestep",
+        "Cycles per timestep",
+        "cycles_per_timestep",
+    )
 
 
 def plot_figures_of_merit(rows: list[dict], out_dir: Path, fmt: str) -> None:
@@ -545,24 +758,45 @@ def plot_figures_of_merit(rows: list[dict], out_dir: Path, fmt: str) -> None:
     x = np.arange(n_cfg)
     offsets, bar_w = _bar_positions(n_cfg, n_prof)
 
-    fig, axes = plt.subplots(1, 3, figsize=_figsize(width_scale=1.5, height_scale=0.6))
+    fig, axes = plt.subplots(1, 3, figsize=_figsize(width_scale=1.5, height_scale=0.7))
     metrics = [
         ("Latency (us)", "latency_us"),
         ("Throughput (Hz)", "throughput_hz"),
         ("Energy (uJ/inf)", "energy_per_inference_uj"),
     ]
     for ax, (ylabel, key) in zip(axes, metrics):
-        for j in range(n_prof):
+        for j, prof in enumerate(profiles):
+            color = PROFILE_COLORS.get(prof, OKABE_ITO[7])
             xs = x + offsets[j]
-            vals = [(_f(grid[i][j].get(key)) or 0) if grid[i][j] else 0 for i in range(n_cfg)]
-            ax.bar(xs, vals, bar_w, color=OKABE_ITO[0], edgecolor="black",
-                   linewidth=0.5, alpha=_profile_alpha(j))
-        ax.set_xticks(x)
-        ax.set_xticklabels(labels, rotation=30, ha="right", fontsize=TICK_LABEL_FONTSIZE - 1)
+            vals = [
+                (_f(grid[i][j].get(key)) or 0) if grid[i][j] else 0
+                for i in range(n_cfg)
+            ]
+            ax.bar(xs, vals, bar_w, color=color, edgecolor="white", linewidth=0.5)
+        if n_prof == 1:
+            ax.set_xticks(x)
+            ax.set_xticklabels(
+                labels, rotation=20, ha="right", fontsize=TICK_LABEL_FONTSIZE - 1
+            )
+        else:
+            _set_numbered_xticks(ax, x, offsets, profiles, labels)
         ax.set_ylabel(ylabel, fontsize=AXIS_LABEL_FONTSIZE - 1)
         ax.tick_params(axis="y", labelsize=TICK_LABEL_FONTSIZE - 1)
-    fig.tight_layout()
-    _add_profile_legend(fig, profiles)
+        _style_axes(ax)
+
+    if n_prof == 1:
+        fig.tight_layout()
+    else:
+        fig.tight_layout()
+        fig.subplots_adjust(bottom=0.22)
+        fig.text(
+            0.5,
+            0.02,
+            _profile_mapping_text(profiles),
+            ha="center",
+            va="bottom",
+            fontsize=LEGEND_FONTSIZE,
+        )
     _save(fig, out_dir, "figures_of_merit", fmt)
 
 
@@ -573,7 +807,12 @@ def plot_utilization_pct(rows: list[dict], out_dir: Path, fmt: str) -> None:
     for how much of the board each config occupies. Profile-to-profile
     differences are handled by the % change area chart.
     """
-    baseline_rows = [r for r in rows if r.get("profile") == "baseline" and _f(r.get("slice_luts")) is not None]
+    baseline_rows = [
+        r
+        for r in rows
+        if r.get("profile") == "baseline" and _f(r.get("slice_luts")) is not None
+    ]
+    baseline_rows.sort(key=lambda r: _config_sort_order(r.get("config", "")))
     if not baseline_rows:
         print("  utilization %: no baseline synth data; skipping")
         return
@@ -599,14 +838,24 @@ def plot_utilization_pct(rows: list[dict], out_dir: Path, fmt: str) -> None:
         total_avail = NEXYS_A7_100T_RESOURCES[res_key]
         vals = [(_f(r.get(res_key)) or 0) / total_avail * 100 for r in baseline_rows]
         xs = x + inner_offsets[k]
-        ax.bar(xs, vals, inner_w, color=color, edgecolor="black", linewidth=0.5, label=res_label)
+        ax.bar(
+            xs,
+            vals,
+            inner_w,
+            color=color,
+            edgecolor="black",
+            linewidth=0.5,
+            label=res_label,
+        )
 
     ax.set_xticks(x)
     ax.set_xticklabels(labels, rotation=20, ha="right")
     ax.set_ylabel("Utilization (% of available)")
     ax.set_ylim(0, 105)
-    ax.axhline(100, color="black", linewidth=0.8, linestyle="--", alpha=0.4, label="100% limit")
-    ax.legend(fontsize=LEGEND_FONTSIZE)
+    ax.axhline(
+        100, color="black", linewidth=0.8, linestyle="--", alpha=0.4, label="100% limit"
+    )
+    ax.legend(fontsize=LEGEND_FONTSIZE, loc="upper left")
     _style_axes(ax)
     _save(fig, out_dir, "utilization_pct", fmt)
 
@@ -692,8 +941,8 @@ def main() -> int:
         default=[],
         metavar="PROFILE",
         help="Re-include a profile that is excluded by default "
-             f"(currently: {', '.join(DEFAULT_EXCLUDED_PROFILES)}). "
-             "May be repeated.",
+        f"(currently: {', '.join(DEFAULT_EXCLUDED_PROFILES)}). "
+        "May be repeated.",
     )
     args = parser.parse_args()
 
@@ -714,17 +963,20 @@ def main() -> int:
         rows = [r for r in rows if r.get("profile", "") not in excluded]
         dropped = before - len(rows)
         if dropped:
-            print(f"  excluded profiles {sorted(excluded)}: dropped {dropped} rows "
-                  f"(use --include <name> to re-add)")
+            print(
+                f"  excluded profiles {sorted(excluded)}: dropped {dropped} rows "
+                f"(use --include <name> to re-add)"
+            )
 
     print(f"Plotting {len(rows)} (config x profile) rows from {args.input.name}")
     print(f"  plots -> {args.plot_dir} (.{args.format})")
     plot_area(rows, args.plot_dir, args.format)
     plot_utilization_pct(rows, args.plot_dir, args.format)
     plot_power(rows, args.plot_dir, args.format)
-    plot_cycles_per_stage(rows, args.plot_dir, args.format)
-    plot_cycles_per_ts_substate(rows, args.plot_dir, args.format, normalize=False)
-    plot_cycles_per_ts_substate(rows, args.plot_dir, args.format, normalize=True)
+    plot_cycles_stage_pct(rows, args.plot_dir, args.format)
+    plot_cycles_total(rows, args.plot_dir, args.format)
+    plot_cycles_run_timesteps(rows, args.plot_dir, args.format)
+    plot_cycles_per_timestep(rows, args.plot_dir, args.format)
     plot_figures_of_merit(rows, args.plot_dir, args.format)
 
     print(f"  tables -> {args.table_dir}")
