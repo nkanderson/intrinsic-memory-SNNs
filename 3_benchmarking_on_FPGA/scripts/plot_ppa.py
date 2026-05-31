@@ -51,9 +51,9 @@ from common.scripts.plot_styles import (  # noqa: E402
 
 # Stage colors for the top-level FSM stacked bar.
 STAGE_COLORS = {
-    "load_hl1": OKABE_ITO[4],  # sky blue
+    "load_hl1": OKABE_ITO[2],  # bluish green
     "run_timesteps": OKABE_ITO[5],  # orange
-    "finish_q": OKABE_ITO[6],  # yellow
+    "finish_q": OKABE_ITO[0],  # blue
 }
 
 # Per-timestep substate colors (6 distinct hues so the stack is readable).
@@ -262,14 +262,22 @@ def _set_numbered_xticks(
     offsets: np.ndarray,
     profiles: list[str],
     config_labels: list[str],
+    grid: Optional[list[list[Optional[dict]]]] = None,
 ) -> None:
-    """Number labels (1, 2, …) at each bar position; bold config group labels below."""
+    """Number labels (1, 2, …) at bar positions that have data; bold config labels below.
+
+    If grid is provided, positions where grid[i][j] is None are silently skipped
+    (no tick mark drawn for missing config/profile combinations).
+    """
     n_cfg = len(x)
     n_prof = len(offsets)
-    bar_positions = [
-        float(x[i] + offsets[j]) for i in range(n_cfg) for j in range(n_prof)
-    ]
-    bar_labels = [str(j + 1) for _ in range(n_cfg) for j in range(n_prof)]
+    bar_positions = []
+    bar_labels = []
+    for i in range(n_cfg):
+        for j in range(n_prof):
+            if grid is None or grid[i][j] is not None:
+                bar_positions.append(float(x[i] + offsets[j]))
+                bar_labels.append(str(j + 1))
     ax.set_xticks(bar_positions)
     ax.set_xticklabels(bar_labels, fontsize=TICK_LABEL_FONTSIZE - 1)
     for xi, cfg_label in zip(x, config_labels):
@@ -290,6 +298,17 @@ def _profile_mapping_text(profiles: list[str]) -> str:
     return "    ".join(
         f"{i + 1} = {PROFILE_DISPLAY_LABELS.get(p, p)}" for i, p in enumerate(profiles)
     )
+
+
+def _mapping_text_wrapped(profiles: list[str], per_line: int = 3) -> tuple[str, int]:
+    """Wrapped profile mapping text. Returns (text, n_lines)."""
+    parts = [
+        f"{i + 1} = {PROFILE_DISPLAY_LABELS.get(p, p)}" for i, p in enumerate(profiles)
+    ]
+    lines = [
+        "    ".join(parts[i : i + per_line]) for i in range(0, len(parts), per_line)
+    ]
+    return "\n".join(lines), len(lines)
 
 
 # ---------------------------------------------------------------------------
@@ -577,16 +596,17 @@ def plot_power(rows: list[dict], out_dir: Path, fmt: str) -> None:
         ax.set_xticks(x)
         ax.set_xticklabels(labels, rotation=20, ha="right")
     else:
-        _set_numbered_xticks(ax, x, offsets, profiles, labels)
+        _set_numbered_xticks(ax, x, offsets, profiles, labels, grid=grid)
+        mapping_text, n_map_lines = _mapping_text_wrapped(profiles)
         fig.tight_layout()
-        fig.subplots_adjust(bottom=0.18)
+        fig.subplots_adjust(bottom=0.12 + n_map_lines * 0.07)
         fig.text(
             0.5,
-            0.04,
-            _profile_mapping_text(profiles),
+            0.1,
+            mapping_text,
             ha="center",
             va="bottom",
-            fontsize=LEGEND_FONTSIZE,
+            fontsize=LEGEND_FONTSIZE * 1.2,
         )
     _style_axes(ax)
     _save(fig, out_dir, "power_stacked", fmt)
@@ -657,16 +677,17 @@ def plot_cycles_stage_pct(rows: list[dict], out_dir: Path, fmt: str) -> None:
         ax.set_xticks(x)
         ax.set_xticklabels(labels, rotation=20, ha="right")
     else:
-        _set_numbered_xticks(ax, x, offsets, profiles, labels)
+        _set_numbered_xticks(ax, x, offsets, profiles, labels, grid=grid)
+        mapping_text, n_map_lines = _mapping_text_wrapped(profiles)
         fig.tight_layout()
-        fig.subplots_adjust(bottom=0.20)
+        fig.subplots_adjust(bottom=0.12 + n_map_lines * 0.07)
         fig.text(
             0.5,
-            0.06,
-            _profile_mapping_text(profiles),
+            0.09,
+            mapping_text,
             ha="center",
             va="bottom",
-            fontsize=LEGEND_FONTSIZE,
+            fontsize=LEGEND_FONTSIZE * 1.2,
         )
     _style_axes(ax)
     _save(fig, out_dir, "cycles_stage_pct", fmt)
@@ -709,16 +730,22 @@ def _plot_cycles_bars(
             loc="upper left",
         )
     else:
-        _set_numbered_xticks(ax, x, offsets, profiles, labels)
+        _set_numbered_xticks(ax, x, offsets, profiles, labels, grid=grid)
+        ax.legend(
+            handles=_profile_legend_handles(profiles),
+            fontsize=LEGEND_FONTSIZE,
+            loc="upper left",
+        )
+        mapping_text, n_map_lines = _mapping_text_wrapped(profiles)
         fig.tight_layout()
-        fig.subplots_adjust(bottom=0.20)
+        fig.subplots_adjust(bottom=0.12 + n_map_lines * 0.07)
         fig.text(
             0.5,
-            0.04,
-            _profile_mapping_text(profiles),
+            0.08,
+            mapping_text,
             ha="center",
             va="bottom",
-            fontsize=LEGEND_FONTSIZE,
+            fontsize=LEGEND_FONTSIZE * 1.2,
         )
     _style_axes(ax)
     _save(fig, out_dir, stem, fmt)
@@ -784,7 +811,7 @@ def plot_figures_of_merit(rows: list[dict], out_dir: Path, fmt: str) -> None:
                 labels, rotation=20, ha="right", fontsize=TICK_LABEL_FONTSIZE - 1
             )
         else:
-            _set_numbered_xticks(ax, x, offsets, profiles, labels)
+            _set_numbered_xticks(ax, x, offsets, profiles, labels, grid=grid)
         ax.set_ylabel(ylabel, fontsize=AXIS_LABEL_FONTSIZE - 1)
         ax.tick_params(axis="y", labelsize=TICK_LABEL_FONTSIZE - 1)
         _style_axes(ax)
