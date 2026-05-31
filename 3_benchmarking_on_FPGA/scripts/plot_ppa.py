@@ -450,6 +450,11 @@ def plot_area(rows: list[dict], out_dir: Path, fmt: str) -> None:
         # Non-baseline profiles numbered 1, 2, … (baseline is the reference, not shown).
         nb_nums = list(range(1, n_nbp + 1))
 
+        # Scale fonts up to compensate for narrower panel width.
+        _fs_label = AXIS_LABEL_FONTSIZE + 5
+        _fs_tick = TICK_LABEL_FONTSIZE + 3
+        _fs_legend = LEGEND_FONTSIZE + 3
+
         for panel_idx, (res_label, res_key) in enumerate(resources_pct):
             ax = axes[panel_idx]
             for i_cfg, ntype in enumerate(cfg_neuron_types):
@@ -477,15 +482,15 @@ def plot_area(rows: list[dict], out_dir: Path, fmt: str) -> None:
 
             ax.axhline(0, color="black", linewidth=0.8, zorder=3)
             ax.set_xticks(x)
-            ax.set_xticklabels(
-                [str(n) for n in nb_nums], fontsize=TICK_LABEL_FONTSIZE - 1
-            )
-            ax.set_title(res_label, fontsize=AXIS_LABEL_FONTSIZE)
+            ax.set_xticklabels([str(n) for n in nb_nums], fontsize=_fs_tick)
+            ax.set_title(res_label, fontsize=_fs_label)
             if panel_idx == 0:
                 ax.set_ylabel("% change vs baseline")
             _style_axes(ax)
+            ax.tick_params(axis="both", labelsize=_fs_tick)
+            ax.yaxis.label.set_size(_fs_label)
 
-        axes[0].legend(fontsize=LEGEND_FONTSIZE, loc="best")
+        axes[0].legend(fontsize=_fs_legend, loc="best")
         # Mapping: only non-baseline profiles numbered from 1; wrap at 3 per line.
         nb_parts = [
             f"{k + 1} = {PROFILE_DISPLAY_LABELS.get(p, p)}"
@@ -500,11 +505,11 @@ def plot_area(rows: list[dict], out_dir: Path, fmt: str) -> None:
         fig.subplots_adjust(bottom=min(bottom_frac, 0.32))
         fig.text(
             0.5,
-            0.16,
+            0.12,  # Adjust vertical position of profile list
             "\n".join(mapping_lines),
             ha="center",
             va="bottom",
-            fontsize=AXIS_LABEL_FONTSIZE,
+            fontsize=AXIS_LABEL_FONTSIZE * 1.3,
         )
         _save(fig, out_dir, "area", fmt)
 
