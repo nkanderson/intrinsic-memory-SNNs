@@ -1,6 +1,6 @@
 <mxfile host="Electron" pages="4">
   <diagram id="lif_network_block" name="LIF-network-block">
-    <mxGraphModel dx="2809" dy="682" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+    <mxGraphModel dx="1096" dy="760" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -21,8 +21,8 @@
         </mxCell>
         <mxCell id="lif-arr-q-out" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#333;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="308" y="490" as="sourcePoint" />
-            <mxPoint x="168" y="490" as="targetPoint" />
+            <mxPoint x="310" y="491.5" as="sourcePoint" />
+            <mxPoint x="170" y="491.5" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="lif-loop-top" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;strokeColor=#0072B2;dashed=1;dashPattern=8 8;fillColor=none;movable=0;resizable=0;rotatable=0;deletable=0;editable=0;locked=1;connectable=0;" value="" vertex="1">
@@ -32,20 +32,20 @@
           <mxGeometry height="20" width="270" x="498" y="355" as="geometry" />
         </mxCell>
         <mxCell id="lif-obs0" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;fontFamily=monospace;fontSize=13;" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;observations[0]&lt;/font&gt;" vertex="1">
-          <mxGeometry height="20" width="150" x="-2" y="198.75" as="geometry" />
+          <mxGeometry height="20" width="150" x="14" y="196.88" as="geometry" />
         </mxCell>
         <mxCell id="lif-obs1" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;fontFamily=monospace;fontSize=13;" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;observations[1]&lt;/font&gt;" vertex="1">
-          <mxGeometry height="20" width="150" x="-2" y="228" as="geometry" />
+          <mxGeometry height="20" width="150" x="14" y="226.13" as="geometry" />
         </mxCell>
         <mxCell id="lif-obs2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;fontFamily=monospace;fontSize=13;" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;observations[2]&lt;/font&gt;" vertex="1">
-          <mxGeometry height="20" width="150" x="-2" y="257" as="geometry" />
+          <mxGeometry height="20" width="150" x="14" y="255.13" as="geometry" />
         </mxCell>
         <mxCell id="lif-obs3" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;fontFamily=monospace;fontSize=13;" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;observations[3]&lt;/font&gt;" vertex="1">
-          <mxGeometry height="20" width="150" x="-2" y="285" as="geometry" />
+          <mxGeometry height="20" width="150" x="14" y="283.13" as="geometry" />
         </mxCell>
         <mxCell id="lif-arr-obs-fc1" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#333;" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <mxPoint x="158" y="250" as="sourcePoint" />
+            <mxPoint x="170" y="250" as="sourcePoint" />
             <mxPoint x="218" y="250" as="targetPoint" />
           </mxGeometry>
         </mxCell>
@@ -103,18 +103,8 @@
         <mxCell id="lif-fc2-sub" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=#555;" value="&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 17px;&quot;&gt;linear_layer&lt;br&gt;&lt;span style=&quot;font-family: monospace; color: rgb(17, 17, 17);&quot;&gt;64 → 16&lt;/span&gt;&lt;/font&gt;&lt;br&gt;&lt;/font&gt;" vertex="1">
           <mxGeometry height="59.5" width="150" x="778" y="240.5" as="geometry" />
         </mxCell>
-        <mxCell id="lif-arr-fc2-hl2" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;strokeColor=#333;" value="">
-          <mxGeometry height="50" relative="1" width="50" as="geometry">
-            <Array as="points">
-              <mxPoint x="1038" y="252.5" />
-              <mxPoint x="1038" y="490" />
-            </Array>
-            <mxPoint x="938" y="252.5" as="sourcePoint" />
-            <mxPoint x="938" y="490" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
         <mxCell id="lif-arr-fc2-hl2-label" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=#555;" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;currents[16]&amp;nbsp;&lt;/font&gt;" vertex="1">
-          <mxGeometry height="20" width="110" x="927" y="355" as="geometry" />
+          <mxGeometry height="20" width="110" x="860" y="355" as="geometry" />
         </mxCell>
         <mxCell id="lif-hl2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#CCEBE3;strokeColor=#009E73;movable=0;resizable=0;rotatable=0;deletable=0;editable=0;locked=1;connectable=0;" value="" vertex="1">
           <mxGeometry height="154.41" width="175" x="755" y="415.38" as="geometry" />
@@ -139,9 +129,6 @@
         </mxCell>
         <mxCell id="lif-hl2-foot" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=#555;" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;all fire synchronously&lt;br&gt;each t&lt;/font&gt;" vertex="1">
           <mxGeometry height="32.01" width="175" x="755.5" y="520.99" as="geometry" />
-        </mxCell>
-        <mxCell id="lif-arr-hl2-mem-label" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=#555;" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;mem[16]&lt;/font&gt;" vertex="1">
-          <mxGeometry height="20" width="62" x="687" y="464" as="geometry" />
         </mxCell>
         <mxCell id="lif-mem" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#FCF9D9;strokeColor=#000000;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" value="" vertex="1">
           <mxGeometry height="165.8" width="180" x="499" y="409.69" as="geometry" />
@@ -180,7 +167,7 @@
           <mxGeometry height="97" width="186" x="225" y="463" as="geometry" />
         </mxCell>
         <mxCell id="lif-action-label" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;rounded=0;fontFamily=monospace;fontSize=13;" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;selected_action&lt;br&gt;&lt;span style=&quot;font-family: Helvetica; color: rgb(85, 85, 85);&quot;&gt;(1 of 2)&lt;/span&gt;&lt;/font&gt;" vertex="1">
-          <mxGeometry height="40" width="160" x="-2" y="472" as="geometry" />
+          <mxGeometry height="40" width="160" x="8" y="472" as="geometry" />
         </mxCell>
         <mxCell id="lif-leg-1-sw" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=1;fillColor=#FAECCC;strokeColor=#E69F00;" value="" vertex="1">
           <mxGeometry height="14" width="16" x="59" y="610" as="geometry" />
@@ -214,6 +201,19 @@
         </mxCell>
         <mxCell id="9T71BRn9JglK21eeH-Vr-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=#555;" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;per-timestep loop&lt;/font&gt;" vertex="1">
           <mxGeometry height="14" width="144" x="806" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="daqf5i3B3KddMnSjEv4r-1" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;strokeWidth=2;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="980" y="257" />
+              <mxPoint x="980" y="499" />
+            </Array>
+            <mxPoint x="940" y="257" as="sourcePoint" />
+            <mxPoint x="940" y="499" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lif-arr-hl2-mem-label" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=11;fontColor=#555;" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;mem[16]&lt;/font&gt;" vertex="1">
+          <mxGeometry height="20" width="73" x="682" y="463.41" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

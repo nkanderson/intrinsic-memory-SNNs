@@ -84,6 +84,13 @@ SUCCESS_THRESHOLD = 475.0
 # colorblind-safe palette. Per-config series rotate through OKABE_ITO[0..7].
 COLOR_THRESHOLD = OKABE_ITO[1]  # vermillion for the solved-threshold reference
 
+_DISPLAY_NAMES = {"leaky": "LIF"}
+
+
+def _display_name(cfg: str) -> str:
+    """Human-readable label for a config name, with neuron-type renames applied."""
+    return _DISPLAY_NAMES.get(cfg, cfg.replace("leaky", "LIF"))
+
 
 def _config_dir(metrics_dir: Path, config_name: str) -> Path:
     """Resolve the per-config subdirectory under metrics_dir, falling back
@@ -128,7 +135,9 @@ def load_per_seed_csvs(csv_dir: Path, base_name: str, max_seeds: int | None = No
     seed set used by the other buffer-size variants.
     """
     pattern = f"{base_name}-seed*.csv"
-    files = sorted(csv_dir.glob(pattern), key=lambda p: int(p.stem.rsplit("-seed", 1)[1]))
+    files = sorted(
+        csv_dir.glob(pattern), key=lambda p: int(p.stem.rsplit("-seed", 1)[1])
+    )
     if not files:
         raise FileNotFoundError(f"No per-seed CSVs found at {csv_dir / pattern}")
     if max_seeds is not None:
@@ -321,7 +330,7 @@ def plot_cross_config(
             iqm,
             linewidth=2.0,
             color=color,
-            label=f"{cfg}  [solved {k}/{n}]",
+            label=f"{_display_name(cfg)}  [solved {k}/{n}]",
         )
         ax.fill_between(episodes, lo, hi, color=color, alpha=0.2)
 
@@ -399,7 +408,7 @@ def plot_cross_config_stacked(
             ax.plot(
                 episodes,
                 mat[i],
-                alpha=0.35,
+                alpha=0.23,  # Update individual seed lines
                 linewidth=0.7,
                 color=COLOR_RAW,
                 zorder=1,
@@ -418,7 +427,7 @@ def plot_cross_config_stacked(
         )
 
         k, n_total = _solved_count(summary_by_cfg[cfg])
-        _stack_panel_label(ax, f"{cfg}  [solved {k}/{n_total}]")
+        _stack_panel_label(ax, f"{_display_name(cfg)}  [solved {k}/{n_total}]")
 
         ax.set_ylim(*STACK_Y_LIMITS)
         ax.set_yticks(STACK_Y_TICKS)
@@ -573,7 +582,9 @@ def plot_final_bars(configs, summary_by_cfg, output_dir: Path, fmt: str):
 
     ax.set_xticks(xs)
     ax.set_xticklabels(configs, rotation=20, ha="right", fontsize=TICK_LABEL_FONTSIZE)
-    ax.set_ylabel("Final 100-ep avg reward (IQM, 95% bootstrap CI)", fontsize=AXIS_LABEL_FONTSIZE)
+    ax.set_ylabel(
+        "Final 100-ep avg reward (IQM, 95% bootstrap CI)", fontsize=AXIS_LABEL_FONTSIZE
+    )
     ax.tick_params(axis="y", labelsize=TICK_LABEL_FONTSIZE)
     ax.set_ylim(0, 520)
     ax.legend(loc="lower right", fontsize=LEGEND_FONTSIZE)
@@ -607,7 +618,7 @@ def plot_performance_profile(configs, summary_by_cfg, output_dir: Path, fmt: str
             fractions,
             linewidth=2.0,
             color=color,
-            label=f"{cfg}  [solved {k}/{n}]",
+            label=f"{_display_name(cfg)}  [solved {k}/{n}]",
         )
     ax.axvline(
         SUCCESS_THRESHOLD,
@@ -716,7 +727,7 @@ def plot_drawdown_curve(
             iqm, lo, hi = _per_episode_band(dd_mat)
             ax.fill_between(episodes, lo, hi, color=color, alpha=0.2)
             ax.plot(episodes, iqm, color=color, linewidth=1.8)
-            _stack_panel_label(ax, cfg)
+            _stack_panel_label(ax, _display_name(cfg))
             ax.grid(True, alpha=0.3)
             ax.set_ylabel("Drawdown", fontsize=AXIS_LABEL_FONTSIZE)
             ax.tick_params(labelsize=TICK_LABEL_FONTSIZE)
@@ -729,7 +740,7 @@ def plot_drawdown_curve(
         episodes = episodes_by_cfg[cfg]
         dd_mat = _drawdown_matrix(running_by_cfg[cfg])
         iqm, lo, hi = _per_episode_band(dd_mat)
-        ax.plot(episodes, iqm, color=color, linewidth=2.0, label=cfg)
+        ax.plot(episodes, iqm, color=color, linewidth=2.0, label=_display_name(cfg))
         ax.fill_between(episodes, lo, hi, color=color, alpha=0.2)
     ax.set_xlabel("Episode", fontsize=AXIS_LABEL_FONTSIZE)
     ax.set_ylabel("Drawdown from running peak (reward)", fontsize=AXIS_LABEL_FONTSIZE)
@@ -783,7 +794,7 @@ def plot_seed_disagreement(
         p75 = np.nanpercentile(mat, 75, axis=0)
         iqr_width = p75 - p25
         iqr_smoothed = _rolling_mean(iqr_width, smooth_window)
-        ax.plot(episodes, iqr_smoothed, color=color, linewidth=2.0, label=cfg)
+        ax.plot(episodes, iqr_smoothed, color=color, linewidth=2.0, label=_display_name(cfg))
     ax.set_xlabel("Episode", fontsize=AXIS_LABEL_FONTSIZE)
     ax.set_ylabel(
         f"Across-seed IQR width\n(running_avg_100, rolling {smooth_window})",

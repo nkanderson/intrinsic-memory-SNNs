@@ -47,10 +47,12 @@ from optuna_analysis import HL1_KEYS, HL2_KEYS, HIST_KEYS, _find_param  # noqa: 
 THRESHOLD_COLOR = OKABE_ITO[1]
 
 NEURON_STYLE = {
-    "leaky": {"color": OKABE_ITO[0], "marker": COMPARISON_MARKERS[0]},
+    "LIF": {"color": OKABE_ITO[0], "marker": COMPARISON_MARKERS[0]},
     "fractional": {"color": OKABE_ITO[2], "marker": COMPARISON_MARKERS[1]},
     "bitshift": {"color": OKABE_ITO[5], "marker": COMPARISON_MARKERS[2]},
 }
+
+_LABEL_RENAMES = {"leaky": "LIF"}
 
 
 def _parse_study_specs(args: argparse.Namespace) -> list[dict[str, str]]:
@@ -87,7 +89,8 @@ def _label_from_study(study_name: str) -> str:
         if sep in base:
             base = base.split(sep, 1)[0]
             break
-    return base or study_name
+    label = base or study_name
+    return _LABEL_RENAMES.get(label, label)
 
 
 # Three-way classification of trials by the selection gate from
