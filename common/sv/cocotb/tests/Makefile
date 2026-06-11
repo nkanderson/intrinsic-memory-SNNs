@@ -486,12 +486,18 @@ ifeq ($(SIM),icarus)
         COMPILE_ARGS += -Pbitshift_lif.INV_DENOM=58982
     endif
     ifeq ($(TEST),subthreshold_frac)
-        # Match python plot_python_subthreshold.py: H=256, alpha=0.5
-        COMPILE_ARGS += -Pfractional_lif.HISTORY_LENGTH=256
-        COMPILE_ARGS += -Pfractional_lif.COEFF_WIDTH=16 -Pfractional_lif.COEFF_FRAC_BITS=15
+        # Extended subthreshold sweep: H=1024, alpha=0.5, UQ0.16 coefficients.
+        # The long discharge window (steps_discharge=1000 in test_subthreshold_dynamics.py)
+        # needs the power-law memory tail to stay intact out to ~1000 steps. That requires
+        # both (a) HISTORY_LENGTH >= steps_charge+steps_discharge so the buffer still reaches
+        # the charge phase, and (b) UQ0.16 coefficients: in QU1.15 the |g_k| underflow to 0
+        # past k~700 (LSB 3.05e-5), truncating the tail. Dropping the unused integer bit
+        # (UQ0.16, same 16-bit width) keeps all 1023 coefficients nonzero down to |g_1023|=1.5e-5.
+        COMPILE_ARGS += -Pfractional_lif.HISTORY_LENGTH=1024
+        COMPILE_ARGS += -Pfractional_lif.COEFF_WIDTH=16 -Pfractional_lif.COEFF_FRAC_BITS=16
         COMPILE_ARGS += -Pfractional_lif.INV_DENOM=58982
-        # Use the 256-history coefficients mem file which has 255 entries
-        COMPILE_ARGS += -Pfractional_lif.GL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-256/gl_coefficients.mem\"
+        # 1024-history coefficients mem file (1023 entries, UQ0.16)
+        COMPILE_ARGS += -Pfractional_lif.GL_COEFF_FILE=\"$(PWD)/weights/fractional-16-4-1024/gl_coefficients.mem\"
     endif
     ifeq ($(TEST),subthreshold_bitshift)
         # Match python plot_python_subthreshold.py: H=256, custom slow decay
