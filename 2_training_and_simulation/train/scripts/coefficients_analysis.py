@@ -69,7 +69,7 @@ def build_quantized_table(
     alpha: float = 0.5,
     history_length: int = 16,
     coeff_bits: int = 16,
-    coeff_frac_bits: int = 15,
+    coeff_frac_bits: int = 16,
     precision: int = 8,
 ) -> List[Dict[str, str]]:
     """
@@ -222,7 +222,7 @@ def plot_relative_error_comparison(
     alpha: float = 0.5,
     history_length: int = 16,
     coeff_bits: int = 16,
-    coeff_frac_bits: int = 15,
+    coeff_frac_bits: int = 16,
     output_path: Path | None = None,
     use_svg: bool = False,
 ):
@@ -247,7 +247,7 @@ def plot_relative_error_comparison(
     plt.plot(
         x,
         series["quantized_pct"],
-        label="quantized (QU1.15)",
+        label=f"quantized (UQ0.{coeff_frac_bits})",
         linewidth=1.8,
         marker="s",
         markersize=4,
@@ -337,7 +337,7 @@ def plot_relative_error_abslog(
     alpha: float = 0.5,
     history_length: int = 16,
     coeff_bits: int = 16,
-    coeff_frac_bits: int = 15,
+    coeff_frac_bits: int = 16,
     output_path: Path | None = None,
     use_svg: bool = False,
 ):
@@ -367,7 +367,6 @@ def plot_relative_error_abslog(
         "custom": "D",
         "custom_slow": "v",
     }
-
 
     plt.figure(figsize=DEFAULT_FIGSIZE)
     for idx, name in enumerate(method_names):
@@ -421,7 +420,7 @@ def plot_mean_absolute_error_bar(
     alpha: float = 0.5,
     history_length: int = 16,
     coeff_bits: int = 16,
-    coeff_frac_bits: int = 15,
+    coeff_frac_bits: int = 16,
     output_path: Path | None = None,
     use_svg: bool = False,
 ):
@@ -436,7 +435,6 @@ def plot_mean_absolute_error_bar(
     )
     method_names, matrix = _method_series_from_relative_error(series)
     mae = np.mean(np.abs(matrix), axis=1)
-
 
     plt.figure(figsize=DEFAULT_FIGSIZE)
     bars = plt.bar(method_names, mae, width=0.65)
@@ -498,13 +496,13 @@ def plot_magnitude_decay(
 
     Shows six series starting at k=1 (g_0=1 is skipped):
       - Analytical GL magnitude (true float values)
-      - Q0.16 quantized magnitude
+      - UQ0.16 quantized magnitude
       - bitshift: simple   (2^0, 2^-1, 2^-2, ...)
       - bitshift: slow_decay
       - bitshift: custom
       - bitshift: custom_slow
 
-    A horizontal dashed reference line marks the Q0.16 quantization floor
+    A horizontal dashed reference line marks the UQ0.16 quantization floor
     (1 / 2^coeff_frac_bits) so it is easy to see when each series reaches
     the representable limit.
 
@@ -515,48 +513,56 @@ def plot_magnitude_decay(
         alpha: Fractional order.
         history_length: Number of history steps to plot (starting at k=1).
         coeff_bits: Total bit width for quantization.
-        coeff_frac_bits: Number of fractional bits (Q0.16 → coeff_frac_bits=16).
+        coeff_frac_bits: Number of fractional bits (UQ0.16 → coeff_frac_bits=16).
         output_path: File path to save the figure; shows interactively if None.
         use_svg: Save as SVG instead of PNG.
     """
     # ---- data -----------------------------------------------------------
-    coeffs = compute_gl_coefficients(alpha, history_length + 1)  # need k=0..history_length
+    coeffs = compute_gl_coefficients(
+        alpha, history_length + 1
+    )  # need k=0..history_length
     coeffs_np = coeffs.numpy() if hasattr(coeffs, "numpy") else np.array(coeffs)
 
     # Skip k=0 (g_0 = 1 by definition; not operationally stored).
     k_values = np.arange(1, history_length + 1)
     analytical = np.abs(coeffs_np[1 : history_length + 1].astype(float))
 
-    # Q0.16 quantized values for k=1..H
+    # UQ0.16 quantized values for k=1..H
     quantized_vals = []
     for v in analytical:
-        _, q_float = quantize_magnitude(float(v), bits=coeff_bits, frac_bits=coeff_frac_bits)
+        _, q_float = quantize_magnitude(
+            float(v), bits=coeff_bits, frac_bits=coeff_frac_bits
+        )
         quantized_vals.append(q_float)
     quantized = np.array(quantized_vals, dtype=float)
 
     # Bitshift sequences (also skip k=0 by slicing from index 1).
     # These are raw float magnitudes (powers of 2), NOT quantized — the whole
     # point of bitshift is to avoid stored coefficients.  The y-axis is clipped
-    # at the Q0.16 floor so series that would be unrepresentable simply exit
+    # at the UQ0.16 floor so series that would be unrepresentable simply exit
     # the visible area.
     simple = np.array(hc.simple_sequence(history_length + 1)[1:], dtype=float)
     slow_decay = np.array(hc.slow_decay_sequence(history_length + 1)[1:], dtype=float)
-    custom = np.array(hc.custom_sequence(history_length + 1, decay_rate=3)[1:], dtype=float)
-    custom_slow = np.array(hc.custom_slow_decay_sequence(history_length + 1)[1:], dtype=float)
+    custom = np.array(
+        hc.custom_sequence(history_length + 1, decay_rate=3)[1:], dtype=float
+    )
+    custom_slow = np.array(
+        hc.custom_slow_decay_sequence(history_length + 1)[1:], dtype=float
+    )
 
-    # Quantization floor: smallest nonzero value in Q0.{coeff_frac_bits}
+    # Quantization floor: smallest nonzero value in UQ0.{coeff_frac_bits}
     q_floor = 1.0 / (1 << coeff_frac_bits)
 
     # ---- style ----------------------------------------------------------
     # Series drawn in Okabe-Ito order; GL gets the first slot (blue), quantized
     # gets the second (vermillion), then the four bitshift variants.
     series = [
-        ("GL analytical",       analytical,  OKABE_ITO[0], "-",    "o"),
-        (f"Q0.{coeff_frac_bits} quantized", quantized,  OKABE_ITO[1], "--",   "s"),
-        ("bitshift: simple",    simple,      OKABE_ITO[2], "-.",   "^"),
-        ("bitshift: slow_decay",slow_decay,  OKABE_ITO[5], ":",    "D"),
-        ("bitshift: custom",    custom,      OKABE_ITO[3], (0,(5,2)),"v"),
-        ("bitshift: custom_slow",custom_slow,OKABE_ITO[4], (0,(1,1)),"P"),
+        ("GL analytical", analytical, OKABE_ITO[0], "-", "o"),
+        (f"UQ0.{coeff_frac_bits} quantized", quantized, OKABE_ITO[1], "--", "s"),
+        ("bitshift: simple", simple, OKABE_ITO[2], "-.", "^"),
+        ("bitshift: slow_decay", slow_decay, OKABE_ITO[5], ":", "D"),
+        ("bitshift: custom", custom, OKABE_ITO[3], (0, (5, 2)), "v"),
+        ("bitshift: custom_slow", custom_slow, OKABE_ITO[4], (0, (1, 1)), "P"),
     ]
 
     marker_stride = max(1, history_length // 10)
@@ -588,7 +594,7 @@ def plot_magnitude_decay(
         color="#666666",
         linewidth=0.9,
         linestyle=":",
-        label=f"Q0.{coeff_frac_bits} floor ({q_floor:.2e})",
+        label=f"UQ0.{coeff_frac_bits} floor ({q_floor:.2e})",
         alpha=0.8,
     )
 
@@ -599,7 +605,7 @@ def plot_magnitude_decay(
     ax.grid(True, which="both", alpha=0.25, linestyle=":")
     ax.set_axisbelow(True)
 
-    # Clip y-axis at the Q0.16 floor so bitshift series that would be
+    # Clip y-axis at the UQ0.16 floor so bitshift series that would be
     # unrepresentable simply exit the visible area — no misleading 10^-18.
     ax.set_ylim(bottom=q_floor * 0.4)
     ax.legend(loc="upper right", fontsize=LEGEND_FONTSIZE, framealpha=0.9)
@@ -646,10 +652,10 @@ def plot_bitshift_growth(
     custom_slow_shifts = np.array(hc.custom_slow_decay_bitshift(history_length + 1)[1:])
 
     series = [
-        ("simple",      simple_shifts,       OKABE_ITO[2], "-.",      "^"),
-        ("slow_decay",  slow_shifts,         OKABE_ITO[5], ":",       "D"),
-        ("custom",      custom_shifts,       OKABE_ITO[3], (0,(5,2)), "v"),
-        ("custom_slow", custom_slow_shifts,  OKABE_ITO[4], (0,(1,1)), "P"),
+        ("simple", simple_shifts, OKABE_ITO[2], "-.", "^"),
+        ("slow_decay", slow_shifts, OKABE_ITO[5], ":", "D"),
+        ("custom", custom_shifts, OKABE_ITO[3], (0, (5, 2)), "v"),
+        ("custom_slow", custom_slow_shifts, OKABE_ITO[4], (0, (1, 1)), "P"),
     ]
 
     marker_stride = max(1, history_length // 10)
@@ -750,7 +756,7 @@ def main():
         default=None,
         help=(
             "Output image path for coefficient magnitude decay plot "
-            "(GL analytical, Q0.16 quantized, all bitshift variants). "
+            "(GL analytical, UQ0.16 quantized, all bitshift variants). "
             "Defaults: alpha=0.5, history-length=64, coeff-bits=16, coeff-frac-bits=16."
         ),
     )
