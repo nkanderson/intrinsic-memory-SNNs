@@ -1,0 +1,56 @@
+Multi-seed training for: bitshift-64-32-4
+  device       : cpu
+  num_seeds    : 1
+  base_seed    : 126
+  num_episodes : 1500
+  output_dir   : metrics/multi-seed/bitshift-64-32-4/_workers/seed126
+
+============================================================
+Seed 126 (1/1)
+============================================================
+  Episode 50/1500  avg(100): 15.9
+  Episode 100/1500  avg(100): 14.4
+  Episode 150/1500  avg(100): 14.3
+  Episode 200/1500  avg(100): 34.6
+  Episode 250/1500  avg(100): 82.5
+  Episode 300/1500  avg(100): 107.4
+  Episode 350/1500  avg(100): 112.3
+  Episode 400/1500  avg(100): 128.3
+  Episode 450/1500  avg(100): 129.3
+  Episode 500/1500  avg(100): 143.8
+  Episode 550/1500  avg(100): 166.6
+  Episode 600/1500  avg(100): 291.3
+  Episode 650/1500  avg(100): 456.9
+  Episode 700/1500  avg(100): 467.1
+  Episode 750/1500  avg(100): 265.4
+  Episode 800/1500  avg(100): 203.8
+  Episode 850/1500  avg(100): 351.7
+  Episode 900/1500  avg(100): 365.8
+  Episode 950/1500  avg(100): 400.5
+  Episode 1000/1500  avg(100): 329.5
+  Episode 1050/1500  avg(100): 208.5
+  Episode 1100/1500  avg(100): 271.0
+  Episode 1150/1500  avg(100): 339.8
+  Episode 1200/1500  avg(100): 368.9
+  Episode 1250/1500  avg(100): 358.1
+  Episode 1300/1500  avg(100): 180.3
+  Episode 1350/1500  avg(100): 18.5
+  Episode 1400/1500  avg(100): 158.8
+  Episode 1450/1500  avg(100): 180.5
+  Episode 1500/1500  avg(100): 163.3
+Model saved to models/bitshift-64-32-4-seed126-final.pth
+  per-episode CSV streamed to: metrics/multi-seed/bitshift-64-32-4/_workers/seed126/bitshift-64-32-4-seed126.csv
+
+Summary CSV: metrics/multi-seed/bitshift-64-32-4/_workers/seed126/bitshift-64-32-4-summary.csv
+
+Results across 1 seeds:
+  solved (final_avg >= 475) : 0/1 seeds
+  final_avg_reward  : 163.27 ± 0.00  (primary metric: CartPole-v1 standard)
+  best_avg_reward   : 500.00 ± 0.00
+  tail_iqm_reward   : 224.43 ± 0.00  (diagnostic: matches Optuna selection metric)
+  convergence_ep    : never reached threshold in any seed
+
+Robust reporting (final_avg_reward across seeds, 95% bootstrap CI):
+  IQM   : 163.27  [95% CI: 163.27, 163.27]
+  Mean  : 163.27  [95% CI: 163.27, 163.27]
+  (note: with N < 10, bootstrap CIs and IQM are necessarily wide; per Colas et al. 2018 consider increasing --num-seeds.)

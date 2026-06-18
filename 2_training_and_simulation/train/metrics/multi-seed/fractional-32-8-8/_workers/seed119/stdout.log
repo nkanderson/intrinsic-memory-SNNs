@@ -1,0 +1,56 @@
+Multi-seed training for: fractional-32-8-8
+  device       : cpu
+  num_seeds    : 1
+  base_seed    : 119
+  num_episodes : 1500
+  output_dir   : metrics/multi-seed/fractional-32-8-8/_workers/seed119
+
+============================================================
+Seed 119 (1/1)
+============================================================
+  Episode 50/1500  avg(100): 17.0
+  Episode 100/1500  avg(100): 14.2
+  Episode 150/1500  avg(100): 14.0
+  Episode 200/1500  avg(100): 34.6
+  Episode 250/1500  avg(100): 62.6
+  Episode 300/1500  avg(100): 83.5
+  Episode 350/1500  avg(100): 87.7
+  Episode 400/1500  avg(100): 88.0
+  Episode 450/1500  avg(100): 147.3
+  Episode 500/1500  avg(100): 185.6
+  Episode 550/1500  avg(100): 172.6
+  Episode 600/1500  avg(100): 278.9
+  Episode 650/1500  avg(100): 381.6
+  Episode 700/1500  avg(100): 358.7
+  Episode 750/1500  avg(100): 305.0
+  Episode 800/1500  avg(100): 300.4
+  Episode 850/1500  avg(100): 198.3
+  Episode 900/1500  avg(100): 163.0
+  Episode 950/1500  avg(100): 335.3
+  Episode 1000/1500  avg(100): 358.4
+  Episode 1050/1500  avg(100): 324.2
+  Episode 1100/1500  avg(100): 353.5
+  Episode 1150/1500  avg(100): 397.0
+  Episode 1200/1500  avg(100): 450.6
+  Episode 1250/1500  avg(100): 289.3
+  Episode 1300/1500  avg(100): 216.2
+  Episode 1350/1500  avg(100): 369.1
+  Episode 1400/1500  avg(100): 454.5
+  Episode 1450/1500  avg(100): 271.1
+  Episode 1500/1500  avg(100): 31.5
+Model saved to models/fractional-32-8-8-seed119-final.pth
+  per-episode CSV streamed to: metrics/multi-seed/fractional-32-8-8/_workers/seed119/fractional-32-8-8-seed119.csv
+
+Summary CSV: metrics/multi-seed/fractional-32-8-8/_workers/seed119/fractional-32-8-8-summary.csv
+
+Results across 1 seeds:
+  solved (final_avg >= 475) : 0/1 seeds
+  final_avg_reward  : 31.53 ± 0.00  (primary metric: CartPole-v1 standard)
+  best_avg_reward   : 466.25 ± 0.00
+  tail_iqm_reward   : 345.25 ± 0.00  (diagnostic: matches Optuna selection metric)
+  convergence_ep    : never reached threshold in any seed
+
+Robust reporting (final_avg_reward across seeds, 95% bootstrap CI):
+  IQM   : 31.53  [95% CI: 31.53, 31.53]
+  Mean  : 31.53  [95% CI: 31.53, 31.53]
+  (note: with N < 10, bootstrap CIs and IQM are necessarily wide; per Colas et al. 2018 consider increasing --num-seeds.)

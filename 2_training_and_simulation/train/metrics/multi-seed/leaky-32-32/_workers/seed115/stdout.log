@@ -1,0 +1,56 @@
+Multi-seed training for: leaky-32-32
+  device       : cpu
+  num_seeds    : 1
+  base_seed    : 115
+  num_episodes : 1500
+  output_dir   : metrics/multi-seed/leaky-32-32/_workers/seed115
+
+============================================================
+Seed 115 (1/1)
+============================================================
+  Episode 50/1500  avg(100): 17.2
+  Episode 100/1500  avg(100): 15.7
+  Episode 150/1500  avg(100): 22.9
+  Episode 200/1500  avg(100): 98.6
+  Episode 250/1500  avg(100): 167.2
+  Episode 300/1500  avg(100): 178.3
+  Episode 350/1500  avg(100): 177.7
+  Episode 400/1500  avg(100): 299.9
+  Episode 450/1500  avg(100): 459.6
+  Episode 500/1500  avg(100): 493.2
+  Episode 550/1500  avg(100): 499.8
+  Episode 600/1500  avg(100): 486.9
+  Episode 650/1500  avg(100): 484.6
+  Episode 700/1500  avg(100): 471.5
+  Episode 750/1500  avg(100): 469.8
+  Episode 800/1500  avg(100): 488.5
+  Episode 850/1500  avg(100): 487.3
+  Episode 900/1500  avg(100): 466.4
+  Episode 950/1500  avg(100): 442.3
+  Episode 1000/1500  avg(100): 371.8
+  Episode 1050/1500  avg(100): 160.6
+  Episode 1100/1500  avg(100): 20.8
+  Episode 1150/1500  avg(100): 155.8
+  Episode 1200/1500  avg(100): 392.4
+  Episode 1250/1500  avg(100): 493.4
+  Episode 1300/1500  avg(100): 483.4
+  Episode 1350/1500  avg(100): 472.0
+  Episode 1400/1500  avg(100): 477.7
+  Episode 1450/1500  avg(100): 493.8
+  Episode 1500/1500  avg(100): 500.0
+Model saved to models/leaky-32-32-seed115-final.pth
+  per-episode CSV streamed to: metrics/multi-seed/leaky-32-32/_workers/seed115/leaky-32-32-seed115.csv
+
+Summary CSV: metrics/multi-seed/leaky-32-32/_workers/seed115/leaky-32-32-summary.csv
+
+Results across 1 seeds:
+  solved (final_avg >= 475) : 1/1 seeds
+  final_avg_reward  : 500.00 ± 0.00  (primary metric: CartPole-v1 standard)
+  best_avg_reward   : 500.00 ± 0.00
+  tail_iqm_reward   : 478.52 ± 0.00  (diagnostic: matches Optuna selection metric)
+  convergence_ep    : 1397.0 ± 0.0  (1/1 seeds converged)
+
+Robust reporting (final_avg_reward across seeds, 95% bootstrap CI):
+  IQM   : 500.00  [95% CI: 500.00, 500.00]
+  Mean  : 500.00  [95% CI: 500.00, 500.00]
+  (note: with N < 10, bootstrap CIs and IQM are necessarily wide; per Colas et al. 2018 consider increasing --num-seeds.)
