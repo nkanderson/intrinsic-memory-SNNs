@@ -25,7 +25,7 @@ not operationally stored):
 
 Run:
     python plot_quantized_coefficient_error.py \
-        --history-length 32 \
+        --max-history 16 \
         --output ../images/coefficients/quantized-coeff-error-16-vs-8.png
 """
 
@@ -215,14 +215,6 @@ def plot_quantized_coefficient_error(
 
     # ---- Bottom panel: signed relative error (%) -----------------------
     ax_bot.axhline(0.0, color="#888888", linewidth=0.9, zorder=1)
-    ax_bot.axhline(
-        -100.0,
-        color=COLOR_LOW,
-        linestyle=":",
-        linewidth=1.0,
-        alpha=0.7,
-        zorder=1,
-    )
     ax_bot.plot(
         k,
         s["err_high"],
@@ -247,24 +239,53 @@ def plot_quantized_coefficient_error(
         zorder=5,
     )
 
-    # Annotate where each scheme first departs from exact (0%) error.
     first_high = _first_nonzero_step(k, s["err_high"])
     first_low = _first_nonzero_step(k, s["err_low"])
-    y_top = float(np.nanmax(s["err_low"]))
-    # Explicit text anchors (text_x, text_y): UQ0.8 sits lower and further left,
-    # UQ0.16 just shifts left of its arrow.
-    for kk, color, name, text_x, text_y in (
-        (first_low, COLOR_LOW, label_low, (first_low or 0) - 1.0, y_top * 0.52),
-        (first_high, COLOR_HIGH, label_high, (first_high or 0) - 0.8, y_top * 0.34),
+
+    # Does UQ0.8 underflow (round to 0 -> -100%) anywhere in this window?
+    underflow_idx = np.flatnonzero(s["low"] == 0.0)
+    underflows = underflow_idx.size > 0
+
+    # Y-limits adapt to the window: reserve room for the -100% floor only when
+    # underflow actually happens, otherwise hug the data so a short window does
+    # not show a misleading expanse of empty space down to -100%.
+    y_top = float(np.max(s["err_low"]))
+    y_hi = max(20.0, y_top * 1.18)
+    y_lo = -112.0 if underflows else min(-5.0, float(np.min(s["err_low"])) * 1.18)
+    ax_bot.set_ylim(y_lo, y_hi)
+    ax_bot.set_xlim(0.5, history_length + 0.5)
+
+    # Annotate where each scheme first departs from exact (0%) error. Heights
+    # are taken as fractions of the (window-dependent) axis top so the labels
+    # stay well placed whether the window is short or long.
+    for kk, color, name, text_x, text_y, err in (
+        (
+            first_low,
+            COLOR_LOW,
+            label_low,
+            (first_low or 0) - 1.0,
+            y_hi * 0.46,
+            s["err_low"],
+        ),
+        (
+            first_high,
+            COLOR_HIGH,
+            label_high,
+            (first_high or 0) - 0.8,
+            y_hi * 0.46,
+            s["err_high"],
+        ),
     ):
         if kk is None:
             continue
         ax_bot.axvline(
             kk, color=color, linestyle="-", linewidth=0.8, alpha=0.35, zorder=1
         )
+        # Point the arrow at this scheme's own marker (its error value at k=kk),
+        # not at y=0 -- otherwise it appears to indicate the flat UQ0.16 line.
         ax_bot.annotate(
             f"{name} first error\nat k={kk}",
-            xy=(kk, 0.0),
+            xy=(kk, float(err[kk - 1])),
             xytext=(text_x, text_y),
             fontsize=LEGEND_FONTSIZE,
             color=color,
@@ -273,10 +294,12 @@ def plot_quantized_coefficient_error(
             va="center",
         )
 
-    # Label the -100% underflow floor, ending just left of where UQ0.8 first
-    # underflows so the text does not collide with the plotted line.
-    underflow_idx = np.flatnonzero(s["low"] == 0.0)
-    if underflow_idx.size:
+    # -100% floor + label, only when UQ0.8 actually underflows in this window.
+    # The label ends just left of the first underflow so it clears the line.
+    if underflows:
+        ax_bot.axhline(
+            -100.0, color=COLOR_LOW, linestyle=":", linewidth=1.0, alpha=0.7, zorder=1
+        )
         underflow_start = int(k[underflow_idx[0]])
         ax_bot.text(
             underflow_start - 0.4,
@@ -293,8 +316,6 @@ def plot_quantized_coefficient_error(
     ax_bot.grid(True, alpha=0.22, linestyle=":")
     ax_bot.set_axisbelow(True)
     ax_bot.tick_params(axis="both", which="major", labelsize=TICK_LABEL_FONTSIZE)
-    ax_bot.set_ylim(-112.0, max(20.0, y_top * 1.18))
-    ax_bot.set_xlim(0.5, history_length + 0.5)
     ax_bot.legend(loc="upper left", fontsize=LEGEND_FONTSIZE, framealpha=0.9)
 
     # No tight_layout(): the annotations/reference lines are outside the data
@@ -335,7 +356,17 @@ def main():
         )
     )
     parser.add_argument("--alpha", type=float, default=0.5)
-    parser.add_argument("--history-length", type=int, default=32)
+    parser.add_argument(
+        "--max-history",
+        "--history-length",
+        dest="max_history",
+        type=int,
+        default=16,
+        help=(
+            "Number of history steps (k) to plot, i.e. the x-axis extent. "
+            "Shorter windows end before UQ0.8 underflows. (alias: --history-length)"
+        ),
+    )
     parser.add_argument("--frac-bits-high", type=int, default=16)
     parser.add_argument("--frac-bits-low", type=int, default=8)
     parser.add_argument(
@@ -358,7 +389,7 @@ def main():
 
     s = plot_quantized_coefficient_error(
         alpha=args.alpha,
-        history_length=args.history_length,
+        history_length=args.max_history,
         frac_bits_high=args.frac_bits_high,
         frac_bits_low=args.frac_bits_low,
         output_path=output_path,
