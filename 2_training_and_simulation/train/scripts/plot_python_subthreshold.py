@@ -33,6 +33,7 @@ def plot_subthreshold_dynamics(
     use_log=False,
     steps_discharge=None,
     include_bitshift=False,
+    use_log_y=False,
 ):
     torch.set_default_dtype(torch.float64)
     alphas = [0.1, 0.3, 0.5, 0.7, 0.9, 1.0]
@@ -40,7 +41,12 @@ def plot_subthreshold_dynamics(
     lam = 0.1
 
     if steps_discharge is None:
-        steps_discharge = 2000 if use_log else 150
+        if use_log:
+            steps_discharge = 2000
+        elif use_log_y:
+            steps_discharge = 500
+        else:
+            steps_discharge = 150
 
     # The history buffer must be larger than the total simulation time (charge + discharge)
     # to ensure the initial charge pulse doesn't fall off the back of the memory buffer.
@@ -155,6 +161,9 @@ def plot_subthreshold_dynamics(
         ax.set_xlabel("Time Step (Since Discharge Start)", fontsize=AXIS_LABEL_FONTSIZE)
 
     else:
+        if use_log_y:
+            ax.set_yscale("log")
+
         if include_baseline:
             ax.plot(
                 range(total_steps),
@@ -226,8 +235,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--baseline", action="store_true", help="Include snnTorch.Leaky baseline"
     )
-    parser.add_argument(
+    scale_group = parser.add_mutually_exclusive_group()
+    scale_group.add_argument(
         "--log", action="store_true", help="Plot discharge phase on log-log scale"
+    )
+    scale_group.add_argument(
+        "--log-y",
+        action="store_true",
+        help="Plot full time series with a linear x-axis and log y-axis (semilog)",
     )
     parser.add_argument(
         "--steps",
@@ -243,9 +258,18 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     output_path = args.output
-    if args.log and output_path == "common/images/plot_python_subthreshold.svg":
+    default_output = "common/images/plot_python_subthreshold.svg"
+    if args.log and output_path == default_output:
         output_path = "common/images/plot_python_subthreshold_log.svg"
+    elif args.log_y and output_path == default_output:
+        output_path = "common/images/plot_python_subthreshold_logy.svg"
 
     plot_subthreshold_dynamics(
-        output_path, args.show, args.baseline, args.log, args.steps, args.bitshift
+        output_path,
+        args.show,
+        args.baseline,
+        args.log,
+        args.steps,
+        args.bitshift,
+        args.log_y,
     )

@@ -276,10 +276,11 @@ def plot_sv_subthreshold(
                 alpha=0.9,
             )
 
-    if not use_log:
-        ax.axvline(
-            steps_charge, color="gray", linestyle="--", alpha=0.7, label="Current off"
-        )
+    # Mark when the input current turns off (rendered on both linear and log
+    # axes -- steps_charge is positive so it displays fine on a log x-axis).
+    ax.axvline(
+        steps_charge, color="gray", linestyle="--", alpha=0.7, label="Current off"
+    )
 
     ax.set_xlabel("Time Step", fontsize=AXIS_LABEL_FONTSIZE)
     ax.set_ylabel("Membrane Potential", fontsize=AXIS_LABEL_FONTSIZE)
